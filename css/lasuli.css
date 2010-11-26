@@ -1,0 +1,237 @@
+body
+{
+  font: 62.5% "Trebuchet MS", sans-serif;
+  margin: 0px;
+  min-height:100%;
+  background-color: #CCCCCC;
+  overflow-y:hidden;
+}
+
+#overlay-div
+{
+	background-color: #000000;
+	opacity:0.5;
+	border:none;
+	margin:0;
+	padding:0;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	z-index:999998;
+	position:absolute;
+}
+
+#status-bar {
+  position: fixed;
+  background-color: #BBBBBB;
+  width: 100%;
+  height: 30px;
+  top: auto;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  z-index:999;
+}
+
+.hide {display: none;}
+
+div#create-viewpoint
+{
+  width: 100%;
+  padding: 4px;
+}
+
+div#create-viewpoint input
+{
+  height:22px;
+  margin:2px 4px 2px 2px;
+  padding:2px;
+}
+
+#tabs {
+  margin-top: 0px;
+  margin-right: 2px;
+  margin-bottom: auto;
+  margin-left: 2px;
+}
+#tabs li .ui-icon-close { float: left; margin: 4px 2px 0 0; cursor: pointer; }
+#tabs li .ui-icon-tabplus { float: left; margin: 6px 2px 0 6px; cursor: pointer; padding: 1px 2px;}
+.ui-icon-tabplus {background-image: url(images/plus.png); }
+
+#viewpointListContainer {margin-top: 30px;}
+#viewpointListContainer span {margin: 0px; padding:6px;}
+#viewpointListContainer ul {list-style-type: none; margin-top: 6px;}
+#viewpointListContainer ul li {
+  margin: 4px 3px 3px -20px;
+  padding: 4px;
+  padding-left: 0px;
+  font-size: 12px;
+  border-bottom:1px solid #EEEEEE;
+  cursor:pointer;
+}
+#viewpointListContainer ul li:last-child {
+  border-bottom:0px;
+}
+
+
+.icon-remove-viewpoint{
+	vertical-align: middle;
+	margin-right: 8px;
+	margin-top: -2px;
+	opacity: 0;
+}
+
+#t_attribute-grid button
+{
+  margin-top:2px;
+  padding-bottom:4px;
+  padding-top:3px;
+  float: right;
+}
+
+#actors li a
+{
+	cursor: pointer;
+}
+
+/* Tag cloud */
+
+#tags ul{
+  -moz-border-radius-bottomleft:6px;
+  -moz-border-radius-bottomright:6px;
+  -moz-border-radius-topleft:6px;
+  -moz-border-radius-topright:6px;
+	margin:1em 0;
+	padding:.5em 10px;
+	text-align:center;
+	background:#FF9999 url(blitzer/images/bg_tags.gif) repeat-x;
+	}
+#tags li{
+	margin:0;
+	padding:0;
+	list-style:none;
+	display:inline-block;
+	}
+#tags li a{
+	text-decoration:none;
+	color:#fff;
+	padding:0 2px;
+	cursor: pointer;
+	}
+#tags li a:hover{
+	color:#cff400;
+	}
+
+.tag1{font-size:100%;}
+.tag2{font-size:120%;}
+.tag3{font-size:140%;}
+.tag4{font-size:160%;}
+.tag5{font-size:180%;}
+
+/* alternative layout */
+
+#tags .alt{
+	text-align:left;
+	padding:0;
+	background:none;
+}
+#tags .alt li{
+	padding:2px 10px;
+	background:#FF9999;
+	display:block;
+}
+#tags .alt .tag1,
+#tags .alt .tag2,
+#tags .alt .tag3,
+#tags .alt .tag4,
+#tags .alt .tag5{font-size:100%;}
+#tags .alt .tag1{background:#FF0000;}
+#tags .alt .tag2{background:#EE0000;}
+#tags .alt .tag3{background:#DD0000;}
+#tags .alt .tag4{background:#CD0000;}
+#tags .alt .tag5{background:#8B0000;}
+
+#tags .alt li:first-child{
+  -moz-border-radius-topleft:4px;
+  -moz-border-radius-topright:4px;
+}
+
+#tags .alt li:last-child{
+  -moz-border-radius-bottomleft:4px;
+  -moz-border-radius-bottomright:4px;
+}
+
+.h3-title
+{
+	margin-left: -8px;
+}
+.h3-title span
+{
+	font-family:"Lucida Grande",Tahoma,Arial,Verdana,sans-serif;
+	font-size: 12px;
+	font-weight:bold;
+	padding-bottom: 6px;
+}
+
+.h3-title img
+{
+	vertical-align: bottom;
+	cursor: pointer;
+	margin-left: 6px;
+}
+
+
+.topics {margin-bottom: 15px;}
+.topics ul{ list-style-type: none;  list-style-position: outside; list-style-image:none; margin: 0; padding: 0px;}
+.topics ul li {display:inline-block;}
+.topics ul li img{ vertical-align: middle; cursor: pointer;}
+
+.topic a {
+  margin-left:15px;
+  background-color:#FBB0AE;
+  border-bottom:1px solid #3E6D8E;
+  border-right:1px solid #7F9FB6;
+  color:#600000;
+  line-height:2.2;
+  margin:2px 2px 2px 6px;
+  padding:3px 4px;
+  text-decoration:none;
+  white-space:nowrap;
+}
+
+.topic a:hover{
+  background-color:#CD0000;
+  border-bottom:1px solid #37607D;
+  border-right:1px solid #37607D;
+  color:#E0EAF1;
+  text-decoration:none;
+}
+
+.fragments {margin-bottom: 20px;}
+.fragments ul { list-style-type: none; margin: 0; padding: 5px 0 0 0; }
+.fragments ul li {
+  margin: 0 3px 3px 3px;
+  padding: 4px;
+  padding-left: 15px;
+  font-size: 12px;
+  border-bottom:1px solid #EEEEEE;
+  cursor:pointer;
+}
+.fragments ul li span { position: relative; float:left; margin-left: -1.3em; }
+
+.fragment-header span { padding: 3px 10px 3px 10px; margin:10px 0 20px 0}
+
+.fragment-toggle { cursor: pointer; }
+
+.edit-itemname-in-place { margin-bottom: 10px; padding: 5px;}
+
+div.ui-tabs-panel {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.tt-tag, .tt-create, .tt-modify, .tt-delete{
+  padding-top:5px;
+  padding-bottom: 5px;
+}
