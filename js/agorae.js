@@ -1,7 +1,7 @@
 (function($) {
-  $.hypertopic = $.hypertopic || {};
+  $.agorae = $.agorae || {};
 
-  $.extend($.hypertopic, {
+  $.extend($.agorae, {
     urlPrefix: '',
 
     newUUID: function() {

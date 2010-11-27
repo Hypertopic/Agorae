@@ -3,18 +3,36 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Hypertopic JavaScript Library</title>
+		<link type="text/css" href="css/blitzer/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
+		<link type="text/css" href="css/agorae.css" rel="stylesheet" />
+
 		<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="js/jquery.log.js"></script>
-    <script type="text/javascript" src="js/jquery.hypertopic.js"></script>
-    <script type="text/javascript" src="js/jquery.utils.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
+		<script type="text/javascript" src="js/jquery.dialog.js"></script>
+    <script type="text/javascript" src="js/jquery.log.js"></script>
+
+    <script type="text/javascript" src="js/agorae.utils.js"></script>
+    <script type="text/javascript" src="js/agorae.ui.js"></script>
+    <script type="text/javascript" src="js/i18n/agorae.locale-en.js"></script>
 
 		<script language="javascript">
 		  $(function(){
 		    $(document).bind("dblclick", function() { self.location.reload(); } );
+		    //$.showPage('page/login.html');
+		    //$.showMessage({title: "error", content: " example"});
+		    $.agorae.ui.login();
 		  });
 		</script>
 	</head>
 <body>
 <div id="main"></div>
+
+<!-- message dialog //-->
+<div id="message-dialog" title="Information" class="hide">
+	<p>
+		<span class="ui-icon ui-icon-notice" style="float:left; margin:0 7px 50px 0;"></span>
+		<span id="message"></span>
+	</p>
+</div>
 </body>
 </html>
