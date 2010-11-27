@@ -40,7 +40,12 @@ body
 }
 
 body.loading #dialog h2 {
-  background-image: url(../images/spinner.gif);
+  background: url("blitzer/images/ajax-loader.gif") 98% 50% no-repeat #FFFFFF ;
+  border: 0px;
+}
+#dialog h2.loading {
+  background:url("blitzer/images/ajax-loader.gif") no-repeat scroll 2% 50% #CC0000;
+  padding-left:1.8em;
 }
 #dialog h3 { color: #CC0000; font-size: 100%; font-weight: bold; margin: 0 -2em;
   padding: .35em 2em 0;
@@ -75,6 +80,8 @@ body.loading #dialog h2 {
   color: #ddd; */cursor: pointer; font-size: 90%; font-weight: normal;
   margin: 0 0 0 5px; padding: .5em 2em; -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
+  -webkit-user-select:none;
+  -moz-user-select:none;
 }
 #dialog .buttons button[type=submit] { font-weight: bold; }
 #dialog .buttons button:hover { background: url("blitzer/images/ui-bg_highlight-hard_100_f6f6f6_1x100.png") repeat-x scroll 50% 50% #F6F6F6; color:#111111; }

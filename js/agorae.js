@@ -1,36 +1,39 @@
 (function($) {
-  $.agorae = $.agorae || {};
-
-  $.extend($.agorae, {
-    urlPrefix: '',
-
-    newUUID: function() {
-      return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-          return v.toString(16);
-      });
-    },
-
-    httpSend: function(httpAction, httpUrl, httpBody) {
-      httpAction = httpAction ? httpAction : "GET";
-      httpUrl = httpUrl ? httpUrl : this.urlPrefix;
-      httpBody = httpBody || "";
-      options = options || {};
-      $.ajax({
-        type: httpAction, url: httpUrl, dataType: "json",
-        data: httpBody,
-        complete: function(req) {
-          var resp = $.httpData(req, "json");
-          if (req.status == 200) {
-            if (options.success) options.success(resp);
-          } else if (options.error) {
-            options.error(req.status, resp.error, resp.reason);
-          } else {
-            alert("Error: " + resp.reason);
-          }
+  function Session() {
+    function login(){
+      $.showDialog("dialog/_login.html", {
+        modal: true,
+        submit: function(data, callback) {
+          if (!validateLoginForm(data, callback)) return;
+          $.agorae.login(data.config, data.name, data.password, callback);
         }
       });
-    }
-  });
+      return false;
+    };
 
+    function validateLoginForm(data, callback) {
+      if (!data.config || data.config.length == 0) {
+        callback({config: "Please enter a correct configuration document URL."});
+        return false;
+      };
+      if (!data.name || data.name.length == 0) {
+        callback({name: "Please enter a name."});
+        return false;
+      };
+      if (!data.password || data.password.length == 0) {
+        callback({password: "Please enter a password."});
+        return false;
+      };
+      return true;
+    };
+
+    this.init = function(){
+      login();
+    };
+  }
+
+  $.agorae = $.agorae || {};
+  $.extend($.agorae, {
+    session : new Session()
+  });
 })(jQuery);

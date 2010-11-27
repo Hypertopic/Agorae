@@ -41,17 +41,19 @@
     }
     overlay.appendTo(document.body).fadeTo(100, 0.6);
     dialog.appendTo(document.body).addClass("loading").centerBox().fadeIn(400);
-
-    $(document).keydown(function(e) {
-      if (e.keyCode == 27) dismiss(); // dismiss on escape key
-    });
+    if(!options.modal)
+    {
+      $(document).keydown(function(e) {
+        if (e.keyCode == 27) dismiss(); // dismiss on escape key
+      });
+      overlay.click(function() { dismiss(); });
+    }
     function dismiss() {
       dialog.fadeOut("fast", function() {
         $("#dialog, #overlay, #overlay-frame").remove();
       });
       $(document).unbind("keydown");
     }
-    overlay.click(function() { dismiss(); });
 
     function showError(name, message) {
       var input = dialog.find(":input[name=" + name + "]");
@@ -71,6 +73,7 @@
         $("form", dialog).submit(function(e) { // invoke callback on submit
           e.preventDefault();
           dialog.find("div.error").remove().end().find(".error").removeClass("error");
+          dialog.find("h2:first").addClass("loading");
           var data = {};
           $.each($("form :input", dialog).serializeArray(), function(i, field) {
             data[field.name] = field.value;
@@ -79,6 +82,7 @@
             data[this.name] = this.value; // file inputs need special handling
           });
           options.submit(data, function callback(errors) {
+            dialog.find("h2:first").removeClass("loading");
             if ($.isEmptyObject(errors)) {
               dismiss();
             } else {

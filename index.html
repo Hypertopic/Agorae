@@ -11,8 +11,9 @@
 		<script type="text/javascript" src="js/jquery.dialog.js"></script>
     <script type="text/javascript" src="js/jquery.log.js"></script>
 
+    <script type="text/javascript" src="js/jquery.agorae.js"></script>
+    <script type="text/javascript" src="js/agorae.js"></script>
     <script type="text/javascript" src="js/agorae.utils.js"></script>
-    <script type="text/javascript" src="js/agorae.ui.js"></script>
     <script type="text/javascript" src="js/i18n/agorae.locale-en.js"></script>
 
 		<script language="javascript">
@@ -20,7 +21,7 @@
 		    $(document).bind("dblclick", function() { self.location.reload(); } );
 		    //$.showPage('page/login.html');
 		    //$.showMessage({title: "error", content: " example"});
-		    $.agorae.ui.login();
+		    $.agorae.session.init();
 		  });
 		</script>
 	</head>
