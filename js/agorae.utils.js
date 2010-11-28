@@ -52,9 +52,9 @@ function _(k){
       $("#ui-dialog-title-message-dialog").html(msgTitle);
   },
 
-  $.showPage = function(url){
+  $.showPage = function(url, callback){
     var d = new Date();
     if($('#main'))
-	    $('#main').html('Loading...').load(url + "?" + d.getTime());
+	    $('#main').html('Loading...').load(url + "?" + d.getTime(), function(){ callback(); });
   }
 })(jQuery);

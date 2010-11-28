@@ -32,8 +32,16 @@
     };
   }
 
+  function FrontPage(){
+
+
+    this.init = function(){
+      alert('loaded');
+    }
+  }
   $.agorae = $.agorae || {};
   $.extend($.agorae, {
-    session : new Session()
+    session : new Session(),
+    frontpage : new FrontPage()
   });
 })(jQuery);

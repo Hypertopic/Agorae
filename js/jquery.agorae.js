@@ -39,6 +39,32 @@
       });
     },
 
+    normalize: function(obj){
+      if(!obj.rows) return false;
+      var rows = obj.rows;
+      var result = {};
+      for(var i=0; i < rows.length; i++)
+      {
+        var r = rows[i];
+        var keys = r.key;
+        var current = result;
+        for(var k=0; k < keys.length; k++)
+        {
+          if(!current[keys[k]])
+            current[keys[k]] = {};
+          current = current[keys[k]];
+        }
+        var value = r.value;
+        for(var attribute in value)
+        {
+          if(!current[attribute])
+            current[attribute] = [];
+          current[attribute].push(value[attribute]);
+        }
+      }
+      return result;
+    },
+
     login: function(config, username, password, callback){
       this.httpSend(config, {type: "GET", username: username, password: password,
         success: function(doc){
@@ -48,6 +74,7 @@
             $.agorae.config.username = username;
             $.ajaxSetup({username: username, password: password});
             callback();
+            $.showPage('page/_index.html', $.agorae.frontpage.init);
             return;
           }
 
@@ -58,6 +85,7 @@
               $.agorae.config.username = username;
               $.ajaxSetup({username: username, password: password});
               callback();
+              $.showPage('page/_index.html', $.agorae.frontpage.init);
             },
             error: function(code, error, reason){
               callback({name: "Error username:" + reason});
