@@ -17,7 +17,7 @@ body
   height: expression(document.body.clientHeight + 'px');
 }
 #dialog { background: #FFF url(blitzer/images/progress.gif) 50% 50% no-repeat;
-  color: #f4f4f4; overflow: hidden; opacity: .95; max-width: 33em;
+  color: #f4f4f4; overflow: hidden; opacity: .95; max-width: 36em;
   padding: 1em 1em 0; -moz-border-radius: 7px;
   -moz-box-shadow: 4px 4px 6px #333; -webkit-border-radius: 7px;
   -webkit-box-shadow: 4px 4px 6px #333;

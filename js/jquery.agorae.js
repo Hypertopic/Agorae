@@ -23,7 +23,7 @@
           try{ resp = $.httpData(req, "json"); } catch(e){}
           if (req.status >= 200 && req.status < 300) {
             if (options.success)
-              options.success(resp);
+              options.success($.agorae.normalize(resp));
           }
           else
             if (options.error) {
@@ -40,7 +40,7 @@
     },
 
     normalize: function(obj){
-      if(!obj.rows) return false;
+      if(!obj.rows) return obj;
       var rows = obj.rows;
       var result = {};
       for(var i=0; i < rows.length; i++)
@@ -97,7 +97,67 @@
           callback({config: "Error read config document:" + reason});
         }
       });
+    },
+
+    getItem: function(itemUrl, callback){
+      this.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          var corpusID, itemID, item;
+          for (var k in doc) {
+            corpusID = k;
+            break;
+          }
+          for (var k in doc[corpusID]){
+            itemID = k;
+            break;
+          }
+          item = doc[corpusID][itemID];
+          item.corpus = corpusID;
+          item.id = itemID;
+          callback(item);
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot load item:" + itemUrl});
+        }
+      });
+    },
+
+    getViewpoint: function(viewpointUrl, callback){
+      this.httpSend(viewpointUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          var viewpointID, viewpoint;
+          for (var k in doc) {
+            viewpointID = k;
+            break;
+          }
+          viewpoint = doc[viewpointID];
+          viewpoint.id = viewpointID;
+          callback(viewpoint);
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot load viewpoint:" + viewpointUrl});
+        }
+      });
+    },
+
+    getUser: function(serverUrl, username, callback){
+      this.httpSend(serverUrl + "user/" + username,
+      {
+        type: "GET",
+        success: function(doc){
+          var user;
+          user = doc[username];
+          user.id = username;
+          callback(user);
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot load user:" + username + " from server:" + serverUrl});
+        }
+      });
     }
   });
-
 })(jQuery);

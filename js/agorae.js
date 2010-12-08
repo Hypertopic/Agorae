@@ -13,7 +13,8 @@
 
     function validateLoginForm(data, callback) {
       if (!data.config || data.config.length == 0) {
-        callback({config: "Please enter a correct configuration document URL."});
+        callback({
+            config: "Please enter a correct configuration document URL."});
         return false;
       };
       if (!data.name || data.name.length == 0) {
@@ -33,10 +34,48 @@
   }
 
   function FrontPage(){
-
+    function loadItem(index, item){
+      $.agorae.getItem(item, function(item){
+        var el = $('<li>' + item.name + '</li>').attr("rel", item.id)
+                  .data("item", item);
+        $('ul#index-item').append(el);
+      });
+    }
+    function loadViewpoint(index, viewpoint){
+      $.agorae.getViewpoint(viewpoint, function(viewpoint){
+        var el = $('<li>' + viewpoint.name + '</li>')
+                  .attr("rel", viewpoint.id).data("viewpoint", viewpoint);
+        $('ul#index-viewpoint').append(el);
+      });
+    }
+    function loadUser(index, server){
+      $.agorae.getUser(server, $.agorae.config.username, function(user){
+        if(user.viewpoint)
+          for(var i=0, viewpoint; viewpoint = user.viewpoint[i]; i++){
+            var el = $('<li class="editable">' + viewpoint.name + '</li>')
+                  .attr("rel", viewpoint.id).data("viewpoint", viewpoint);
+            $('ul#index-viewpoint').append(el);
+          }
+      });
+    }
 
     this.init = function(){
-      alert('loaded');
+      $.each($.agorae.config.items, loadItem);
+      $.each($.agorae.config.viewpoints, loadViewpoint);
+      $.each($.agorae.config.servers, loadUser);
+      $('input#index-edit-toggle').iToggle({
+    		easing: 'easeOutExpo',
+    		type: 'radio',
+    		keepLabel: true,
+    		easing: 'easeInExpo',
+    		speed: 300,
+    		onClickOn: function(){
+    			//Function here
+    		},
+    		onClickOff: function(){
+    			//Function here
+    		}
+    	});
     }
   }
   $.agorae = $.agorae || {};
