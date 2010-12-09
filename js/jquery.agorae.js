@@ -13,11 +13,12 @@
       options = options || {};
       httpAction = options.type ? options.type : "GET";
       httpBody = options.data || "";
-      dType = (typeof(httpBody) == "string") ? "text" : "json";
+      cType = (typeof(httpBody) == "string") ? "html/text" : "application/json";
+      httpBody = (typeof(httpBody) == "string") ? httpBody : JSON.stringify(httpBody);
       bAsync = (typeof(options.async) != "boolean") ? false : options.async;
       $.ajax({
-        type: httpAction, url: url, dataType: dType,
-        data: httpBody, async: bAsync,
+        type: httpAction, url: url, contentType: cType, dataType: 'json',
+        processData: false, data: httpBody, async: bAsync,
         complete: function(req) {
           var resp = "";
           try{ resp = $.httpData(req, "json"); } catch(e){}
@@ -156,6 +157,67 @@
         },
         error: function(code, error, reason){
           $.showMessage({title: "error", content: "Cannot load user:" + username + " from server:" + serverUrl});
+        }
+      });
+    },
+
+    createViewpoint: function(viewpointName, callback){
+      var viewpoint = {};
+      viewpoint.viewpoint_name = viewpointName;
+      viewpoint.users = new Array($.agorae.config.username);
+      this.httpSend($.agorae.config.servers[0],
+      {
+        type: "POST",
+        data: viewpoint,
+        success: function(doc){
+          viewpoint.name = viewpointName;
+          viewpoint.id = doc.id;
+          viewpoint.rev = doc.rev;
+          callback(viewpoint);
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot create viewpoint:" + viewpointName});
+        }
+      });
+    },
+
+    renameViewpoint: function(url, name, success, error){
+      $.agorae.httpSend(url,
+      {
+        type: "GET",
+        success: function(doc){
+          doc.viewpoint_name = name;
+          $.agorae.httpSend(url+"?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success,
+            error: error
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + url});
+        }
+      });
+    },
+    delete: function(url, callback){
+      this.httpSend(url,
+      {
+        type: "GET",
+        success: function(doc){
+          $.agorae.httpSend(url+"?rev=" + doc._rev,
+          {
+            type: "DELETE",
+            success: function(doc){
+              callback(doc);
+            },
+            error: function(code, error, reason){
+              $.showMessage({title: "error", content: "Cannot delete:" + url});
+            }
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + url});
         }
       });
     }

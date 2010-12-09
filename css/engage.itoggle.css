@@ -43,8 +43,8 @@ div#itoggle label.ilabel{
 div#itoggle label.itoggle,
 div#itoggle label.itoggle span{
 	display: block;
-	width: 93px;
-	height: 27px;
+	width: 76px;
+	height: 22px;
 	margin-bottom: 20px;
 	background: url(blitzer/images/itoggle.png) left bottom no-repeat;
 	cursor:pointer;

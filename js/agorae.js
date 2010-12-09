@@ -48,17 +48,33 @@
         $('ul#index-viewpoint').append(el);
       });
     }
+
+    function apendViewpoint(viewpoint, server){
+      server = server || $.agorae.config.servers[0];
+      var el = $('<li><img class="del ctl hide" '
+                   + 'src="css/blitzer/images/delete.png"><span '
+                   + 'class="editable">' + viewpoint.name + '</span></li>')
+                   .attr("rel", viewpoint.id).data("viewpoint", viewpoint)
+                   .data("server", server);
+      $('ul#index-viewpoint').append(el);
+    }
+
     function loadUser(index, server){
       $.agorae.getUser(server, $.agorae.config.username, function(user){
         if(user.viewpoint)
           for(var i=0, viewpoint; viewpoint = user.viewpoint[i]; i++){
-            var el = $('<li class="editable">' + viewpoint.name + '</li>')
-                  .attr("rel", viewpoint.id).data("viewpoint", viewpoint);
-            $('ul#index-viewpoint').append(el);
+            apendViewpoint(viewpoint, server);
           }
       });
     }
 
+    function checkStatus(){
+      $.log($('#index-edit-toggle').attr('checked'));
+      if($('#index-edit-toggle').attr('checked'))
+        $('.ctl').show();
+      else
+        $('.ctl').hide();
+    }
     this.init = function(){
       $.each($.agorae.config.items, loadItem);
       $.each($.agorae.config.viewpoints, loadViewpoint);
@@ -70,11 +86,69 @@
     		easing: 'easeInExpo',
     		speed: 300,
     		onClickOn: function(){
-    			//Function here
+    			$('.ctl').show();
     		},
     		onClickOff: function(){
-    			//Function here
+    		  $('.ctl').hide();
     		}
+    	});
+
+    	$('div.viewpoint-list img.add').live('click', function(){
+    	  $.log('add viewpoint');
+        $.agorae.createViewpoint('no name', function(doc){
+          apendViewpoint(doc);
+          checkStatus();
+        });
+    	});
+
+    	$('ul#index-viewpoint img.del').live('click', function(){
+    	  $.log('del viewpoint');
+    	  var viewpoint = $(this).parent().data('viewpoint');
+    	  var server = $(this).parent().data('server');
+    	  $.log(viewpoint);
+    	  var url = server + viewpoint.id;
+    	  $.log(url);
+    	  var self = $(this);
+    	  $.agorae.delete(url, function(){
+    	    self.parent().remove();
+    	  });
+    	});
+
+      $('ul#index-viewpoint span.editable').live('click', function(){
+        var viewpointName = $(this).text();
+        $.log(viewpointName);
+        var el = $('<input type="textbox">').val(viewpointName);
+    	  $(this).replaceWith(el);
+    	  el.focus(function() { $(this).select(); }).select()
+    	    .mouseup(function(e){ e.preventDefault(); });
+    	  el.blur(function(){
+    	    var span = $('<span></span>').addClass('editable');
+    	    if($(this).val() == '' || $(this).val() == viewpointName)
+    	    {
+    	      span.html(viewpointName);
+    	      $(this).replaceWith(span);
+    	    }
+    	    else
+    	    {
+    	      var self = $(this);
+    	      var newName = self.val();
+    	      var viewpoint = $(this).parent().data('viewpoint');
+    	      var server = $(this).parent().data('server');
+        	  var url = server + viewpoint.id;
+        	  $.log(url);
+    	      $.agorae.renameViewpoint(url, newName, function(){
+    	        span.html(newName);
+    	        self.replaceWith(span);
+    	      }, function(){
+    	        span.html(viewpointName);
+    	        self.replaceWith(span);
+    	      });
+    	    }
+    	  });
+    	  el.keyup(function(event){
+          if (event.keyCode == 27 || event.keyCode == 13)
+            $(this).blur();
+        });
     	});
     }
   }
