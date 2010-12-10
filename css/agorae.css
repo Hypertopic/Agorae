@@ -91,3 +91,15 @@ body.loading #dialog h2 {
   background: url(blitzer/images/progress.gif) 50% 50% no-repeat;
   visibility: hidden;
 }
+#dialog fieldset td.cookie {
+  vertical-align: top;
+  color: #666;
+  font-weight: bold;
+  text-align: right;
+}
+
+div#main{
+  font-size: 120%;
+  width: 40em;
+  margin: 10em;
+}

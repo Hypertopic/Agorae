@@ -56,5 +56,17 @@ function _(k){
     var d = new Date();
     if($('#main'))
 	    $('#main').html('Loading...').load(url + "?" + d.getTime(), function(){ callback(); });
+  },
+
+  $.queryString = function(name)
+  {
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( window.location.href );
+    if( results == null )
+      return "";
+    else
+      return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 })(jQuery);

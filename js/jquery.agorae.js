@@ -66,16 +66,17 @@
       return result;
     },
 
-    login: function(config, username, password, callback){
-      this.httpSend(config, {type: "GET", username: username, password: password,
+    login: function(config, username, password, callback, success){
+      $.agorae.httpSend(config, {type: "GET", username: username, password: password,
         success: function(doc){
           $.agorae.config = doc;
           //if there is no auth field in config document, then this service don't request authentication.
           if(!doc.auth){
             $.agorae.config.username = username;
+            $.agorae.config.password = password;
             $.ajaxSetup({username: username, password: password});
+            success();
             callback();
-            $.showPage('page/_index.html', $.agorae.frontpage.init);
             return;
           }
 
@@ -84,9 +85,10 @@
             data: {name: username, password: password},
             success: function(){
               $.agorae.config.username = username;
+              $.agorae.config.password = password;
               $.ajaxSetup({username: username, password: password});
+              success();
               callback();
-              $.showPage('page/_index.html', $.agorae.frontpage.init);
             },
             error: function(code, error, reason){
               callback({name: "Error username:" + reason});
@@ -200,6 +202,7 @@
         }
       });
     },
+
     delete: function(url, callback){
       this.httpSend(url,
       {
