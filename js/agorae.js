@@ -59,6 +59,10 @@
       return true;
     };
 
+    this.logout = function(){
+      $.cookie('session', null);
+      self.location.href = './';
+    };
     this.init = function(){
       if(!$.cookie('session'))
         login();
@@ -70,6 +74,8 @@
     };
 
     this.route = function(){
+      $.agorae.pagehelper.init();
+
       if(!$.queryString('uri'))
       {
         $.showPage('page/_index.html', $.agorae.frontpage.init);
@@ -96,6 +102,20 @@
   }
 
   function PageHelper(){
+    function resizeSidebar(){
+      var viewportHeight = window.innerHeight ? window.innerHeight : $(window).height();
+		  viewportHeight = viewportHeight - 190;
+		  viewportHeight = (viewportHeight > 0) ? viewportHeight : 0;
+		  viewportHeight = (viewportHeight < $('div#main').outerHeight()) ? $('div#main').outerHeight() : viewportHeight;
+		  $('div#sidebar').height(viewportHeight);
+    };
+
+    this.resize = function(){ resizeSidebar(); };
+
+    this.init = function(){
+      $(window).resize(resizeSidebar).trigger('resize');
+      setTimeout('$.agorae.pagehelper.resize();', 300);
+    };
     this.toggle = function(show){
       if(show)
         $('input#index-edit-toggle').iToggle({
@@ -106,9 +126,11 @@
       		speed: 300,
       		onClickOn: function(){
       			$('.ctl').show();
+      			$('ul.links').addClass('editing').removeClass('links');
       		},
       		onClickOff: function(){
       		  $('.ctl').hide();
+      		  $('ul.editing').addClass('links').removeClass('editing');
       		}
       	});
       else
@@ -121,6 +143,25 @@
         $('.ctl').show();
       else
         $('.ctl').hide();
+    };
+
+    this.navigatorBar = function(obj){
+      if(typeof(obj) != 'string'){
+        var str = '';
+        for(var i=0, bar; bar = obj[i]; i++)
+        {
+          if(bar.uri)
+            str += '<a href="' + bar.uri + '">' + bar.name + '</a>';
+          else
+            str += '<b>' + bar.name + '</b>';
+
+          if(i < obj.length-1)
+            str += ' &gt; ';
+        }
+        obj = str;
+      }
+      $('div#header-navigatorbar').html(obj);
+
     };
   }
   function FrontPage(){
@@ -178,7 +219,7 @@
       $.each($.agorae.config.viewpoints, loadViewpoint);
       $.each($.agorae.config.servers, loadUser);
       $.agorae.pagehelper.toggle(true);
-
+      $.agorae.pagehelper.navigatorBar('<b>Accueil</b>');
     	$('div.viewpoint-list img.add').live('click', function(){
         $.agorae.createViewpoint('no name', function(doc){
           apendViewpoint(doc);
@@ -191,7 +232,7 @@
     	  var server = $(this).parent().data('server');
     	  var url = server + viewpoint.id;
     	  var self = $(this);
-    	  $.agorae.delete(url, function(){
+    	  $.agorae.deleteDoc(url, function(){
     	    self.parent().remove();
     	  });
     	});
@@ -249,7 +290,7 @@
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<span class="editable">' + topic.name + '</span></li>')
                    .attr("rel", topic.id).attr("uri", uri);
-      $('ul#viewpoint-topic').append(el);
+      $('ul#topic').append(el);
     };
 
     function onTopicClick(el){
@@ -265,14 +306,18 @@
     this.init = function(){
       var uri = $.queryString('uri');
       $.agorae.getViewpoint(uri, function(viewpoint){
-        $.each(viewpoint.upper, appendTopic);
+        var bars = [{'uri': './', 'name': 'Accueil'}];
+        bars.push({'name': viewpoint.name + ''});
+        $.agorae.pagehelper.navigatorBar(bars);
+        if(viewpoint.upper)
+          $.each(viewpoint.upper, appendTopic);
       });
       if(uri.indexOf($.agorae.config.servers[0]) == 0)
         $.agorae.pagehelper.toggle(true);
       else
         $.agorae.pagehelper.toggle(false);
       //Click to create topic with no name
-      $('div.viewpoint-topic-list img.add').live('click', function(){
+      $('div.topic-list img.add').live('click', function(){
         $.agorae.createTopic(uri, 'no name', function(doc){
           appendTopic(0, doc);
           $.agorae.pagehelper.checkController();
@@ -280,7 +325,7 @@
     	});
 
     	//Click to delete topic
-    	$('div.viewpoint-topic-list img.del').live('click', function(){
+    	$('div.topic-list img.del').live('click', function(){
         var id = $(this).parent().attr('rel');
     	  var self = $(this);
     	  $.agorae.deleteTopic(uri, id , function(){
@@ -289,7 +334,7 @@
     	});
 
       //Click to edit in place
-      $('ul#viewpoint-topic span.editable').live('click', function(){
+      $('ul#topic span.editable').live('click', function(){
         if(!onTopicClick($(this)))
           return false;
         var id = $(this).parent().attr('rel');
@@ -325,7 +370,7 @@
     	});
 
       //Click on non-editable link
-    	$('ul#viewpoint-topic span').live('click', function(){ onTopicClick($(this)); return false; });
+    	$('ul#topic span').live('click', function(){ onTopicClick($(this)); return false; });
     };
   }
 
@@ -334,6 +379,13 @@
       var uri = $.queryString('uri');
 
       $.agorae.getTopic(uri, function(topic){
+        var bars = [{'uri': './', 'name': 'Accueil'}];
+        bars.push({'uri': './?uri=' + topic.prefixUrl + 'viewpoint/' + topic.viewpoint_id, 'name': topic.viewpoint_name});
+        if(topic.broader)
+          for(var i=0, t; t = topic.broader[i]; i++)
+            bars.push({'uri': './?uri=' + topic.prefixUrl + 'topic/' + topic.viewpoint_id + '/' + t.id, 'name': t.name});
+        bars.push({'name': topic.name});
+        $.agorae.pagehelper.navigatorBar(bars);
         if(topic.narrower)
           $.each(topic.narrower, appendTopic);
         if(topic.item)
@@ -456,7 +508,7 @@
           uri = uri.substr(0,uri.length -1);
         if(uri.indexOf("/topic/") > 0)
           prefixUrl = uri.substr(0, uri.indexOf("topic/"));
-    	  $.agorae.delete(prefixUrl + itemID , function(){
+    	  $.agorae.deleteDoc(prefixUrl + itemID , function(){
     	    self.parent().remove();
     	  });
     	  return false;

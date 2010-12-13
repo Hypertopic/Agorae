@@ -208,6 +208,8 @@
       var prefixUrl, docID, viewpointID, topicID;
       if(url.substr(-1) == '/')
         url = url.substr(0,url.length -1);
+
+      $.log(url);
       if(url.indexOf("/topic/") > 0){
         var parts = url.split('/');
         topicID = parts.pop();
@@ -229,7 +231,16 @@
             if(topic.narrower)
               for(var i=0, n; n = topic.narrower[i]; i++)
                 narrower.push({"name": viewpoint[n.id].name, "id": n.id, "uri": prefixUrl + '/topic/' + viewpointID + '/' + n.id });
-            success({"item": topic.item, "name": topic.name, "narrower": narrower });
+            var broader = [];
+            function getBroader(topicID){
+              if(!viewpoint[topicID] || !viewpoint[topicID].broader)
+                return false;
+              broader.push(viewpoint[topicID].broader[0]);
+              getBroader(viewpoint[topicID].broader[0].id);
+            }
+            getBroader(topicID);
+            success({"item": topic.item, "name": topic.name, "narrower": narrower, "viewpoint_name": viewpoint.name[0],
+              "viewpoint_id": viewpointID, "prefixUrl": prefixUrl+"/", "broader": broader });
           }
         });
       }
@@ -397,7 +408,7 @@
         }
       });
     },
-    delete: function(url, callback){
+    deleteDoc: function(url, callback){
       this.httpSend(url,
       {
         type: "GET",

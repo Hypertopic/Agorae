@@ -17,7 +17,7 @@ body
   height: expression(document.body.clientHeight + 'px');
 }
 #dialog { background: #FFF url(blitzer/images/progress.gif) 50% 50% no-repeat;
-  color: #f4f4f4; overflow: hidden; opacity: .95; max-width: 36em;
+  color: #f4f4f4; overflow: hidden; opacity: .95; max-width: 56em;
   padding: 1em 1em 0; -moz-border-radius: 7px;
   -moz-box-shadow: 4px 4px 6px #333; -webkit-border-radius: 7px;
   -webkit-box-shadow: 4px 4px 6px #333;
@@ -35,7 +35,7 @@ body
   font-weight:bold;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
-  margin: -0.3em -0.3em 0.5em -0.5em;
+  margin: -0.4em -0.4em 0.5em -0.5em;
   padding: 0.2em 0.2em 0.2em 0.6em;
 }
 
@@ -71,7 +71,7 @@ body.loading #dialog h2 {
 #dialog fieldset.radiogroup input { position: absolute; left: 5px; top: 2px; }
 #dialog fieldset.radiogroup p.help { margin-top: .5em; margin-left: 25px; }
 #dialog fieldset.radiogroup hr { border-color: #333; margin-left: 25px; }
-#dialog .buttons { padding: 0 .5em .5em; text-align: right; }
+#dialog .buttons { padding: 0 .5em 1em; text-align: right; }
 #dialog .buttons button {
   background:url("blitzer/images/ui-bg_highlight-hard_100_eeeeee_1x100.png") repeat-x scroll 50% 50% #EEE;
   border:1px solid #D8DCDF;
@@ -140,11 +140,21 @@ div#header-toolbar{
 }
 div#header-navigatorbar{
   color: #333;
+  font-size: 110%;
   display: inline;
   float: left;
   height: 100%;
-  line-height: 3em;
+  line-height: 2.5em;
   overflow: hidden;
+}
+div#header-navigatorbar a {
+  color: #666;
+  text-decoration: none;
+}
+div#header-navigatorbar b {
+  color: #333;
+  font-size: 120%;
+  text-decoration: none;
 }
 div#header-buttonbar{
   float: right;
@@ -156,12 +166,12 @@ div#header-buttonbar img{
   margin-left: 6px;
   margin-right: 2px;
 }
-div#header-toolbar a {
+div#header-buttonbar a {
   color: #333;
   font-size: 120%;
   text-decoration: none;
 }
-div#header-toolbar a:hover {
+div#header-buttonbar a:hover {
   color: #000;
   text-decoration: underline;
 }
@@ -189,7 +199,6 @@ div#footer a {
 div#sidebar {
     background-color: #F2F2F2;
     border-right: 1px solid #CCCCCC;
-    height: 100%;
     left: 20px;
     float: left;
     width: 15em;
@@ -208,6 +217,7 @@ p.h2{
 }
 p.h2 img{
   margin-left: 0.2em;
+  cursor: pointer;
 }
 ul.links li span{
   cursor: pointer;
@@ -216,14 +226,20 @@ ul.links li span:hover{
   color:blue;
   text-decoration: underline;
 }
-ul.links li span.editable{
+ul.editing li span{
+  color: #ccc;
+  cursor: default;
+}
+ul.editing li span.editable{
+  color: #003;
   cursor: text;
 }
-ul.links li span.editable:hover{
+ul.editing li span.editable:hover{
   color: #003;
   text-decoration: none;
 }
 li img.ctl{
   vertical-align: top;
   margin-right: 0.2em;
+  cursor: pointer;
 }
