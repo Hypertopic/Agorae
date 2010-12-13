@@ -126,9 +126,9 @@
   function FrontPage(){
     function loadItem(index, item){
       $.agorae.getItem(item, function(item){
-        var el = $('<li>' + item.name + '</li>').attr("rel", item.id)
+        var el = $('<li><span>' + item.name + '</span></li>').attr("rel", item.id)
                   .data("item", item);
-        $('ul#index-item').append(el);
+        $('ul#item').append(el);
       });
     }
 
@@ -138,7 +138,7 @@
         var el = $('<li><span>' + viewpoint.name + '</span></li>')
                   .attr("rel", viewpoint.id).data("viewpoint", viewpoint)
                   .data("server", server).data('uri', viewpointUrl);
-        $('ul#index-viewpoint').append(el);
+        $('ul#viewpoint').append(el);
       });
     }
 
@@ -152,7 +152,7 @@
                    .attr("rel", viewpoint.id).data("viewpoint", viewpoint)
                    .data("server", server)
                    .data('uri', server + 'viewpoint/' + viewpoint.id);
-      $('ul#index-viewpoint').append(el);
+      $('ul#viewpoint').append(el);
     }
 
     function loadUser(index, server){
@@ -186,7 +186,7 @@
         });
     	});
 
-    	$('ul#index-viewpoint img.del').live('click', function(){
+    	$('ul#viewpoint img.del').live('click', function(){
     	  var viewpoint = $(this).parent().data('viewpoint');
     	  var server = $(this).parent().data('server');
     	  var url = server + viewpoint.id;
@@ -196,7 +196,7 @@
     	  });
     	});
 
-      $('ul#index-viewpoint span.editable').live('click', function(){
+      $('ul#viewpoint span.editable').live('click', function(){
         if(!onViewpointClick($(this)))
           return false;
         var viewpoint = $(this).parent().data('viewpoint');
@@ -233,7 +233,7 @@
         });
     	});
 
-    	$('ul#index-viewpoint span').live('click', function(){ onViewpointClick($(this)); });
+    	$('ul#viewpoint span').live('click', function(){ onViewpointClick($(this)); });
     }
   }
 

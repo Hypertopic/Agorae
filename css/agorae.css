@@ -1,9 +1,9 @@
 body
 {
+  background-color: #FFF;
   font: 62.5% "Trebuchet MS", sans-serif;
   margin: 0px;
-  min-height:100%;
-  overflow-y:hidden;
+  padding: 0px;
 }
 .hide {display: none;}
 
@@ -97,9 +97,133 @@ body.loading #dialog h2 {
   font-weight: bold;
   text-align: right;
 }
-
+div#container{
+  background: #FFF;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  bottom: 0;
+}
+div#shadow-left{
+  background: url(blitzer/images/shadow-left.png) repeat scroll left top transparent;
+  width: 20px;
+  top: 0;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  position: fixed;
+}
+div#shadow-right{
+  background: url(blitzer/images/shadow-right.png) repeat scroll left top transparent;
+  width: 20px;
+  top: 0;
+  left: auto;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+}
+div#header{
+  background: url(blitzer/images/headerbg.jpg) repeat scroll left top transparent;
+  color: white;
+  height: 10em;
+  text-align: right;
+  padding-right: 6em;
+  padding-top: 2em;
+}
+div#header-toolbar{
+  background: url(blitzer/images/toolbarbg.png) repeat scroll left top transparent;
+  color: white;
+  margin: 0em;
+  height: 30px;
+  padding-right: 4em;
+  padding-left: 3em;
+}
+div#header-navigatorbar{
+  color: #333;
+  display: inline;
+  float: left;
+  height: 100%;
+  line-height: 3em;
+  overflow: hidden;
+}
+div#header-buttonbar{
+  float: right;
+  display: inline;
+  overflow: hidden;
+}
+div#header-buttonbar img{
+  vertical-align: middle;
+  margin-left: 6px;
+  margin-right: 2px;
+}
+div#header-toolbar a {
+  color: #333;
+  font-size: 120%;
+  text-decoration: none;
+}
+div#header-toolbar a:hover {
+  color: #000;
+  text-decoration: underline;
+}
 div#main{
   font-size: 120%;
-  width: 40em;
-  margin: 10em;
+  padding: 2em 4em 5em 16em;
+}
+div#footer{
+  background: url(blitzer/images/footerbg.png) repeat scroll left top transparent;
+  position: fixed;
+  bottom: 0;
+  top: auto;
+  border-top: 1px solid #000000;
+  color: #000000;
+  font-size: 1.1em;
+  height: 3em;
+  padding-top: 0.5em;
+  text-align: center;
+  width: 100%;
+}
+div#footer a {
+    color: #000000;
+    text-decoration: underline;
+}
+div#sidebar {
+    background-color: #F2F2F2;
+    border-right: 1px solid #CCCCCC;
+    height: 100%;
+    left: 20px;
+    float: left;
+    width: 15em;
+    position: absolute;
+}
+div.p{
+  color: #003;
+  font-weight: bold;
+  font-size: 100%;
+}
+p.h2{
+    color: gray;
+    font-size: 200%;
+    font-variant: small-caps;
+    margin-bottom: 0em;
+}
+p.h2 img{
+  margin-left: 0.2em;
+}
+ul.links li span{
+  cursor: pointer;
+}
+ul.links li span:hover{
+  color:blue;
+  text-decoration: underline;
+}
+ul.links li span.editable{
+  cursor: text;
+}
+ul.links li span.editable:hover{
+  color: #003;
+  text-decoration: none;
+}
+li img.ctl{
+  vertical-align: top;
+  margin-right: 0.2em;
 }
