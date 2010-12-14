@@ -50,13 +50,13 @@ function _(k){
       }
       $('message-dialog').dialog('option', 'position', 'center');
       $("#ui-dialog-title-message-dialog").html(msgTitle);
-  },
+  };
 
   $.showPage = function(url, callback){
     var d = new Date();
     if($('#main'))
 	    $('#main').html('Loading...').load(url + "?" + d.getTime(), function(){ callback(); });
-  },
+  };
 
   $.queryString = function(name)
   {
@@ -68,5 +68,16 @@ function _(k){
       return "";
     else
       return decodeURIComponent(results[1].replace(/\+/g, " "));
+  };
+
+  $.log=function(){
+    if(window.console&&window.console.log)
+    {
+      console.log.apply(window.console,arguments);
+    }
+  };
+  $.fn.log=function(){
+    a.log(this);
+    return this;
   }
 })(jQuery);

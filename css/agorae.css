@@ -211,7 +211,7 @@ div.p{
 }
 p.h2{
     color: gray;
-    font-size: 200%;
+    font-size: 160%;
     font-variant: small-caps;
     margin-bottom: 0em;
 }
@@ -242,4 +242,19 @@ li img.ctl{
   vertical-align: top;
   margin-right: 0.2em;
   cursor: pointer;
+}
+div.attribute{
+  font-size: 1.2em;
+  line-height: 1.6em;
+  padding-left: 1em;
+}
+div.attributename {
+  color: #999;
+  font-weight: normal;
+  padding-right: 0.3em;
+}
+div.attributevalue span{
+  color: #666;
+  font-weight: bold;
+  padding-right: 0.3em;
 }

@@ -105,8 +105,12 @@
         }
       });
     },
-    getItem: function(itemUrl, callback){
-      this.httpSend(itemUrl,
+    getItem: function(itemUrl, callback, error){
+      if(!error)
+        error = function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot load item:" + itemUrl});
+        };
+      $.agorae.httpSend(itemUrl,
       {
         type: "GET",
         success: function(doc){
@@ -124,9 +128,7 @@
           item.id = itemID;
           callback(item);
         },
-        error: function(code, error, reason){
-          $.showMessage({title: "error", content: "Cannot load item:" + itemUrl});
-        }
+        error: error
       });
     },
     getViewpoint: function(viewpointUrl, callback){

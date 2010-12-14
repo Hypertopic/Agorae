@@ -93,6 +93,11 @@
         $.showPage('page/_topic.html', $.agorae.topicpage.init);
         return false;
       }
+      if(uri.indexOf('/item/') > 0)
+      {
+        $.showPage('page/_item.html', $.agorae.itempage.init);
+        return false;
+      }
     };
 
     this.rewrite = function(url){
@@ -491,7 +496,7 @@
     	//Click to unlink item
     	$('div.item-list img.unlink').live('click', function(event){
     	  event.stopPropagation();
-        var itemID = $(this).parent().attr('id');
+        var itemID = $(this).parent().attr('rel');
     	  var self = $(this);
     	  $.agorae.unlinkItem(uri, itemID , function(){
     	    self.parent().remove();
@@ -501,7 +506,7 @@
     	//Click to delete item
     	$('div.item-list img.del').live('click', function(event){
     	  event.stopPropagation();
-        var itemID = $(this).parent().attr('id');
+        var itemID = $(this).parent().attr('rel');
     	  var self = $(this);
     	  var prefixUrl;
         if(uri.substr(-1) == '/')
@@ -518,7 +523,7 @@
         event.stopPropagation();
         if(!onItemClick($(this)))
           return false;
-        var id = $(this).parent().attr('id');
+        var id = $(this).parent().attr('rel');
         var name = $(this).text();
         var el = $('<input type="textbox">').val(name);
     	  $(this).replaceWith(el);
@@ -568,7 +573,7 @@
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
                    + '<span class="editable">' + item.name + '</span></li>')
-                   .attr("id", item.id).attr("corpus", item.corpus);
+                   .attr("rel", item.id).attr("corpus", item.corpus);
       $('ul#item').append(el);
     };
 
@@ -591,20 +596,89 @@
         prefixUrl = uri.substr(0, uri.indexOf("topic/"));
       if(!$('#index-edit-toggle').attr('checked'))
       {
-        var uri = prefixUrl + 'item/' + el.parent().attr('corpus') + '/' + el.parent().attr('id');
-        $.agorae.session.rewrite(uri);
+        var corpusID = el.parent().attr('corpus');
+        var itemId = el.parent().attr('rel');
+
+        var uri = prefixUrl + 'item/' + corpusID + '/' + itemId;
+        $.agorae.getItem(uri, function(){
+          $.agorae.session.rewrite(uri);
+        }, function(){
+          //TODO check every server to find item
+          for(var i=0, server; server = $.agorae.config.servers[i]; i++)
+          {
+            if(server == prefixUrl) continue;
+            uri = server + 'item/' + corpusID + '/' + itemId;
+            $.agorae.getItem(uri, function(){
+                $.agorae.session.rewrite(uri);
+              }, function(){ return false; });
+          }
+        });
         return false;
       }
       return true;
     };
   }
 
+  function ItemPage(){
+    this.init = function(){
+      var uri = $.queryString('uri');
+      $.agorae.getItem(uri, function(item){
+        $.log(item);
+        var bars = [{'uri': './', 'name': 'Accueil'}];
+        bars.push({'name': item.name + ''});
+        $.agorae.pagehelper.navigatorBar(bars);
+        var reserved = ["corpus", "id", "highlight", "name", "resource", "topic"];
+        for(var n in item){
+          if(reserved.indexOf(n) >= 0) continue;
+          appendAttribute(n, item[n]);
+        }
+        if(item.resource)
+          $.each(item.resource, appendResource);
+      });
+
+      if(uri.indexOf($.agorae.config.servers[0]) == 0)
+        $.agorae.pagehelper.toggle(true);
+      else
+        $.agorae.pagehelper.toggle(false);
+    };
+
+    function appendAttribute(name, value){
+      value = (typeof(value[0]) == "string") ? value : value[0];
+      var str = '<div class="attribute">';
+      str += '<div style="display: inline;" class="attributename">' + name + '</div>';
+      str += '<div style="display: inline;" class="attributevalue">';
+      for(var i=0, v; v = value[i]; i++)
+      {
+        var comma = (i < value.length - 1) ? "," : "";
+        str += '<span>' + v + comma + '</span>';
+      }
+      str += '</div></div>';
+
+      $('div.attributes').append(str);
+    };
+
+    function appendResource(idx, url){
+      var urlPath = $.url.setUrl(url).attr("path");
+      var file = urlPath;
+      if(urlPath.indexOf("/") >= 0)
+      {
+        var parts = urlPath.split("/");
+        file = parts.pop();
+        if(file == "") file = parts.pop();
+      }
+      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
+                   + '<span class="editable">' + file + '</span></li>')
+                   .attr("rel", url);
+      $('ul#resource').append(el);
+    };
+  }
   $.agorae = $.agorae || {};
   $.extend($.agorae, {
     session : new Session(),
     pagehelper : new PageHelper(),
     frontpage : new FrontPage(),
     viewpointpage : new ViewpointPage(),
-    topicpage : new TopicPage()
+    topicpage : new TopicPage(),
+    itempage : new ItemPage()
   });
 })(jQuery);
