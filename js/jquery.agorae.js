@@ -105,15 +105,13 @@
         }
       });
     },
-    getItem: function(itemUrl, callback, error){
+    getItem: function(itemUrl, callback, success, error){
       if(!error)
         error = function(code, error, reason){
           $.showMessage({title: "error", content: "Cannot load item:" + itemUrl});
         };
-      $.agorae.httpSend(itemUrl,
-      {
-        type: "GET",
-        success: function(doc){
+      if(!success)
+        success = function(doc){
           var corpusID, itemID, item;
           for (var k in doc) {
             corpusID = k;
@@ -127,7 +125,11 @@
           item.corpus = corpusID;
           item.id = itemID;
           callback(item);
-        },
+        };
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: success,
         error: error
       });
     },
@@ -562,6 +564,159 @@
               success(item);
             }
           });
+        }
+      });
+    },
+    deleteItemAttachment: function(itemUrl, attachment_name, callback) {
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          $.agorae.httpSend(itemUrl + "/" + attachment_name + "?rev=" + doc._rev,
+          {
+            type: "DELETE",
+            success: function(doc){
+              callback(doc);
+            },
+            error: function(code, error, reason){
+              $.showMessage({title: "error", content: "Cannot delete:" + itemUrl});
+            }
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
+        }
+      });
+    },
+    attachItemResource: function(itemUrl, resource, success){
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          $.log(doc);
+          if(!doc.resource) doc.resource = [];
+          doc.resource.push(resource);
+          $.agorae.httpSend(itemUrl + "?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
+        }
+      });
+    },
+    updateItemResource: function(itemUrl, resource, newResource, success){
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          $.log(doc);
+          if(!doc.resource) doc.resource = [];
+          for(var i=0, r; r=doc.resource[i]; i++)
+            if(r == resource)
+            {
+              doc.resource.splice(i,1);
+              i--;
+            }
+          doc.resource.push(newResource);
+          $.agorae.httpSend(itemUrl + "?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
+        }
+      });
+    },
+    createItemAttribute: function(itemUrl, attributename, attributevalue, success){
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          $.log(doc);
+          if(!doc[attributename]) doc[attributename] = [];
+          if(doc[attributename].indexOf(attributevalue) < 0)
+            doc[attributename].push(attributevalue);
+          $.agorae.httpSend(itemUrl + "?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
+        }
+      });
+    },
+    deleteItemAttribute: function(itemUrl, attributename, attributevalue, success){
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          $.log(doc);
+          if(!doc[attributename] || doc[attributename].indexOf(attributevalue) < 0)
+          {
+            success();
+            return false;
+          }
+          for(var i=0, v; v = doc[attributename][i]; i++)
+            if(v == attributevalue)
+            {
+              doc[attributename].splice(i, 1);
+              i--;
+            }
+          $.agorae.httpSend(itemUrl + "?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
+        }
+      });
+    },
+    updateItemAttribute: function(itemUrl, attributename, attributevalue, name, value, success){
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          $.log(doc);
+          if(!doc[attributename] || doc[attributename].indexOf(attributevalue) < 0)
+          {
+            success();
+            return false;
+          }
+          for(var i=0, v; v = doc[attributename][i]; i++)
+            if(v == attributevalue)
+            {
+              doc[attributename].splice(i, 1);
+              i--;
+            }
+          if(!doc[name]) doc[name] = [];
+          if(doc[name].indexOf(value))
+          {
+            success(doc);
+            return true;
+          }
+          doc[name].push(value);
+          $.agorae.httpSend(itemUrl + "?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
         }
       });
     }

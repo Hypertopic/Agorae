@@ -16,7 +16,7 @@ function dispatch(evt, arguments){
 }
 
 function _(k){
-  if($.agorae.i18n[k])
+  if($.agorae.i18n && $.agorae.i18n[k])
     return $.agorae.i18n[k];
 }
 

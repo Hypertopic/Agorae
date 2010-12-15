@@ -243,18 +243,28 @@ li img.ctl{
   margin-right: 0.2em;
   cursor: pointer;
 }
+div.attributes{margin-top: 1em;}
 div.attribute{
-  font-size: 1.2em;
   line-height: 1.6em;
   padding-left: 1em;
 }
 div.attributename {
   color: #999;
   font-weight: normal;
-  padding-right: 0.3em;
+  padding-right: 0.7em;
 }
 div.attributevalue span{
   color: #666;
   font-weight: bold;
   padding-right: 0.3em;
+}
+span.attributename{
+  padding-left: 0.2em;
+  padding-right: 0.3em;
+}
+span.attributevalue{
+  padding-left: 0.3em;
+}
+a#logout{
+  cursor: pointer;
 }

@@ -121,7 +121,7 @@
       $(window).resize(resizeSidebar).trigger('resize');
       setTimeout('$.agorae.pagehelper.resize();', 300);
     };
-    this.toggle = function(show){
+    this.toggle = function(show, clickon, clickoff){
       if(show)
         $('input#index-edit-toggle').iToggle({
       		easing: 'easeOutExpo',
@@ -132,10 +132,12 @@
       		onClickOn: function(){
       			$('.ctl').show();
       			$('ul.links').addClass('editing').removeClass('links');
+      			if(clickon) clickon();
       		},
       		onClickOff: function(){
       		  $('.ctl').hide();
       		  $('ul.editing').addClass('links').removeClass('editing');
+      		  if(clickoff) clickoff();
       		}
       	});
       else
@@ -280,6 +282,7 @@
     	});
 
     	$('ul#viewpoint span').live('click', function(){ onViewpointClick($(this)); });
+
     }
   }
 
@@ -560,7 +563,6 @@
         });
     	});
     };
-
     function appendTopic(idx, topic){
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
@@ -568,7 +570,6 @@
                    .attr("rel", topic.id).attr("uri", topic.uri);
       $('ul#topic').append(el);
     };
-
     function appendItem(idx, item){
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
@@ -576,7 +577,6 @@
                    .attr("rel", item.id).attr("corpus", item.corpus);
       $('ul#item').append(el);
     };
-
     function onTopicClick(el){
       if(!$('#index-edit-toggle').attr('checked'))
       {
@@ -586,7 +586,6 @@
       }
       return true;
     };
-
     function onItemClick(el){
       var prefixUrl;
       var uri = $.queryString('uri');
@@ -627,21 +626,54 @@
         var bars = [{'uri': './', 'name': 'Accueil'}];
         bars.push({'name': item.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
-        var reserved = ["corpus", "id", "highlight", "name", "resource", "topic"];
+        var reserved = ["corpus", "id", "highlight", "name", "resource", "topic", "_attachments"];
         for(var n in item){
           if(reserved.indexOf(n) >= 0) continue;
           appendAttribute(n, item[n]);
         }
         if(item.resource)
-          $.each(item.resource, appendResource);
+        {
+          var resource = (item.resource[0] && typeof(item.resource[0]) == "object") ? item.resource[0] : item.resource;
+          $.each(resource, appendResource);
+        }
+        if(item._attachments)
+          appendAttachment(item._attachments[0]);
       });
 
       if(uri.indexOf($.agorae.config.servers[0]) == 0)
-        $.agorae.pagehelper.toggle(true);
+        $.agorae.pagehelper.toggle(true, onEditOn, onEditOff);
       else
-        $.agorae.pagehelper.toggle(false);
+        $.agorae.pagehelper.toggle(false, onEditOn, onEditOff);
+
+      $('div.resource-list img.upload').bind('click', uploadAttachment);
+      $('div.resource-list img.del').bind('click', deleteAttachment);
+      $('div.resource-list span.attachment').live('click', clickAttachment);
+      $('div.resource-list img.add').bind('click', attachResource);
+      $('div.resource-list span.resource').live('click', clickResource);
+    };
+    function onEditOn(){
+      $('div.attributes').hide();
+      $('ul#attribute').show();
+
+    };
+    function onEditOff(){
+      $('div.attributes').show();
+      $('ul#attribute').hide();
     };
 
+    function parseUri(){
+      var uri = $.queryString('uri');
+      if(uri.substr(-1) == '/')
+        uri = uri.substr(0,uri.length -1);
+      parts = uri.split('/');
+      var result = {};
+      result.item = parts.pop();
+      result.corpus = parts.pop();
+      parts.pop();
+      result.prefixUrl = parts.join('/') + "/";
+      result.itemUrl = result.prefixUrl + result.item;
+      return result;
+    };
     function appendAttribute(name, value){
       value = (typeof(value[0]) == "string") ? value : value[0];
       var str = '<div class="attribute">';
@@ -655,22 +687,152 @@
       str += '</div></div>';
 
       $('div.attributes').append(str);
-    };
 
+      for(var i=0, v; v = value[i]; i++)
+      {
+        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
+                     + '<span class="editable attributename">' + name + '</span>'
+                     + ' : <span class="editable attributevalue">' + v + '</span></li>')
+                     .attr("attributename", name).attr("attributevalue", v);
+        $('ul#attribute').append(el);
+      }
+    };
+    function uploadAttachment() {
+      $.showDialog("dialog/_upload.html", {
+        load: function(elem) {
+        },
+        submit: function(data, callback) {
+          if (!data._attachments || data._attachments.length == 0) {
+            callback({_attachments: "Please select a file to upload."});
+            return;
+          }
+          var form = $("#upload-form");
+          form.find("#progress").css("visibility", "visible");
+          var uris = parseUri();
+          var itemUrl = uris.prefixUrl + uris.item;
+          $.log(itemUrl);
+          $.agorae.getItem(itemUrl, null, function(doc){
+            $.log(doc);
+            $("input[name='_rev']", form).val(doc._rev);
+            form.ajaxSubmit({
+              url: itemUrl,
+              success: function(resp) {
+                $.log(resp);
+                form.find("#progress").css("visibility", "hidden");
+                var file = {};
+                var k = $('input[type=file]').val();
+                file[k] = {};
+                appendAttachment(file);
+                callback();
+              }
+            });
+          });
+        }
+      });
+    };
+    function deleteAttachment(){
+      var file = $(this).parent().attr("rel");
+      var uris = parseUri();
+      var self = $(this);
+      $.agorae.deleteItemAttachment(uris.itemUrl, file, function(){
+        self.parent().remove();
+      });
+    };
+    function clickAttachment(){
+      var uris = parseUri();
+      var url = uris.itemUrl + "/" + $(this).parent().attr("rel");
+      window.open(url);
+    };
+    function attachResource(){
+      $.showDialog("dialog/_resource.html", {
+        submit: function(data, callback) {
+          if (!data.resource || data.resource.length == 0) {
+            callback({resource: "Please input a resource URL."});
+            return;
+          }
+          var form = $("#resource-form");
+          var uris = parseUri();
+          var itemUrl = uris.itemUrl;
+          $.agorae.attachItemResource(itemUrl, data.resource, function(){
+            appendResource(0, data.resource);
+            callback();
+          });
+        }
+      });
+    };
+    function clickResource(){
+      var url = $(this).parent().attr("rel");
+      if(!$('#index-edit-toggle').attr('checked'))
+      {
+        window.open(url);
+        return false;
+      }
+      $(this).parent().attr("file", $(this).html());
+      var el = $('<input type="textbox">').val(url);
+    	$(this).replaceWith(el);
+    	el.focus(function() { $(this).select(); }).select()
+    	  .mouseup(function(e){ e.preventDefault(); });
+    	el.blur(function(){
+    	  var span = $('<span></span>').addClass('editable').addClass('resource');
+    	  if($(this).val() == '' || $(this).val() == url)
+    	  {
+
+    	    span.html($(this).parent().attr("file"));
+    	    $(this).replaceWith(span);
+    	  }
+    	  else
+    	  {
+    	    var self = $(this);
+    	    var newUrl = self.val();
+    	    var uris = parseUri();
+    	    $.agorae.updateItemResource(uris.itemUrl, url, newUrl, function(){
+    	      var urlPath = $.url.setUrl(newUrl).attr("path");
+            var file = newUrl;
+            if(urlPath && urlPath.indexOf("/") >= 0)
+            {
+              var parts = urlPath.split("/");
+              file = parts.pop();
+              if(file == "") file = parts.pop();
+            }
+    	      span.html(file);
+    	      self.replaceWith(span);
+    	    }, function(){
+    	      span.html($(this).parent().attr("file"));
+    	      self.replaceWith(span);
+    	    });
+    	  }
+    	});
+    	el.keyup(function(event){
+        if (event.keyCode == 27 || event.keyCode == 13)
+          $(this).blur();
+      });
+    };
     function appendResource(idx, url){
+      $.log(url);
       var urlPath = $.url.setUrl(url).attr("path");
-      var file = urlPath;
-      if(urlPath.indexOf("/") >= 0)
+      var file = url;
+      if(urlPath && urlPath.indexOf("/") >= 0)
       {
         var parts = urlPath.split("/");
         file = parts.pop();
         if(file == "") file = parts.pop();
       }
-      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
-                   + '<span class="editable">' + file + '</span></li>')
+      var el = $('<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
+                   + '<span class="editable resource">' + file + '</span></li>')
                    .attr("rel", url);
       $('ul#resource').append(el);
     };
+    function appendAttachment(attachments){
+      $.log(attachments)
+      for(var file in attachments)
+      {
+        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
+                     + '<span class="editable attachment">' + file + '</span></li>')
+                     .attr("rel", file);
+        $('ul#resource').append(el);
+      }
+    };
+
   }
   $.agorae = $.agorae || {};
   $.extend($.agorae, {

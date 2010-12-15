@@ -13,6 +13,7 @@
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="js/jquery.dialog.js"></script>
 		<script type="text/javascript" src="js/jquery.url.js"></script>
+		<script type="text/javascript" src="js/jquery.form.js"></script>
     <script type="text/javascript" src="js/json2.js"></script>
 
     <script type="text/javascript" src="js/jquery.agorae.js"></script>
@@ -26,6 +27,7 @@
 		    //$.showMessage({title: "error", content: " example"});
 
 		    $.agorae.session.init();
+		    $('a#logout').click(function(){ $.agorae.session.logout(); return false; });
 		  });
 		</script>
 		<title>Agorae V2</title>
@@ -39,7 +41,7 @@
     <div id="header-navigatorbar"><b>Accueil</b></div>
     <div id="header-buttonbar">
       <img border="0" src="css/blitzer/images/search.png"><a id="search-span" href="#"><span>Rechercher</span></a>
-      <img border="0" src="css/blitzer/images/logout.png"><a id="logout-span" href="#"><span>Se déconnecter</span></a>
+      <img border="0" src="css/blitzer/images/logout.png"><a id="logout"><span>Se déconnecter</span></a>
     </div>
   </div>
   <div id="content">
