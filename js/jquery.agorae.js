@@ -1,5 +1,6 @@
 (function($) {
   $.agorae = $.agorae || {};
+  $.agorae.cache = $.agorae.cache || {};
 
   $.extend($.agorae, {
     newUUID: function() {
@@ -19,29 +20,42 @@
       options = options || {};
       httpAction = options.type ? options.type : "GET";
       httpBody = options.data || "";
-      cType = (typeof(httpBody) == "string") ? "html/text" : "application/json";
-      httpBody = (typeof(httpBody) == "string") ? httpBody : JSON.stringify(httpBody);
+      if(typeof(options.processData) == "boolean" && options.processData === true)
+        cType = "application/x-www-form-urlencoded";
+      else
+        cType = (typeof(httpBody) == "string") ? "html/text" : "application/json";
+      httpBody = (typeof(httpBody) == "string") ? httpBody : (typeof(options.processData) == "boolean" && options.processData === true) ? httpBody : JSON.stringify(httpBody);
       bAsync = (typeof(options.async) != "boolean") ? false : options.async;
+      processData = (typeof(options.processData) != "boolean") ? false : options.processData;
+      dataType = (typeof(options.dataType) == "string") ? options.dataType : "json";
+      var success = options.success || function(){};
+
       $.ajax({
-        type: httpAction, url: url, contentType: cType, dataType: 'json',
-        processData: false, data: httpBody, async: bAsync,
-        complete: function(req) {
+        type: httpAction, url: url, contentType: cType, dataType: dataType,
+        processData: processData, data: httpBody, async: bAsync,
+        dataFilter: function(data, type){
+          if(type == "json")
+            try{
+              var resp = JSON.parse(data);
+              return $.agorae.normalize(resp);
+            }catch(e){
+              $.log(e);
+            }
+          return data;
+        },
+        success: success,
+        error: function(req) {
           var resp = "";
           try{ resp = $.httpData(req, "json"); } catch(e){}
-          if (req.status >= 200 && req.status < 300) {
-            if (options.success)
-              options.success($.agorae.normalize(resp));
+          if (options.error) {
+            var error = (resp && resp.error) ? resp.error : "unkown";
+            var reason = (resp && resp.reason) ? resp.reason : "unkown";
+            if(req.status == 0)
+              reason = "cross domain request limited";
+            options.error(req.status, error, reason);
+          } else {
+            alert("Error: " + resp.reason);
           }
-          else
-            if (options.error) {
-              var error = (resp && resp.error) ? resp.error : "unkown";
-              var reason = (resp && resp.reason) ? resp.reason : "unkown";
-              if(req.status == 0)
-                reason = "cross domain request limited";
-              options.error(req.status, error, reason);
-            } else {
-              alert("Error: " + resp.reason);
-            }
         }
       });
     },
@@ -70,45 +84,47 @@
       }
       return result;
     },
-    login: function(config, username, password, callback, success){
-      $.agorae.httpSend(config, {type: "GET", username: username, password: password,
-        success: function(doc){
-          $.agorae.config = doc;
-          //if there is no auth field in config document, then this service don't request authentication.
-          if(!doc.auth){
-            $.agorae.config.username = username;
-            $.agorae.config.password = password;
-            $.ajaxSetup({username: username, password: password});
+    login: function(username, password, callback, success){
+      //validate username and password on the specific service.
+      if($.agorae.config.auth)
+        $.agorae.httpSend($.agorae.config.auth, {type: "POST", username: username, password: password,
+          data: {name: username, password: password},
+          processData: true,
+          success: function(){
+            $.agorae.session.username = username;
+            $.agorae.session.password = password;
             success();
             callback();
-            return;
+          },
+          error: function(code, error, reason){
+            callback({password: "Le nom d'utilisateur ou le mot de passe que vous avez saisi est incorrect.\n" + reason});
           }
-
-          //validate username and password on the specific service.
-          $.agorae.httpSend(doc.auth, {type: "POST", username: username, password: password,
-            data: {name: username, password: password},
-            success: function(){
-              $.agorae.config.username = username;
-              $.agorae.config.password = password;
-              $.ajaxSetup({username: username, password: password});
-              success();
-              callback();
-            },
-            error: function(code, error, reason){
-              callback({name: "Error username:" + reason});
-            }
-          });
-
+        });
+      else
+      {
+        //If no auth service is defined, just asume every user is a validated user
+        success();
+        callback();
+      }
+      $.ajaxSetup({username: username, password: password});
+    },
+    loadConfig: function(configUrl){
+      $.agorae.httpSend(configUrl,
+      {
+        type: "GET",
+        async: false,
+        success: function(doc){
+          $.agorae.config = doc;
         },
         error: function(code, error, reason){
-          callback({config: "Error read config document:" + reason});
+          $.showMessage({title: "error", content: "Impossible de charger config document : " + configUrl});
         }
       });
     },
     getItem: function(itemUrl, callback, success, error){
       if(!error)
         error = function(code, error, reason){
-          $.showMessage({title: "error", content: "Cannot load item:" + itemUrl});
+          $.showMessage({title: "error", content: "Impossible de charger d'item : " + itemUrl});
         };
       if(!success)
         success = function(doc){
@@ -117,15 +133,24 @@
             corpusID = k;
             break;
           }
+          if(!doc[corpusID]){
+            callback(false);
+            return;
+          }
           for (var k in doc[corpusID]){
             itemID = k;
             break;
+          }
+          if(!doc[corpusID][itemID]){
+            callback(false);
+            return;
           }
           item = doc[corpusID][itemID];
           item.corpus = corpusID;
           item.id = itemID;
           callback(item);
         };
+
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
@@ -138,7 +163,6 @@
       {
         type: "GET",
         success: function(doc){
-          $.log(doc);
           var viewpointID, viewpoint;
           for (var k in doc) {
             viewpointID = k;
@@ -153,27 +177,27 @@
         }
       });
     },
-    getUser: function(serverUrl, username, callback){
-      this.httpSend(serverUrl + "user/" + username,
+    getUser: function(serverUrl, callback){
+      this.httpSend(serverUrl + "user/" + $.agorae.session.username,
       {
         type: "GET",
         success: function(doc){
           var user;
-          user = doc[username];
-          user.id = username;
+          user = doc[$.agorae.session.username];
+          user.id = $.agorae.session.username;
           if(user.corpus)
             $.agorae.config.corpus = user.corpus
           callback(user);
         },
         error: function(code, error, reason){
-          $.showMessage({title: "error", content: "Cannot load user:" + username + " from server:" + serverUrl});
+          $.showMessage({title: "error", content: "Cannot load user:" + $.agorae.session.username + " from server:" + serverUrl});
         }
       });
     },
     createViewpoint: function(viewpointName, callback){
       var viewpoint = {};
       viewpoint.viewpoint_name = viewpointName;
-      viewpoint.users = new Array($.agorae.config.username);
+      viewpoint.users = new Array($.agorae.session.username);
       this.httpSend($.agorae.config.servers[0],
       {
         type: "POST",
@@ -185,7 +209,7 @@
           callback(viewpoint);
         },
         error: function(code, error, reason){
-          $.showMessage({title: "error", content: "Cannot create viewpoint:" + viewpointName});
+          $.showMessage({title: "Erreur", content: "Impossible de cr¨¦er un point de vue : " + reason});
         }
       });
     },
@@ -316,7 +340,6 @@
       {
         type: "GET",
         success: function(viewpoint){
-          $.log(viewpoint);
           delete viewpoint.topics[id];
           for(var tid in viewpoint.topics){
             var topic = viewpoint.topics[tid];

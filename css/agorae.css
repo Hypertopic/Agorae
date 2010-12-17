@@ -65,7 +65,7 @@ body.loading #dialog h2 {
 }
 #dialog fieldset input { background-color: #e9e9e9; vertical-align: middle; }
 #dialog fieldset input.error { background-color: #f9e4e4; }
-#dialog fieldset div.error { padding-top: .3em; color: #b33; }
+#dialog fieldset div.error { padding-top: .3em; color: #b33; max-width: 25em;}
 #dialog fieldset.radiogroup { padding-top: 1em; }
 #dialog fieldset.radiogroup label { position: relative; padding-left: 25px; }
 #dialog fieldset.radiogroup input { position: absolute; left: 5px; top: 2px; }
@@ -160,16 +160,19 @@ div#header-buttonbar{
   float: right;
   display: inline;
   overflow: hidden;
+  line-height: 2.7em;
 }
 div#header-buttonbar img{
-  vertical-align: middle;
-  margin-left: 6px;
-  margin-right: 2px;
+    margin-left: 10px;
+    margin-right: 2px;
+    margin-top: -4px;
+    vertical-align: middle;
 }
 div#header-buttonbar a {
   color: #333;
   font-size: 120%;
   text-decoration: none;
+  cursor: pointer;
 }
 div#header-buttonbar a:hover {
   color: #000;
@@ -264,7 +267,4 @@ span.attributename{
 }
 span.attributevalue{
   padding-left: 0.3em;
-}
-a#logout{
-  cursor: pointer;
 }

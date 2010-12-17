@@ -25,9 +25,8 @@
 		    //$(document).bind("dblclick", function() { self.location.reload(); } );
 		    //$.showPage('page/login.html');
 		    //$.showMessage({title: "error", content: " example"});
-
-		    $.agorae.session.init();
-		    $('a#logout').click(function(){ $.agorae.session.logout(); return false; });
+        var config = "http://127.0.0.1/agorae/config";
+		    $.agorae.pagehelper.init(config);
 		  });
 		</script>
 		<title>Agorae V2</title>
@@ -35,13 +34,14 @@
 <body>
 <div id="container">
   <div id="header">
-    <span style="font-size: 260%;"><i style="font-family: serif;">i &gt;</i> Semantec</span><br><span style="font-size: 130%; font-style: italic;">pour une ingénierie 2.0</span>
+    <span style="font-size: 260%;">Agorae</span>
   </div>
   <div id="header-toolbar">
     <div id="header-navigatorbar"><b>Accueil</b></div>
     <div id="header-buttonbar">
-      <img border="0" src="css/blitzer/images/search.png"><a id="search-span" href="#"><span>Rechercher</span></a>
-      <img border="0" src="css/blitzer/images/logout.png"><a id="logout"><span>Se déconnecter</span></a>
+      <span><img border="0" src="css/blitzer/images/search.png"><a id="search-span" href="#"><span>Rechercher</span></a></span>
+      <span class="sign-in"><img border="0" src="css/blitzer/images/sign-in.png"><a id="sign-in"><span>Connexion</span></a></span>
+      <span class="sign-out hide"><img border="0" src="css/blitzer/images/sign-out.png"><a id="sign-out"><span>Se déconnecter</span></a></span>
     </div>
   </div>
   <div id="content">

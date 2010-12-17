@@ -15,11 +15,6 @@ function dispatch(evt, arguments){
     listener[evt].fn.apply(this, [arguments]);
 }
 
-function _(k){
-  if($.agorae.i18n && $.agorae.i18n[k])
-    return $.agorae.i18n[k];
-}
-
 (function($) {
   $.showMessage = function(options){
       var msgTitle = (typeof(options.title) == "string") ? options.title : "Information";
@@ -28,8 +23,8 @@ function _(k){
       {
         $("#message-dialog").dialog('destroy');
         var i18nButtons = {};
-        i18nButtons[_('Cancel')] = function() { $(this).dialog('close');  };
-    	  i18nButtons[_('Okay')] = function() { $(this).dialog('close');  options.callback();  };
+        i18nButtons['Annuler'] = function() { $(this).dialog('close');  };
+    	  i18nButtons['Okay'] = function() { $(this).dialog('close');  options.callback();  };
         $("#message-dialog").dialog({
           autoOpen: true,
           modal: true,
@@ -39,7 +34,7 @@ function _(k){
       else
       {
       	var i18nButtons = {};
-        i18nButtons[_('Okay')] = function() { $(this).dialog('close');  };
+        i18nButtons['Okay'] = function() { $(this).dialog('close');  };
         $("#message-dialog").dialog('destroy');
         $("#message-dialog").dialog({
           bgiframe: true,
