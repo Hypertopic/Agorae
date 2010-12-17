@@ -65,6 +65,17 @@ function dispatch(evt, arguments){
       return decodeURIComponent(results[1].replace(/\+/g, " "));
   };
 
+  $.getUri = function(){
+    var uri = self.location.hash;
+    if(uri.length > 0)
+    {
+      uri = uri.substr(1);
+      return (uri.substr(-1) == "/") ? uri.substr(0,uri.length -1) : uri;
+    }
+    else
+      return null;
+  };
+
   $.log=function(){
     if(window.console&&window.console.log)
     {

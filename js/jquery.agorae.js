@@ -16,6 +16,30 @@
         id = parts.pop();
       return id;
     },
+    getServerUri: function(uri){
+      if(uri.indexOf("/viewpoint/") >= 0)
+        return uri.substr(0, uri.indexOf("/viewpoint/") + 1);
+      if(uri.indexOf("/topic/") >= 0)
+        return uri.substr(0, uri.indexOf("/topic/") + 1);
+      if(uri.indexOf("/item/") >= 0)
+        return uri.substr(0, uri.indexOf("/item/") + 1);
+
+      return uri;
+    },
+    getDocumentUri: function(uri){
+      var parts = uri.split("/");
+      var id = parts.pop();
+      if(uri.indexOf("/viewpoint/") >= 0)
+        return uri.substr(0, uri.indexOf("/viewpoint/") + 1) + id;
+      if(uri.indexOf("/topic/") >= 0){
+        id = parts.pop();
+        return uri.substr(0, uri.indexOf("/topic/") + 1) + id;
+      }
+      if(uri.indexOf("/item/") >= 0)
+        return uri.substr(0, uri.indexOf("/item/") + 1) + id;
+
+      return uri;
+    },
     httpSend: function(url, options) {
       options = options || {};
       httpAction = options.type ? options.type : "GET";
@@ -148,7 +172,8 @@
           item = doc[corpusID][itemID];
           item.corpus = corpusID;
           item.id = itemID;
-          callback(item);
+          if(callback)
+            callback(item);
         };
 
       $.agorae.httpSend(itemUrl,
@@ -214,9 +239,11 @@
       });
     },
     renameViewpoint: function(url, name, success, error){
+      var url = $.agorae.getDocumentUri(url);
       $.agorae.httpSend(url,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           doc.viewpoint_name = name;
           $.agorae.httpSend(url+"?rev=" + doc._rev,
@@ -233,67 +260,51 @@
       });
     },
     getTopic: function(url, success){
-      var prefixUrl, docID, viewpointID, topicID;
-      if(url.substr(-1) == '/')
-        url = url.substr(0,url.length -1);
-
-      $.log(url);
-      if(url.indexOf("/topic/") > 0){
-        var parts = url.split('/');
-        topicID = parts.pop();
-        viewpointID = parts.pop();
-        parts.pop();
-        prefixUrl = parts.join('/');
-        parts.push('viewpoint');
-        parts.push(viewpointID);
-        viewpointUrl = parts.join('/');
-
-        $.agorae.httpSend(viewpointUrl,
-        {
-          type: "GET",
-          success: function(viewpoint){
-            viewpoint = viewpoint[viewpointID];
-            topic = viewpoint[topicID];
-            topic.name = topic.name || '';
-            var narrower = [];
-            if(topic.narrower)
-              for(var i=0, n; n = topic.narrower[i]; i++)
-                narrower.push({"name": viewpoint[n.id].name, "id": n.id, "uri": prefixUrl + '/topic/' + viewpointID + '/' + n.id });
-            var broader = [];
-            function getBroader(topicID){
-              if(!viewpoint[topicID] || !viewpoint[topicID].broader)
-                return false;
-              broader.push(viewpoint[topicID].broader[0]);
-              getBroader(viewpoint[topicID].broader[0].id);
-            }
-            getBroader(topicID);
-            success({"item": topic.item, "name": topic.name, "narrower": narrower, "viewpoint_name": viewpoint.name[0],
-              "viewpoint_id": viewpointID, "prefixUrl": prefixUrl+"/", "broader": broader });
+      var prefixUrl, parts, viewpointID, topicID;
+      var parts = url.split("/");
+      topicID = parts.pop();
+      prefixUrl = parts.join("/") + "/";
+      viewpointID = parts.pop();
+      parts.pop();
+      parts.push("viewpoint");
+      parts.push(viewpointID);
+      viewpointUrl = parts.join("/");
+      $.agorae.httpSend(viewpointUrl,
+      {
+        type: "GET",
+        success: function(viewpoint){
+          viewpoint = viewpoint[viewpointID];
+          topic = viewpoint[topicID];
+          topic.name = topic.name || '';
+          var narrower = [];
+          if(topic.narrower)
+            for(var i=0, n; n = topic.narrower[i]; i++)
+              narrower.push({"name": viewpoint[n.id].name, "id": n.id, "uri": prefixUrl + n.id });
+          var broader = [];
+          function getBroader(topicID){
+            if(!viewpoint[topicID] || !viewpoint[topicID].broader)
+              return false;
+            broader.push(viewpoint[topicID].broader[0]);
+            getBroader(viewpoint[topicID].broader[0].id);
           }
-        });
-      }
-
+          getBroader(topicID);
+          success({"item": topic.item, "name": topic.name, "narrower": narrower, "viewpoint_name": viewpoint.name[0],
+            "viewpoint_id": viewpointID, "viewpointUrl": viewpointUrl, "broader": broader, "prefixUrl": prefixUrl });
+        }
+      });
     },
     createTopic: function(url, name, success){
       var prefixUrl, viewpointID, parentTopicID;
-      if(url.substr(-1) == '/')
-        url = url.substr(0,url.length -1);
-      if(url.indexOf("/viewpoint/") > 0){
-        prefixUrl = url.substr(0, url.indexOf("viewpoint/"));
-        var parts = url.split('/');
-        viewpointID = parts.pop();
-        url = prefixUrl + viewpointID;
-      }
       if(url.indexOf("/topic/") > 0){
-        prefixUrl = url.substr(0, url.indexOf("topic/"));
         var parts = url.split('/');
         parentTopicID = parts.pop();
         viewpointID = parts.pop();
-        url = prefixUrl + viewpointID;
       }
+      url = $.agorae.getDocumentUri(url);
       $.agorae.httpSend(url,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           if(!doc.topics) doc.topics = {};
           var topicID = $.agorae.newUUID();
@@ -307,7 +318,9 @@
             type: "PUT",
             data: doc,
             success: function(doc){
-              success({"id": topicID, "name": name});
+              doc.id = topicID;
+              doc.name = name;
+              success(doc);
             },
             error: function(code, error, reason){
               $.showMessage({title: "error", content: "Cannot update:" + url});
@@ -320,25 +333,11 @@
       });
     },
     deleteTopic: function(url, id, success){
-      var prefixUrl, viewpointID;
-      if(url.substr(-1) == '/')
-        url = url.substr(0,url.length -1);
-      if(url.indexOf("/viewpoint/") > 0){
-        prefixUrl = url.substr(0, url.indexOf("viewpoint/"));
-        var parts = url.split('/');
-        viewpointID = parts.pop();
-        url = prefixUrl + viewpointID;
-      }
-      if(url.indexOf("/topic/") > 0){
-        prefixUrl = url.substr(0, url.indexOf("topic/"));
-        var parts = url.split('/');
-        parts.pop();
-        viewpointID = parts.pop();
-        url = prefixUrl + viewpointID;
-      }
+      url = $.agorae.getDocumentUri(url);
       $.agorae.httpSend(url,
       {
         type: "GET",
+        cache: false,
         success: function(viewpoint){
           delete viewpoint.topics[id];
           for(var tid in viewpoint.topics){
@@ -368,19 +367,11 @@
       });
     },
     unlinkTopic: function(url, id, success){
-      var prefixUrl, viewpointID;
-      if(url.substr(-1) == '/')
-        url = url.substr(0,url.length -1);
-      if(url.indexOf("/topic/") > 0){
-        prefixUrl = url.substr(0, url.indexOf("topic/"));
-        var parts = url.split('/');
-        parts.pop();
-        viewpointID = parts.pop();
-        url = prefixUrl + viewpointID;
-      }
+      url = $.agorae.getDocumentUri(url);
       $.agorae.httpSend(url,
       {
         type: "GET",
+        cache: false,
         success: function(viewpoint){
           viewpoint.topics[id].broader = [];
           $.agorae.httpSend(url+"?rev=" + viewpoint._rev,
@@ -399,25 +390,11 @@
       });
     },
     renameTopic: function(url, id, name, success){
-      var prefixUrl, viewpointID;
-      if(url.substr(-1) == '/')
-        url = url.substr(0,url.length -1);
-      if(url.indexOf("/viewpoint/") > 0){
-        prefixUrl = url.substr(0, url.indexOf("viewpoint/"));
-        var parts = url.split('/');
-        viewpointID = parts.pop();
-        url = prefixUrl + viewpointID;
-      }
-      if(url.indexOf("/topic/") > 0){
-        prefixUrl = url.substr(0, url.indexOf("topic/"));
-        var parts = url.split('/');
-        parts.pop();
-        viewpointID = parts.pop();
-        url = prefixUrl + viewpointID;
-      }
+      url = $.agorae.getDocumentUri(url);
       $.agorae.httpSend(url,
       {
         type: "GET",
+        cache: false,
         success: function(viewpoint){
           viewpoint.topics[id].name = name;
           $.agorae.httpSend(url+"?rev=" + viewpoint._rev,
@@ -457,23 +434,23 @@
       });
     },
     getCorpus: function(url, success){
-      if($.agorae.config.corpus)
+      if($.agorae.session.corpus)
       {
-        var corpus = (typeof($.agorae.config.corpus) != 'string') ? $.agorae.config.corpus[0] : $.agorae.config.corpus;
+        var corpus = (typeof($.agorae.session.corpus) != 'string') ? $.agorae.session.corpus[0] : $.agorae.session.corpus;
         success(corpus);
         return false;
       }
 
-      var userUrl = url + "user/" + $.agorae.config.username;
+      var userUrl = url + "user/" + $.agorae.session.username;
       $.agorae.httpSend(userUrl,
       {
         type: "GET",
         success: function(user){
-          user = user[$.agorae.config.username];
+          user = user[$.agorae.session.username];
           if(user.corpus)
           {
             var corpus = user.corpus[0];
-            $.agorae.config.corpus = corpus;
+            $.agorae.session.corpus = corpus;
             success(corpus);
             return false;
           }
@@ -485,10 +462,10 @@
       });
     },
     createCorpus: function(url, corpusName, success){
-      corpusName = corpusName || 'no name';
+      corpusName = corpusName || 'Sans nom';
       var corpus = {};
       corpus.corpus_name = corpusName;
-      corpus.users = [$.agorae.config.username];
+      corpus.users = [$.agorae.session.username];
       $.agorae.httpSend(url,
       {
         type: "POST",
@@ -545,22 +522,16 @@
     },
     unlinkItem: function(topicUrl, itemID, success){
       var prefixUrl, topicID, viewpointID;
-      if(topicUrl.substr(-1) == '/')
-        topicUrl = topicUrl.substr(0,topicUrl.length -1);
-      if(topicUrl.indexOf("/topic/") > 0){
-        prefixUrl = topicUrl.substr(0, topicUrl.indexOf("topic/"));
-        var parts = topicUrl.split('/');
-        topicID = parts.pop();
-        viewpointID = parts.pop();
-      }
+      topicID = $.agorae.getDocumentID(topicUrl);
       $.each($.agorae.config.servers, function(idx, server){
-        $.agorae.httpSend(prefixUrl + itemID,
+        $.agorae.httpSend(server + itemID,
         {
           type: "GET",
+          cache: false,
           success: function(item){
             if(item.topics[topicID]){
               delete item.topics[topicID];
-              $.agorae.httpSend(prefixUrl + itemID + "?rev=" + item._rev,
+              $.agorae.httpSend(server + itemID + "?rev=" + item._rev,
               {
                 type: "PUT",
                 data: item,
@@ -577,6 +548,7 @@
       $.agorae.httpSend(prefixUrl + itemID,
       {
         type: "GET",
+        cache: false,
         success: function(item){
           item.item_name = name;
           $.agorae.httpSend(prefixUrl + itemID + "?rev=" + item._rev,

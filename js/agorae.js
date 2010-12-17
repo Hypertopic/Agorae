@@ -27,9 +27,9 @@
           };
           $.agorae.login(data.name, data.password, callback, function(){
             if(data.cookie){
-              $.cookie('cookie', '1');
-              $.cookie('name', data.name);
-              $.cookie('password', data.password);
+              $.cookie('cookie', '1', { expires: 365});
+              $.cookie('name', data.name, { expires: 365});
+              $.cookie('password', data.password, { expires: 365});
             }
             else
             {
@@ -80,16 +80,16 @@
       $('a#sign-in').click($.agorae.session.login);
       $('a#sign-out').click($.agorae.session.logout);
 
-      $.agorae.pagehelper.route();
+      $(window).hashchange($.agorae.pagehelper.route).hashchange();
     };
     this.route = function(){
-      if(!$.queryString('uri'))
+      var uri = $.getUri();
+      if(!uri)
       {
         $('div#main').attr('class', 'index');
         $.showPage('page/_index.html', $.agorae.indexpage.init);
         return false;
       }
-      var uri = $.queryString('uri');
 
       if(uri.indexOf('/viewpoint/') > 0)
       {
@@ -137,7 +137,6 @@
       });
     };
     this.checkController = function(){
-      $.log($('#index-edit-toggle').attr('checked'));
       if($('#index-edit-toggle').attr('checked'))
         $('.ctl').show();
       else
@@ -192,10 +191,10 @@
       $.agorae.pagehelper.navigatorBar('<b>Accueil</b>');
 
       //Enable the links
-      $('div.index ul#item li[uri] span').live('click', onItemClick);
+      $('div.index ul#item li[uri] span').die().live('click', onItemClick);
     	$('div.index div.viewpoint-list img.add').click(createViewpoint);
-    	$('div.index ul#viewpoint img.del').live('click', deleteViewpoint);
-    	$('div.index ul#viewpoint li[uri] span').live('click', onViewpointClick);
+    	$('div.index ul#viewpoint img.del').die().live('click', deleteViewpoint);
+    	$('div.index ul#viewpoint li[uri] span').die().live('click', onViewpointClick);
     }
     function appendItem(idx, itemUrl){
       $.agorae.getItem(itemUrl, function(item){
@@ -227,13 +226,14 @@
       $.agorae.getUser(server, function(user){
         if(user.viewpoint)
           for(var i=0, viewpoint; viewpoint = user.viewpoint[i]; i++){
-            appendViewpoint(i, server + viewpoint.id, viewpoint, true);
+            appendViewpoint(i, server + 'viewpoint/' + viewpoint.id, viewpoint, true);
           }
       });
     };
     function onItemClick(){
       var uri = $(this).parent().attr("uri");
       $.agorae.pagehelper.rewrite(uri);
+      return false;
     };
     function createViewpoint(){
       $.agorae.createViewpoint('Sans nom', function(doc){
@@ -291,112 +291,100 @@
     };
   }
   function ViewpointPage(){
-
-    function appendTopic(index, topic){
-      var uri = $.queryString('uri');
-      if(uri.substr(-1) == '/')
-        uri = uri.substr(0,uri.length -1);
-
-      uri += '/' + topic.id;
-      uri = uri.replace(/\/viewpoint\//, "/topic/");
-      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
-                   + '<span class="editable">' + topic.name + '</span></li>')
-                   .attr("rel", topic.id).attr("uri", uri);
-      $('ul#topic').append(el);
-    };
-
-    function onTopicClick(el){
-      if(!$('#index-edit-toggle').attr('checked'))
-      {
-        var uri = el.parent().attr('uri');
-        $.agorae.session.rewrite(uri);
-        return false;
-      }
-      return true;
-    };
-
     this.init = function(){
-      var uri = $.queryString('uri');
+      var uri = $.getUri();
       $.agorae.getViewpoint(uri, function(viewpoint){
-        var bars = [{'uri': './', 'name': 'Accueil'}];
+        var bars = [{'uri': '#', 'name': 'Accueil'}];
         bars.push({'name': viewpoint.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
         if(viewpoint.upper)
           $.each(viewpoint.upper, appendTopic);
       });
-      if(uri.indexOf($.agorae.config.servers[0]) == 0)
+
+      if(typeof($.agorae.config.servers[0]) == "string" && uri.indexOf($.agorae.config.servers[0]) == 0)
         $.agorae.pagehelper.toggle(true);
       else
         $.agorae.pagehelper.toggle(false);
-      //Click to create topic with no name
-      $('div.topic-list img.add').live('click', function(){
-        $.agorae.createTopic(uri, 'no name', function(doc){
-          appendTopic(0, doc);
-          $.agorae.pagehelper.checkController();
-        });
+      $('div.viewpoint div.topic-list img.add').click(createTopic);
+    	$('div.viewpoint div.topic-list img.del').die().live('click', $.agorae.viewpointpage.deleteTopic);
+    	$('div.viewpoint ul#topic li[uri] span').die().live('click', $.agorae.viewpointpage.onTopicClick);
+    };
+    function createTopic(){
+      var uri = $.getUri();
+      $.agorae.createTopic(uri, 'sans nom', function(doc){
+        appendTopic(0, doc);
+        $.agorae.pagehelper.checkController();
+      });
+    };
+    this.deleteTopic = function(){
+      var id = $(this).parent().attr('id');
+      var uri = $(this).parent().attr('uri');
+    	var self = $(this);
+    	$.agorae.deleteTopic(uri, id , function(){
+    	  self.parent().remove();
     	});
-
-    	//Click to delete topic
-    	$('div.topic-list img.del').live('click', function(){
-        var id = $(this).parent().attr('rel');
-    	  var self = $(this);
-    	  $.agorae.deleteTopic(uri, id , function(){
-    	    self.parent().remove();
-    	  });
-    	});
-
-      //Click to edit in place
-      $('ul#topic span.editable').live('click', function(){
-        if(!onTopicClick($(this)))
-          return false;
-        var id = $(this).parent().attr('rel');
-        var name = $(this).text();
-        var el = $('<input type="textbox">').val(name);
-    	  $(this).replaceWith(el);
-    	  el.focus(function() { $(this).select(); }).select()
-    	    .mouseup(function(e){ e.preventDefault(); });
-    	  el.blur(function(){
-    	    var span = $('<span></span>').addClass('editable');
-    	    if($(this).val() == '' || $(this).val() == name)
-    	    {
+    };
+    function appendTopic(index, topic){
+      var uri = $.getUri();
+      uri += '/' + topic.id;
+      uri = uri.replace(/\/viewpoint\//, "/topic/");
+      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
+                   + '<span class="editable">' + topic.name + '</span></li>')
+                   .attr("id", topic.id).attr("uri", uri);
+      $('ul#topic').append(el);
+    };
+    this.onTopicClick = function(){
+      var uri = $(this).parent().attr('uri');
+      if(!$('#index-edit-toggle').attr('checked'))
+      {
+        $.agorae.pagehelper.rewrite(uri);
+        return false;
+      }
+      var id = $(this).parent().attr('id');
+      var name = $(this).text();
+      var el = $('<input type="textbox">').val(name);
+    	$(this).replaceWith(el);
+    	el.focus(function() { $(this).select(); }).select()
+    	  .mouseup(function(e){ e.preventDefault(); });
+    	el.blur(function(){
+    	  var span = $('<span></span>').addClass('editable');
+    	  if($(this).val() == '' || $(this).val() == name)
+    	  {
+    	    span.html(name);
+    	    $(this).replaceWith(span);
+    	  }
+    	  else
+    	  {
+    	    var self = $(this);
+    	    var newName = self.val();
+    	    $.agorae.renameTopic(uri, id, newName, function(){
+    	      span.html(newName);
+    	      self.replaceWith(span);
+    	    }, function(){
     	      span.html(name);
-    	      $(this).replaceWith(span);
-    	    }
-    	    else
-    	    {
-    	      var self = $(this);
-    	      var newName = self.val();
-    	      $.agorae.renameTopic(uri, id, newName, function(){
-    	        span.html(newName);
-    	        self.replaceWith(span);
-    	      }, function(){
-    	        span.html(name);
-    	        self.replaceWith(span);
-    	      });
-    	    }
-    	  });
-    	  el.keyup(function(event){
-          if (event.keyCode == 27 || event.keyCode == 13)
-            $(this).blur();
-        });
+    	      self.replaceWith(span);
+    	    });
+    	  }
     	});
-
-      //Click on non-editable link
-    	$('ul#topic span').live('click', function(){ onTopicClick($(this)); return false; });
+    	el.keyup(function(event){
+        if (event.keyCode == 27 || event.keyCode == 13)
+          $(this).blur();
+      });
+      return true;
     };
   }
-
   function TopicPage(){
     this.init = function(){
-      var uri = $.queryString('uri');
+      var uri = $.getUri();
 
       $.agorae.getTopic(uri, function(topic){
-        var bars = [{'uri': './', 'name': 'Accueil'}];
-        bars.push({'uri': './?uri=' + topic.prefixUrl + 'viewpoint/' + topic.viewpoint_id, 'name': topic.viewpoint_name});
+        var bars = [{'uri': '#', 'name': 'Accueil'}];
+        bars.push({'uri': '#' + topic.viewpointUrl, 'name': topic.viewpoint_name});
         if(topic.broader)
           for(var i=0, t; t = topic.broader[i]; i++)
-            bars.push({'uri': './?uri=' + topic.prefixUrl + 'topic/' + topic.viewpoint_id + '/' + t.id, 'name': t.name});
+            bars.push({'uri': '#' + topic.prefixUrl + t.id, 'name': t.name});
         bars.push({'name': topic.name});
+
         $.agorae.pagehelper.navigatorBar(bars);
         if(topic.narrower)
           $.each(topic.narrower, appendTopic);
@@ -404,230 +392,145 @@
           $.each(topic.item, appendItem);
       });
 
-      if(uri.indexOf($.agorae.config.servers[0]) == 0)
+      if(typeof($.agorae.config.servers[0]) == "string" && uri.indexOf($.agorae.config.servers[0]) == 0)
         $.agorae.pagehelper.toggle(true);
       else
         $.agorae.pagehelper.toggle(false);
 
-      //Click to create topic with no name
-      $('div.topic-list img.add').click(function(event){
-        event.stopPropagation();
-        $.agorae.createTopic(uri, 'no name', function(topic){
-          if(uri.substr(-1) == '/')
-            uri = uri.substr(0,uri.length -1);
-          var parts = uri.split('/');
-          parts.pop();
-          parts.push(topic.id);
-          topic.uri = parts.join('/');
-          appendTopic(0, topic);
-          $.agorae.pagehelper.checkController();
-        });
-        return false;
-    	});
+      $('div.topic div.topic-list img.add').click(createTopic);
+      $('div.topic div.topic-list img.del').die().live('click', $.agorae.viewpointpage.deleteTopic);
+      $('div.topic div.topic-list img.unlink').die().live('click', unlinkTopic);
+    	$('div.topic ul#topic li[uri] span').die().live('click', $.agorae.viewpointpage.onTopicClick);
 
-    	//Click to delete topic
-    	$('div.topic-list img.del').live('click', function(event){
-    	  event.stopPropagation();
-        var id = $(this).parent().attr('rel');
-    	  var self = $(this);
-    	  $.agorae.deleteTopic(uri, id , function(){
-    	    self.parent().remove();
-    	  });
-    	  return false;
-    	});
-
-      //Click to unlink topic
-    	$('div.topic-list img.unlink').live('click', function(event){
-    	  event.stopPropagation();
-        var id = $(this).parent().attr('rel');
-    	  var self = $(this);
-    	  $.agorae.unlinkTopic(uri, id , function(){
-    	    self.parent().remove();
-    	  });
-    	  return false;
-    	});
-
-    	//Click to edit in place
-      $('ul#topic span.editable').live('click', function(event){
-        event.stopPropagation();
-        if(!onTopicClick($(this)))
-          return false;
-        var id = $(this).parent().attr('rel');
-        var name = $(this).text();
-        var el = $('<input type="textbox">').val(name);
-    	  $(this).replaceWith(el);
-    	  el.focus(function() { $(this).select(); }).select()
-    	    .mouseup(function(e){ e.preventDefault(); });
-    	  el.blur(function(){
-    	    var span = $('<span></span>').addClass('editable');
-    	    if($(this).val() == '' || $(this).val() == name)
-    	    {
-    	      span.html(name);
-    	      $(this).replaceWith(span);
-    	    }
-    	    else
-    	    {
-    	      var self = $(this);
-    	      var newName = self.val();
-    	      $.agorae.renameTopic(uri, id, newName, function(){
-    	        span.html(newName);
-    	        self.replaceWith(span);
-    	      }, function(){
-    	        span.html(name);
-    	        self.replaceWith(span);
-    	      });
-    	    }
-    	  });
-    	  el.keyup(function(event){
-          if (event.keyCode == 27 || event.keyCode == 13)
-            $(this).blur();
-        });
-        return false;
-    	});
-
-    	//Click to create item with no name
-      $('div.item-list img.add').click(function(event){
-        $.log('start to create item');
-        event.stopPropagation();
-        $.agorae.createItem(uri, 'no name', function(item){
-          $.log('create item');
-          $.log(item);
-          appendItem(0, item);
-          $.log('create done');
-          $.agorae.pagehelper.checkController();
-          return false;
-        });
-        $.log('end to create item');
-        return false;
-    	});
-    	//Click to unlink item
-    	$('div.item-list img.unlink').live('click', function(event){
-    	  event.stopPropagation();
-        var itemID = $(this).parent().attr('rel');
-    	  var self = $(this);
-    	  $.agorae.unlinkItem(uri, itemID , function(){
-    	    self.parent().remove();
-    	  });
-    	  return false;
-    	});
-    	//Click to delete item
-    	$('div.item-list img.del').live('click', function(event){
-    	  event.stopPropagation();
-        var itemID = $(this).parent().attr('rel');
-    	  var self = $(this);
-    	  var prefixUrl;
-        if(uri.substr(-1) == '/')
-          uri = uri.substr(0,uri.length -1);
-        if(uri.indexOf("/topic/") > 0)
-          prefixUrl = uri.substr(0, uri.indexOf("topic/"));
-    	  $.agorae.deleteDoc(prefixUrl + itemID , function(){
-    	    self.parent().remove();
-    	  });
-    	  return false;
-    	});
-    	//Click to edit in place
-      $('ul#item span.editable').live('click', function(event){
-        event.stopPropagation();
-        if(!onItemClick($(this)))
-          return false;
-        var id = $(this).parent().attr('rel');
-        var name = $(this).text();
-        var el = $('<input type="textbox">').val(name);
-    	  $(this).replaceWith(el);
-    	  el.focus(function() { $(this).select(); }).select()
-    	    .mouseup(function(e){ e.preventDefault(); });
-    	  el.blur(function(){
-    	    var span = $('<span></span>').addClass('editable');
-    	    if($(this).val() == '' || $(this).val() == name)
-    	    {
-    	      span.html(name);
-    	      $(this).replaceWith(span);
-    	    }
-    	    else
-    	    {
-    	      var self = $(this);
-    	      var newName = self.val();
-    	      var prefixUrl;
-            if(uri.substr(-1) == '/')
-              uri = uri.substr(0,uri.length -1);
-            if(uri.indexOf("/topic/") > 0)
-              prefixUrl = uri.substr(0, uri.indexOf("topic/"));
-    	      $.agorae.renameItem(prefixUrl, id, newName, function(){
-    	        span.html(newName);
-    	        self.replaceWith(span);
-    	      }, function(){
-    	        span.html(name);
-    	        self.replaceWith(span);
-    	      });
-    	    }
-    	  });
-    	  el.keyup(function(event){
-          if (event.keyCode == 27 || event.keyCode == 13)
-            $(this).blur();
-        });
-    	});
+      $('div.topic div.item-list img.add').click(createItem);
+      $('div.topic div.item-list img.del').die().live('click', deleteItem);
+    	$('div.topic div.item-list img.unlink').die().live('click', unlinkItem);
+      $('div.topic ul#item span.editable').die().live('click', onItemClick);
+    };
+    function createTopic(){
+      var uri = $.getUri();
+      $.agorae.createTopic(uri, 'Sans nom', function(topic){
+        var parts = uri.split("/");
+        parts.pop();
+        parts.push(topic.id);
+        topic.uri = parts.join('/');
+        appendTopic(0, topic);
+        $.agorae.pagehelper.checkController();
+      });
+      return false;
+    };
+    function unlinkTopic(){
+      var id = $(this).parent().attr('id');
+      var uri = $(this).parent().attr('uri');
+      var self = $(this);
+      $.agorae.unlinkTopic(uri, id , function(){
+        self.parent().remove();
+      });
+      return false;
     };
     function appendTopic(idx, topic){
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
                    + '<span class="editable">' + topic.name + '</span></li>')
-                   .attr("rel", topic.id).attr("uri", topic.uri);
+                   .attr("id", topic.id).attr("uri", topic.uri);
       $('ul#topic').append(el);
+    };
+    function createItem(){
+      var uri = $.getUri();
+      $.agorae.createItem(uri, 'Sans nom', function(item){
+        appendItem(0, item);
+        $.agorae.pagehelper.checkController();
+      });
+      return false;
+    };
+    function deleteItem(){
+      var itemID = $(this).parent().attr('id');
+    	var self = $(this);
+    	var prefixUrl;
+    	var uri = $.getUri();
+      if(uri.indexOf("/topic/") > 0)
+        prefixUrl = uri.substr(0, uri.indexOf("topic/"));
+    	$.agorae.deleteDoc(prefixUrl + itemID, function(){
+    	  self.parent().remove();
+    	});
+    	return false;
+    };
+    function unlinkItem(){
+      var uri = $.getUri();
+      var itemID = $(this).parent().attr('id');
+    	var self = $(this);
+    	$.agorae.unlinkItem(uri, itemID , function(){
+    	  self.parent().remove();
+    	});
+      return false;
     };
     function appendItem(idx, item){
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
                    + '<span class="editable">' + item.name + '</span></li>')
-                   .attr("rel", item.id).attr("corpus", item.corpus);
+                   .attr("id", item.id).attr("corpus", item.corpus);
       $('ul#item').append(el);
     };
-    function onTopicClick(el){
+    function onItemClick(){
+      var uri = $.getUri(),
+          prefixUrl = $.agorae.getServerUri(uri),
+          corpusID = $(this).parent().attr('corpus'),
+          itemID = $(this).parent().attr('id');
       if(!$('#index-edit-toggle').attr('checked'))
       {
-        var uri = el.parent().attr('uri');
-        $.agorae.session.rewrite(uri);
-        return false;
-      }
-      return true;
-    };
-    function onItemClick(el){
-      var prefixUrl;
-      var uri = $.queryString('uri');
-      if(uri.substr(-1) == '/')
-        uri = uri.substr(0,uri.length -1);
-      if(uri.indexOf("/topic/") > 0)
-        prefixUrl = uri.substr(0, uri.indexOf("topic/"));
-      if(!$('#index-edit-toggle').attr('checked'))
-      {
-        var corpusID = el.parent().attr('corpus');
-        var itemId = el.parent().attr('rel');
-
-        var uri = prefixUrl + 'item/' + corpusID + '/' + itemId;
-        $.agorae.getItem(uri, function(){
-          $.agorae.session.rewrite(uri);
+        var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
+        $.agorae.getItem(uri, null, function(){
+          $.agorae.pagehelper.rewrite(uri);
         }, function(){
-          //TODO check every server to find item
-          for(var i=0, server; server = $.agorae.config.servers[i]; i++)
+          if($.agorae.session.servers)
+          for(var i=0, server; server = $.agorae.session.servers[i]; i++)
           {
             if(server == prefixUrl) continue;
-            uri = server + 'item/' + corpusID + '/' + itemId;
+            uri = server + 'item/' + corpusID + '/' + itemID;
             $.agorae.getItem(uri, function(){
-                $.agorae.session.rewrite(uri);
+                $.agorae.pagehelper.rewrite(uri);
               }, function(){ return false; });
           }
         });
         return false;
       }
+      var name = $(this).text();
+      var el = $('<input type="textbox">').val(name);
+    	$(this).replaceWith(el);
+    	el.focus(function() { $(this).select(); }).select()
+    	  .mouseup(function(e){ e.preventDefault(); });
+    	el.blur(function(){
+    	  var span = $('<span></span>').addClass('editable');
+    	  if($(this).val() == '' || $(this).val() == name)
+    	  {
+    	    span.html(name);
+    	    $(this).replaceWith(span);
+    	  }
+    	  else
+    	  {
+    	    var self = $(this);
+    	    var newName = self.val();
+    	    $.agorae.renameItem(prefixUrl, itemID, newName, function(){
+    	      span.html(newName);
+    	      self.replaceWith(span);
+    	    }, function(){
+    	      span.html(name);
+    	      self.replaceWith(span);
+    	    });
+    	  }
+    	});
+    	el.keyup(function(event){
+        if (event.keyCode == 27 || event.keyCode == 13)
+          $(this).blur();
+      });
       return true;
     };
   }
-
   function ItemPage(){
     this.init = function(){
       var uri = $.queryString('uri');
       $.agorae.getItem(uri, function(item){
-        $.log(item);
-        var bars = [{'uri': './', 'name': 'Accueil'}];
+        var bars = [{'uri': '#', 'name': 'Accueil'}];
         bars.push({'name': item.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
         var reserved = ["corpus", "id", "highlight", "name", "resource", "topic", "_attachments"];
