@@ -76,10 +76,11 @@
       if($.agorae.config.footer)
         $('div#footer').html($.agorae.config.footer);
 
+      //init topic tree dialog
+      $.agorae.topictree.init();
       //init event;
       $('a#sign-in').click($.agorae.session.login);
       $('a#sign-out').click($.agorae.session.logout);
-
       $(window).hashchange($.agorae.pagehelper.route).hashchange();
     };
     this.route = function(){
@@ -143,7 +144,7 @@
         $('.ctl').hide();
     };
     this.hideController = function(){
-      $('#index-edit-toggle').removeAttr('checked').hide();
+      $('#index-edit-toggle').removeAttr('checked').hide().parent().hide();
       $('.ctl').hide();
     };
     this.navigatorBar = function(obj){
@@ -528,7 +529,7 @@
   }
   function ItemPage(){
     this.init = function(){
-      var uri = $.queryString('uri');
+      var uri = $.getUri();
       $.agorae.getItem(uri, function(item){
         var bars = [{'uri': '#', 'name': 'Accueil'}];
         bars.push({'name': item.name + ''});
@@ -552,11 +553,12 @@
       else
         $.agorae.pagehelper.toggle(false, onEditOn, onEditOff);
 
-      $('div.resource-list img.upload').bind('click', uploadAttachment);
-      $('div.resource-list img.del').bind('click', deleteAttachment);
-      $('div.resource-list span.attachment').live('click', clickAttachment);
-      $('div.resource-list img.add').bind('click', attachResource);
-      $('div.resource-list span.resource').live('click', clickResource);
+      $('div.item div.resource-list img.upload').bind('click', uploadAttachment);
+      $('div.item div.resource-list img.del').bind('click', deleteAttachment);
+      $('div.item div.resource-list span.attachment').die().live('click', clickAttachment);
+      $('div.item div.resource-list img.add').bind('click', attachResource);
+      $('div.item div.resource-list span.resource').die().live('click', clickResource);
+      $('div.item div.topic-list img.attach').click(attachTopic);
     };
     function onEditOn(){
       $('div.attributes').hide();
@@ -567,9 +569,8 @@
       $('div.attributes').show();
       $('ul#attribute').hide();
     };
-
     function parseUri(){
-      var uri = $.queryString('uri');
+      var uri = $.getUri();
       if(uri.substr(-1) == '/')
         uri = uri.substr(0,uri.length -1);
       parts = uri.split('/');
@@ -739,7 +740,84 @@
         $('ul#resource').append(el);
       }
     };
+    function attachTopic(){
+      $.agorae.topictree.openDialog(
+        function(){
+          var topics = [];
+          for(var i=0, t; t = $.jstree._focused().data.ui.selected[i]; i++)
+          {
+            if($(t).attr("rel") == "viewpoint") continue;
+            topics.push({"id": $(t).attr("topicID"), "viewpoint": $(t).attr("viewpointID"), "name": $(t).attr("name")});
+          }
 
+          $.log(topics);
+          if(topics.length == 0)
+          {
+            $.showMessage({title: "Warn", content: "Please select a topic first!"});
+            return false;
+          }
+          var uri = $.getUri();
+          uri = $.agorae.getDocumentUri(uri);
+          $.agorae.tagItem(uri, topics, function(){
+            $.agorae.topictree.closeDialog();
+          });
+        }
+      );
+    }
+  }
+  function TopicTree(){
+    this.init = function(){
+      $("#topic-tree-dialog").dialog({
+        bgiframe: true,
+        autoOpen: false,
+        modal: true,
+        width: 400,
+        title: "Thèmes",
+        close: function(){
+          $("#tree").jstree('destroy');
+        },
+        open: function(){
+          $.jstree._themes = 'css/jsTree/themes/';
+          var uri = $.getUri();
+          if(uri.indexOf("/topic/") > 0)
+          {
+            var parts = uri.split("/");
+            parts.pop();
+            var viewpointID = parts.pop();
+            parts.pop();
+            parts.push("viewpoint");
+            parts.push(viewpointID);
+            uri = parts.join("/");
+          }
+          else
+            uri = null;
+          var topics = $.agorae.getTopicTree(uri);
+          $("#tree").jstree({
+            "json_data" : topics,
+            "types" : $.agorae.topictree.jstree_types,
+            "plugins" : [ "themes", "json_data", "ui", "crrm", "types" ]
+          });
+        }
+      });
+    };
+    this.openDialog = function(callback){
+      $("#topic-tree-dialog").dialog('option', "buttons", {
+          'Okay': callback,
+          'Annuler': function(){
+            $("#topic-tree-dialog").dialog('close');
+          }
+      }).dialog('open');
+    };
+    this.closeDialog = function(){
+      $("#topic-tree-dialog").dialog('close');
+    };
+    this.jstree_types = {
+      "valid_children" : [ "viewpoint" ],
+      "types" : {
+        "viewpoint": { "icon" : {  "image" : "css/blitzer/images/viewpoint.png"} },
+        "topic": { "icon" : {  "image" : "css/blitzer/images/topic.png" } }
+      }
+    };
   }
   $.agorae = $.agorae || {};
   $.extend($.agorae, {
@@ -748,6 +826,7 @@
     indexpage : new IndexPage(),
     viewpointpage : new ViewpointPage(),
     topicpage : new TopicPage(),
-    itempage : new ItemPage()
+    itempage : new ItemPage(),
+    topictree : new TopicTree()
   });
 })(jQuery);

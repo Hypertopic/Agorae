@@ -37,7 +37,6 @@
       }
       if(uri.indexOf("/item/") >= 0)
         return uri.substr(0, uri.indexOf("/item/") + 1) + id;
-
       return uri;
     },
     httpSend: function(url, options) {
@@ -566,6 +565,7 @@
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           $.agorae.httpSend(itemUrl + "/" + attachment_name + "?rev=" + doc._rev,
           {
@@ -587,6 +587,7 @@
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           $.log(doc);
           if(!doc.resource) doc.resource = [];
@@ -607,6 +608,7 @@
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           $.log(doc);
           if(!doc.resource) doc.resource = [];
@@ -633,6 +635,7 @@
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           $.log(doc);
           if(!doc[attributename]) doc[attributename] = [];
@@ -654,6 +657,7 @@
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           $.log(doc);
           if(!doc[attributename] || doc[attributename].indexOf(attributevalue) < 0)
@@ -683,6 +687,7 @@
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
+        cache: false,
         success: function(doc){
           $.log(doc);
           if(!doc[attributename] || doc[attributename].indexOf(attributevalue) < 0)
@@ -714,6 +719,94 @@
           $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
         }
       });
+    },
+    tagItem: function(itemUrl, topics, success){
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        cache: false,
+        success: function(item){
+          if(!item.topics) item.topics = {};
+          for(var i=0, topic; topic = topics[i]; i++)
+            item.topics[topic.id] = {"viewpoint": topic.viewpoint };
+          $.agorae.httpSend(itemUrl + "?rev=" + item._rev,
+          {
+            type: "PUT",
+            data: item,
+            success: success
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
+        }
+      });
+    },
+    getNarrower: function(viewpoint, topic){
+      var topicID = topic.id, result = [];
+      if(typeof(viewpoint[topicID].narrower) != "undefined")
+        for(var i=0, topic; topic = viewpoint[topicID].narrower[i]; i++)
+        {
+          var t = {"data": topic.name, "attr": {"viewpointID": viewpoint.id, "topicID": topic.id, "name": topic.name, "rel": "topic"}};
+          t.children = $.agorae.getNarrower(viewpoint, topic);
+          result.push(t);
+        }
+      return result;
+    },
+    getTopicTree: function(viewpointUrl){
+      var tree = {"data": []},
+          viewpoints = [];
+      if(!viewpointUrl){
+        if($.agorae.session.username)
+          $.agorae.httpSend($.agorae.config.servers[0] + "user/" + $.agorae.session.username,
+          {
+            type: "GET",
+            success: function(doc){
+              if(typeof doc[$.agorae.session.username] == "undefined")
+                return false;
+              var user = doc[$.agorae.session.username];
+              if(user.viewpoint)
+              for(var i=0, viewpoint; viewpoint = user.viewpoint[i]; i++){
+                var url = $.agorae.config.servers[0] + 'viewpoint/' + viewpoint.id;
+                if(viewpoints.indexOf(url) < 0)
+                  viewpoints.push(url);
+              }
+            }
+          });
+        if($.agorae.config.viewpoints)
+          for(var i=0, url; url = $.agorae.config.viewpoints[i]; i++)
+            if(viewpoints.indexOf(url) < 0)
+                  viewpoints.push(url);
+      }
+      else
+        viewpoints.push(viewpointUrl);
+      $.log(viewpoints);
+      for(var i=0, url; url = viewpoints[i]; i++)
+        $.agorae.httpSend(url,
+        {
+          type: "GET",
+          success: function(viewpoint){
+            var viewpointID;
+            for(viewpointID in viewpoint)
+              break;
+            if(!viewpointID) return;
+            viewpoint = viewpoint[viewpointID];
+            viewpoint.id = viewpointID;
+            $.log(viewpoint);
+            var state = (i==0) ? "open" : "close";
+            var root = {"data": viewpoint.name, "attr": {"viewpointID": viewpointID, "name": viewpoint.name, "rel": "viewpoint"},
+                       "children": [], "state": state};
+            if(viewpoint.upper)
+              for(var i=0, topic; topic = viewpoint.upper[i]; i++)
+              {
+                var t = {"data": topic.name, "attr": {"viewpointID": viewpoint.id, "topicID": topic.id, "name": topic.name, "rel": "topic"}};
+                t.children = $.agorae.getNarrower(viewpoint, topic);
+                root.children.push(t);
+              }
+            tree.data.push(root);
+          }
+        });
+      $.log(tree);
+      return tree;
     }
   });
 })(jQuery);
