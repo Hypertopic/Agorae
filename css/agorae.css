@@ -123,11 +123,11 @@ div#shadow-right{
   position: fixed;
 }
 div#header{
-  background: url(blitzer/images/headerbg.jpg) repeat scroll left top transparent;
+  /*background: url(blitzer/images/headerbg.jpg) repeat scroll left top transparent;*/
+  background-color: #990000;
   color: white;
-  height: 10em;
-  text-align: right;
-  padding-right: 6em;
+  height: 8em;
+  padding-left: 6em;
   padding-top: 2em;
 }
 div#header-toolbar{
@@ -267,4 +267,45 @@ span.attributename{
 }
 span.attributevalue{
   padding-left: 0.3em;
+}
+div#topictree{
+  float:left;
+  margin-top: 0.5em;
+}
+
+/* Tag cloud */
+
+#tags ul{
+  -moz-border-radius-bottomleft:6px;
+  -moz-border-radius-bottomright:6px;
+  -moz-border-radius-topleft:6px;
+  -moz-border-radius-topright:6px;
+	margin:1em 0;
+	padding:.5em 10px;
+	text-align:center;
+}
+#tags li{
+	margin:0;
+	padding:0;
+	list-style:none;
+	display:inline-block;
+	}
+#tags li a{
+	text-decoration:none;
+	padding:0 2px;
+	cursor: pointer;
+	}
+#tags li a:hover{
+	color:#8B0000;
+}
+.tag1{font-size:100%;}
+.tag2{font-size:120%;}
+.tag3{font-size:140%;}
+.tag4{font-size:160%;}
+.tag5{font-size:180%;}
+
+#tags ul li a.tag-clicked{
+  background: none repeat scroll 0 0 #BEEBFF;
+  border: 1px solid #99DEFD;
+  padding: 0 2px 0 1px;
 }

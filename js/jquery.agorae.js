@@ -753,7 +753,7 @@
       return result;
     },
     getTopicTree: function(viewpointUrl){
-      var tree = {"data": []},
+      var tree = {"data": []}, tagcloud = {},
           viewpoints = [];
       if(!viewpointUrl){
         if($.agorae.session.username)
@@ -803,10 +803,19 @@
                 root.children.push(t);
               }
             tree.data.push(root);
+
+            //Generate tag cloud
+            for(var topicID in viewpoint)
+              if(viewpoint[topicID].name){
+                var topicName = viewpoint[topicID].name;
+                if(!(topicName in tagcloud)) tagcloud[topicName] = {"topics": [], "size": 0};
+                tagcloud[topicName].topics.push({"viewpointID": viewpoint.id, "topicID": topicID});
+                tagcloud[topicName].size += (viewpoint[topicID].item && viewpoint[topicID].item.length > 0) ? viewpoint[topicID].item.length : 0;
+              }
           }
         });
       $.log(tree);
-      return tree;
+      return {"tree": tree, "tagcloud": tagcloud};
     }
   });
 })(jQuery);
