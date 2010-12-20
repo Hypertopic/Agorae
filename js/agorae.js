@@ -49,7 +49,7 @@
     };
 
     this.logout = function(){
-      $.cookie('session', null);
+      $.cookie('session.username', null);
       $('span.sign-in').show().next().hide();
       $.agorae.pagehelper.hideController();
     };
@@ -81,8 +81,7 @@
       //init event;
       $('a#sign-in').click($.agorae.session.login);
       $('a#sign-out').click($.agorae.session.logout);
-      $('a#shortcut').click(function(){ $.agorae.topictree.openDialog( function(){} ); });
-      $(window).hashchange($.agorae.pagehelper.route).hashchange();
+      $('a#shortcut').click(function(){ $.agorae.topictree.openDialog( function(){} );  return false;});
 
       $.agorae.session.ctrlPressed = false;
       $(window).keydown(function(evt) {
@@ -94,6 +93,8 @@
           $.agorae.session.ctrlPressed = false;
         }
       });
+
+      $(window).hashchange($.agorae.pagehelper.route).hashchange();
     };
     this.route = function(){
       var uri = $.getUri();
@@ -138,14 +139,14 @@
       	easing: 'easeInExpo',
       	speed: 300,
       	onClickOn: function(){
+      	  if(clickon) clickon();
       		$('.ctl').show();
       		$('ul.links').addClass('editing').removeClass('links');
-      		if(clickon) clickon();
       	},
       	onClickOff: function(){
+      	  if(clickoff) clickoff();
       	  $('.ctl').hide();
       	  $('ul.editing').addClass('links').removeClass('editing');
-      	  if(clickoff) clickoff();
       	}
       });
     };
@@ -414,6 +415,7 @@
       $('div.topic div.topic-list img.del').die().live('click', $.agorae.viewpointpage.deleteTopic);
       $('div.topic div.topic-list img.unlink').die().live('click', unlinkTopic);
     	$('div.topic ul#topic li[uri] span').die().live('click', $.agorae.viewpointpage.onTopicClick);
+      $('div.topic div.topic-list img.attach').click(attachTopic);
 
       $('div.topic div.item-list img.add').click(createItem);
       $('div.topic div.item-list img.del').die().live('click', deleteItem);
@@ -441,7 +443,51 @@
       });
       return false;
     };
+    function attachTopic(){
+      $.agorae.topictree.openDialog(
+        function(){
+          var topics = [];
+          if($('#tt-tree').attr('checked'))
+            for(var i=0, t; t = $.jstree._focused().data.ui.selected[i]; i++)
+            {
+              if($(t).attr("rel") == "viewpoint") continue;
+              topics.push({"id": $(t).attr("topicID"), "viewpoint": $(t).attr("viewpointID"), "name": $(t).attr("name"), "uri": $(t).attr("uri")});
+            }
+          else
+          {
+            for(var j=0, el; el = $('#tags a.tag-clicked')[j]; j++)
+            {
+
+              var el = $(el).parent();
+              if(!el.attr("topics")) continue;
+              var tag_topics = JSON.parse(el.attr("topics"));
+              var topicName = el.attr("name");
+              for(var k=0, t; t = tag_topics[k]; k++)
+                topics.push({"id": t.topicID, "viewpoint": t.viewpointID, "name": topicName, "uri": t.uri});
+            }
+          }
+          if(topics.length == 0)
+          {
+            $.showMessage({title: "Warn", content: "Please select a topic first!"});
+            return false;
+          }
+          var uri = $.getUri();
+          $.agorae.moveTopicIn(uri, topics, function(inserts){
+            $.each(inserts, appendTopic);
+            $.agorae.topictree.closeDialog();
+            $.agorae.pagehelper.checkController();
+          });
+        }
+      );
+    };
     function appendTopic(idx, topic){
+      if(!topic.uri){
+        var uri = $.getUri();
+        parts = uri.split("/");
+        parts.pop();
+        parts.push(topic.id);
+        topic.uri = parts.join("/");
+      }
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
                    + '<span class="editable">' + topic.name + '</span></li>')
@@ -543,6 +589,7 @@
     this.init = function(){
       var uri = $.getUri();
       $.agorae.getItem(uri, function(item){
+        $.log(item);
         var bars = [{'uri': '#', 'name': 'Accueil'}];
         bars.push({'name': item.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
@@ -551,6 +598,7 @@
           if(reserved.indexOf(n) >= 0) continue;
           appendAttribute(n, item[n]);
         }
+        onEditOff();
         if(item.resource)
         {
           var resource = (item.resource[0] && typeof(item.resource[0]) == "object") ? item.resource[0] : item.resource;
@@ -558,6 +606,8 @@
         }
         if(item._attachments)
           appendAttachment(item._attachments[0]);
+        if(item.topic)
+          $.each(item.topic, appendTopic);
       });
 
       if(uri.indexOf($.agorae.config.servers[0]) == 0)
@@ -571,14 +621,48 @@
       $('div.item div.resource-list img.add').bind('click', attachResource);
       $('div.item div.resource-list span.resource').die().live('click', clickResource);
       $('div.item div.topic-list img.attach').click(attachTopic);
+      $('div.item div.topic-list ul#topic img.unlink').click(detachTopic);
+
+      $('div.item div.attribute-list img.add').click(addAttribute);
+      $('div.item div.attribute-list img.del').die().live('click', deleteAttribute);
+
+      $('div.item ul#topic li[uri] span').die().live('click', $.agorae.viewpointpage.onTopicClick);
     };
     function onEditOn(){
+      var attributes = {};
+      $('div.attribute').each(function(){
+        var name = $(this).find(".attributename").text();
+        attributes[name] = [];
+        $(this).find(".attributevalue span").each(function(){
+          attributes[name].push($(this).attr("attributevalue"));
+        });
+      });
+      $('ul#attribute').html('');
+      for(var name in attributes)
+        appendAttribute(name, attributes[name]);
       $('div.attributes').hide();
       $('ul#attribute').show();
-
     };
     function onEditOff(){
-      $('div.attributes').show();
+      var attributes = {};
+      $('ul#attribute li').each(function(){
+        var name = $(this).attr("attributename");
+        if(!(name in attributes)) attributes[name] = [];
+        attributes[name].push($(this).attr("attributevalue"));
+      });
+      var str = '';
+      for(var name in attributes){
+        str += '<div class="attribute">';
+        str += '<div style="display: inline;" class="attributename" attributename="' + encodeURIComponent(name) +'">' + name + '</div>';
+        str += '<div style="display: inline;" class="attributevalue">';
+        for(var i=0, v; v = attributes[name][i]; i++)
+        {
+          var comma = (i < attributes[name].length - 1) ? "," : "";
+          str += '<span attributevalue="' + encodeURIComponent(v) +'">' + v + comma + '</span>';
+        }
+        str += '</div></div>';
+      }
+      $('div.attributes').html('').append(str).show();
       $('ul#attribute').hide();
     };
     function parseUri(){
@@ -594,20 +678,37 @@
       result.itemUrl = result.prefixUrl + result.item;
       return result;
     };
+    function addAttribute(){
+      $.showDialog("dialog/_attribute.html", {
+        submit: function(data, callback) {
+          if (!data.attributename || data.attributename.length == 0) {
+            callback({attributename: "Veuillez saisir le nom d'attribut"});
+            return;
+          }
+          if (!data.attributevalue || data.attributevalue.length == 0) {
+            callback({attributename: "Veuillez saisir le valeur d'attribut"});
+            return;
+          }
+          uri = $.getUri();
+          $.agorae.describeItem(uri, data.attributename, data.attributevalue, appendAttribute);
+          callback();
+          $.agorae.pagehelper.checkController();
+        }
+      });
+    };
+    function deleteAttribute(){
+      $.log('delete');
+      var attributename = $(this).parent().attr("attributename");
+      var attributevalue = $(this).parent().attr("attributevalue");
+      var uri = $.getUri();
+      $.log(uri);
+      var self = $(this);
+      $.agorae.undescribeItem(uri, attributename, attributevalue, function(){
+        self.parent().remove();
+      });
+    };
     function appendAttribute(name, value){
       value = (typeof(value[0]) == "string") ? value : value[0];
-      var str = '<div class="attribute">';
-      str += '<div style="display: inline;" class="attributename">' + name + '</div>';
-      str += '<div style="display: inline;" class="attributevalue">';
-      for(var i=0, v; v = value[i]; i++)
-      {
-        var comma = (i < value.length - 1) ? "," : "";
-        str += '<span>' + v + comma + '</span>';
-      }
-      str += '</div></div>';
-
-      $('div.attributes').append(str);
-
       for(var i=0, v; v = value[i]; i++)
       {
         var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
@@ -637,13 +738,16 @@
             form.ajaxSubmit({
               url: itemUrl,
               success: function(resp) {
-                $.log(resp);
+                var uri = $.getUri();
+                $.agorae.getItem(uri, function(item){
+                  if(item._attachments){
+                    $('ul#resource li[file]').remove();
+                    appendAttachment(item._attachments[0]);
+                  }
+                });
                 form.find("#progress").css("visibility", "hidden");
-                var file = {};
-                var k = $('input[type=file]').val();
-                file[k] = {};
-                appendAttachment(file);
                 callback();
+                $.agorae.pagehelper.checkController();
               }
             });
           });
@@ -651,7 +755,7 @@
       });
     };
     function deleteAttachment(){
-      var file = $(this).parent().attr("rel");
+      var file = $(this).parent().attr("file");
       var uris = parseUri();
       var self = $(this);
       $.agorae.deleteItemAttachment(uris.itemUrl, file, function(){
@@ -660,7 +764,7 @@
     };
     function clickAttachment(){
       var uris = parseUri();
-      var url = uris.itemUrl + "/" + $(this).parent().attr("rel");
+      var url = uris.itemUrl + "/" + $(this).parent().attr("file");
       window.open(url);
     };
     function attachResource(){
@@ -676,6 +780,7 @@
           $.agorae.attachItemResource(itemUrl, data.resource, function(){
             appendResource(0, data.resource);
             callback();
+            $.agorae.pagehelper.checkController();
           });
         }
       });
@@ -743,15 +848,29 @@
       $('ul#resource').append(el);
     };
     function appendAttachment(attachments){
-      $.log(attachments)
+      var uris = parseUri();
       for(var file in attachments)
       {
+        var uri = uris.itemUrl + "/" + file;
+        var contentType = attachments[file].content_type;
+        var fancybox_group = (contentType.indexOf("image/") == 0) ? "fancybox_group" : "";
         var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
-                     + '<span class="editable attachment">' + file + '</span></li>')
-                     .attr("rel", file);
+                     + '<a rel="' + fancybox_group + '" class="editable attachment" href="' + uri + '">' + file + '</a></li>')
+                     .attr("file", file);
         $('ul#resource').append(el);
       }
+      fbox();
     };
+    function fbox(){
+      $("a[rel=fancybox_group]").fancybox({
+				'transitionIn'		: 'none',
+				'transitionOut'		: 'none',
+				'titlePosition' 	: 'over',
+				'titleFormat'		: function(title, currentArray, currentIndex, currentOpts) {
+					return '<span id="fancybox-title-over">Image ' + (currentIndex + 1) + ' / ' + currentArray.length + (title.length ? ' &nbsp; ' + title : '') + '</span>';
+				}
+			});
+		}
     function attachTopic(){
       $.agorae.topictree.openDialog(
         function(){
@@ -760,7 +879,7 @@
             for(var i=0, t; t = $.jstree._focused().data.ui.selected[i]; i++)
             {
               if($(t).attr("rel") == "viewpoint") continue;
-              topics.push({"id": $(t).attr("topicID"), "viewpoint": $(t).attr("viewpointID"), "name": $(t).attr("name")});
+              topics.push({"id": $(t).attr("topicID"), "viewpoint": $(t).attr("viewpointID"), "name": $(t).attr("name"), "uri": $(t).attr("uri")});
             }
           else
           {
@@ -772,7 +891,7 @@
               var tag_topics = JSON.parse(el.attr("topics"));
               var topicName = el.attr("name");
               for(var k=0, t; t = tag_topics[k]; k++)
-                topics.push({"id": t.topicID, "viewpoint": t.viewpointID, "name": topicName});
+                topics.push({"id": t.topicID, "viewpoint": t.viewpointID, "name": topicName, "uri": t.uri});
             }
           }
           if(topics.length == 0)
@@ -784,10 +903,30 @@
           uri = $.agorae.getDocumentUri(uri);
           $.agorae.tagItem(uri, topics, function(){
             $.agorae.topictree.closeDialog();
+            $.each(topics, appendTopic);
+            $.agorae.pagehelper.checkController();
           });
         }
       );
-    }
+    };
+    function detachTopic(){
+      var id = $(this).parent().attr("id");
+      var itemUrl = $.getUri();
+      $.agorae.untagItem(itemUrl, id, function(){
+        $('div.item div.topic-list ul#topic li[id="' + id + '"]').hide().remove();
+      });
+    };
+    function appendTopic(idx, topic){
+      if(!topic.name)
+      {
+        var ret = $.agorae.getTopicName(topic.id, topic.viewpoint);
+        $.extend(topic, ret);
+      }
+      var el = $('<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
+               + '<span class="editable">' + topic.name + '</span></li>')
+               .attr("id", topic.id).attr("viewpoint", topic.viewpoint).attr("uri", topic.uri);
+      $('ul#topic').append(el);
+    };
   }
   function TopicTree(){
     function radiobar(){
@@ -816,6 +955,7 @@
         var content = $("<li class='tag" + size + "'><a>" + name + "</a></li>").attr("topics", JSON.stringify(tags[name].topics)).attr("name", name);
         $("#tags ul").append(content);
       }
+      $("#tags ul li").tsort();
       $("#tags ul li a").click(function(){
         if($.agorae.session.ctrlPressed)
           $(this).toggleClass('tag-clicked');
