@@ -987,6 +987,45 @@
         });
       $.log(tree);
       return {"tree": tree, "tagcloud": tagcloud};
+    },
+    getAttributeName : function(callback){
+      var corpora = [], attributes = {};
+      if(!$.agorae.config.servers) return false;
+
+      $.each($.agorae.config.servers, function(idx, server){
+        var userUrl = server + "user/" + $.agorae.session.username;
+        $.agorae.httpSend(userUrl,
+        {
+          type: "GET",
+          async: false,
+          success: function(user){
+            user = user[$.agorae.session.username];
+            if(user.corpus)
+              for(var i=0, corpus; corpus = user.corpus[i]; i++)
+                corpora.push({"server": server, "id": corpus.id});
+          },
+          error: function(code, error, reason){
+            $.showMessage({title: "error", content: "Cannot load user:" + userUrl});
+          }
+        });
+      });
+      $.each(corpora, function(idx, corpus){
+        var url = corpus.server + "attribute/" + corpus.id;
+        $.agorae.httpSend(url,
+          {
+            type: "GET",
+            async: false,
+            success: function(attribute){
+              attribute = attribute[corpus.id];
+              for(var name in attribute)
+              {
+                if(!(name in attributes)) attributes[name] = [];
+                attributes[name].push(url);
+              }
+            }
+          });
+      });
+      return attributes;
     }
   });
 })(jQuery);

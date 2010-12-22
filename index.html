@@ -28,9 +28,6 @@
 
 		<script language="javascript">
 		  $(function(){
-		    //$(document).bind("dblclick", function() { self.location.reload(); } );
-		    //$.showPage('page/login.html');
-		    //$.showMessage({title: "error", content: " example"});
         var config = "http://127.0.0.1/agorae/config";
 		    $.agorae.pagehelper.init(config);
 		  });
@@ -45,7 +42,7 @@
   <div id="header-toolbar">
     <div id="header-navigatorbar"><b>Accueil</b></div>
     <div id="header-buttonbar">
-      <span><img border="0" src="css/blitzer/images/search.png"><a id="item-search" href="#"><span>Rechercher</span></a></span>
+      <span class="item-search hide"><img border="0" src="css/blitzer/images/search.png"><a id="item-search" href="#"><span>Rechercher</span></a></span>
       <span><img border="0" src="css/blitzer/images/shortcut.png"><a id="shortcut" href="#"><span>Quick launch</span></a></span>
       <span class="sign-in"><img border="0" src="css/blitzer/images/sign-in.png"><a id="sign-in"><span>Connexion</span></a></span>
       <span class="sign-out hide"><img border="0" src="css/blitzer/images/sign-out.png"><a id="sign-out"><span>Se déconnecter</span></a></span>
@@ -78,6 +75,10 @@
   <div id="tree"></div>
   <div id="tags" class="hide"><ul></ul></div>
 </div>
-
+<!-- item dialog //-->
+<div id="item-dialog" title="Rechercher Items" class="hide">
+  <div id="item-search-condition"></div>
+  <div id="item-search-result"><ul></ul></div>
+</div>
 </body>
 </html>

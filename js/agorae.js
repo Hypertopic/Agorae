@@ -40,6 +40,7 @@
             $.agorae.session.username = data.name;
             $.agorae.session.password = data.password;
             $('span.sign-in').hide().next().show();
+            $('span.item-search').show();
             $('#index-edit-toggle').show();
             $.agorae.pagehelper.route();
           });
@@ -51,6 +52,7 @@
     this.logout = function(){
       $.cookie('session.username', null);
       $('span.sign-in').show().next().hide();
+      $('span.item-search').hide();
       $.agorae.pagehelper.hideController();
     };
   }
@@ -78,10 +80,13 @@
 
       //init topic tree dialog
       $.agorae.topictree.init();
+      //init item search dialog
+      $.agorae.itemdialog.init();
       //init event;
+      $('a#item-search').click(function(){ $.agorae.itemdialog.open( shortcutToItem );  return false;});
       $('a#sign-in').click($.agorae.session.login);
       $('a#sign-out').click($.agorae.session.logout);
-      $('a#shortcut').click(function(){ $.agorae.topictree.openDialog( function(){} );  return false;});
+      $('a#shortcut').click(function(){ $.agorae.topictree.openDialog( shortcutToTopic );  return false;});
 
       $.agorae.session.ctrlPressed = false;
       $(window).keydown(function(evt) {
@@ -185,6 +190,34 @@
 		  viewportHeight = (viewportHeight > 0) ? viewportHeight : 0;
 		  viewportHeight = (viewportHeight < $('div#main').outerHeight()) ? $('div#main').outerHeight() : viewportHeight;
 		  $('div#sidebar').height(viewportHeight);
+    };
+    function shortcutToTopic(){
+      var uris = [];
+      if($('#tt-tree').attr('checked'))
+        for(var i=0, t; t = $.jstree._focused().data.ui.selected[i]; i++)
+          uris.push($(t).attr("uri"));
+      else
+        for(var j=0, el; el = $('#tags a.tag-clicked')[j]; j++)
+        {
+          var el = $(el).parent();
+          if(!el.attr("topics")) continue;
+          var tag_topics = JSON.parse(el.attr("topics"));
+          for(var k=0, t; t = tag_topics[k]; k++)
+             uris.push(t.uri);
+        }
+      $.agorae.topictree.closeDialog();
+      if(uris.length == 0) return;
+      if(uris.length == 1)
+        $.agorae.pagehelper.rewrite(uris[0]);
+      else
+        for(var i=0, uri; uri = uris[i]; i++)
+          if(i == 0)
+            $.agorae.pagehelper.rewrite(uris[i]);
+          else
+            window.open(uris[i]);
+    };
+    function shortcutToItem(){
+
     };
   }
   function IndexPage(){
@@ -1024,6 +1057,41 @@
       }
     };
   }
+  function ItemDialog(){
+    this.init = function(){
+      $("#item-dialog").dialog({
+        bgiframe: true,
+        autoOpen: false,
+        modal: true,
+        width: 500,
+        title: "Rechercher Items",
+        close: function(){
+          //Clear search result
+        },
+        open: function(){
+          $('#item-search-condition').html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
+          $('#item-search-result').html('');
+          //Init attribute name
+          var names = $.agorae.getAttributeName();
+          $.log(names);
+        }
+      });
+    };
+    this.open = function(callback){
+      callback = callback || function(){};
+      $("#item-dialog").dialog('option', "buttons", {
+          'Rechercher': callback,
+          'Annuler': function(){
+            $("#item-dialog").dialog('close');
+          }
+      }).dialog('open');
+    };
+    this.close = function(callback){
+      $("#item-dialog").dialog('close');
+    };
+    function showSearchCondition(){
+    };
+  }
   $.agorae = $.agorae || {};
   $.extend($.agorae, {
     session : new Session(),
@@ -1032,6 +1100,7 @@
     viewpointpage : new ViewpointPage(),
     topicpage : new TopicPage(),
     itempage : new ItemPage(),
-    topictree : new TopicTree()
+    topictree : new TopicTree(),
+    itemdialog : new ItemDialog()
   });
 })(jQuery);
