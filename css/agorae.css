@@ -313,3 +313,28 @@ div#topictree{
   color: #333;
   text-decoration:none;
 }
+ul.search-condition{
+  list-style: none outside none; margin: 0; padding: 0 1em;
+}
+ul.search-condition li{
+    background-color: #FFECEC;
+    border-bottom: 1px solid #3E6D8E;
+    display: inline-block;
+    margin-left: -1em;
+    padding: 1em;
+    width: 100%;
+}
+ul.search-condition li select.attributename{
+    padding: 0.3em;
+    margin-right: 0.8em;
+    min-width: 12em;
+}
+ul.search-condition li select.attributevalue{
+    padding: 0.3em;
+    margin-right: 0.8em;
+    min-width: 12em;
+}
+ul.search-condition button{
+  padding: 0.5em 0;
+  float:right;
+}

@@ -30,9 +30,13 @@
               $.cookie('cookie', '1', { expires: 365});
               $.cookie('name', data.name, { expires: 365});
               $.cookie('password', data.password, { expires: 365});
+              $.cookie('session.username', $.agorae.session.username);
+              $.cookie('session.password', $.agorae.session.password);
             }
             else
             {
+              $.cookie('session.username', null);
+              $.cookie('session.password', null);
               $.cookie('cookie', '0');
               $.cookie('name', null);
               $.cookie('password', null);
@@ -51,6 +55,7 @@
 
     this.logout = function(){
       $.cookie('session.username', null);
+      $.cookie('session.password', null);
       $('span.sign-in').show().next().hide();
       $('span.item-search').hide();
       $.agorae.pagehelper.hideController();
@@ -99,6 +104,14 @@
         }
       });
 
+      if($.cookie('session.username') && $.cookie('session.password'))
+      {
+        $.agorae.session.username = $.cookie('session.username');
+        $.agorae.session.password = $.cookie('session.password');
+        $('span.sign-in').hide().next().show();
+        $('span.item-search').show();
+        $('#index-edit-toggle').show();
+      }
       $(window).hashchange($.agorae.pagehelper.route).hashchange();
     };
     this.route = function(){
@@ -1069,18 +1082,22 @@
           //Clear search result
         },
         open: function(){
-          $('#item-search-condition').html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
-          $('#item-search-result').html('');
+          $('#item-search-condition').show().html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
+          $('#item-search-result').hide().html('<ul></ul>');
           //Init attribute name
-          var names = $.agorae.getAttributeName();
-          $.log(names);
+          $.agorae.itemdialog.names = $.agorae.getAttributeName();
+          $('#item-search-condition').html('<ul class="search-condition"></ul>');
+          showSearchCondition();
         }
       });
+      $('ul.search-condition select.attributename').die().live('change', onNameChange);
+      $('ul.search-condition button.plus').die().live('click', showSearchCondition);
+      $('ul.search-condition button.minus').die().live('click', removeSearchCondition);
     };
     this.open = function(callback){
       callback = callback || function(){};
       $("#item-dialog").dialog('option', "buttons", {
-          'Rechercher': callback,
+          'Rechercher': doSearch,
           'Annuler': function(){
             $("#item-dialog").dialog('close');
           }
@@ -1090,6 +1107,77 @@
       $("#item-dialog").dialog('close');
     };
     function showSearchCondition(){
+      $.log($.agorae.itemdialog.names);
+      var uuid = $.agorae.newUUID();
+      var el = $('<li style="display: none">Nom : <select class="attributename"><option value=""></option></select>'
+               + ' Valeur : <select class="attributevalue"><option value=""></option></select>'
+               +'<button class="plus"></button><button class="minus"></button></li>').attr("id", uuid);
+
+      for(var name in $.agorae.itemdialog.names)
+        el.find("select:first").append('<option value="' + encodeURIComponent(name) +'">' + encodeURIComponent(name) +'</option>');
+      $('ul.search-condition').append(el);
+      el.slideDown({duration: 500, easing: 'easeOutBounce'});
+      $("button:first", 'li#' + uuid).button({
+          icons: {
+              primary: "ui-icon-plusthick"
+          },
+          text: false
+      }).next().button({
+          icons: {
+              primary: "ui-icon-minusthick"
+          },
+          text: false
+      });
+      $('ul.search-condition button:first').next().button({ disabled: true });
+    };
+    function removeSearchCondition(){
+      var li = $(this).parent();
+      li.slideUp({duration: 500, easing: 'easeOutCubic', complete: function(){ li.remove(); }});
+    };
+    function onNameChange(){
+      var valSelect = $(this).nextAll("select");
+      valSelect.find('option').remove();
+      var name = $(this).val().trim();
+      if(name == "")
+        return;
+      var values = $.agorae.getAttributeValue($.agorae.itemdialog.names[name], name);
+      $.log(values);
+      for(var v in values)
+      {
+        var el = $('<option value="' + encodeURIComponent(v) +'">' + encodeURIComponent(v) +'</option>');
+        el.attr("values", JSON.stringify(values[v]));
+        valSelect.append(el);
+      }
+    };
+    function doSearch(){
+      if($('#item-search-condition').css('display') != 'none')
+      {
+        var uris = [];
+        $('select.attributevalue','ul.search-condition').each(function(){
+          var option = $(this).find('option:selected');
+          if(!option || option.length <= 0) return;
+          var values = JSON.parse(option.attr("values"));
+          $.log(values);
+          for(var i=0, v; v = values[i]; i++)
+          {
+            var uri = v.uri + "/" + encodeURIComponent(v.attributename) + "/" + encodeURIComponent(v.attributevalue);
+            if(uris.indexOf(uri) < 0) uris.push(uri);
+          }
+        });
+        if(uris.length == 0) return;
+
+        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Return");
+        $('#item-search-result').show().html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
+        $('#item-search-condition').hide();
+        var items = $.agorae.searchItem(uris);
+        $.log(items);
+      }
+      else
+      {
+        $('#item-search-condition').show();
+        $('#item-search-result').hide();
+        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Rechercher");
+      }
     };
   }
   $.agorae = $.agorae || {};

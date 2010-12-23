@@ -1026,6 +1026,75 @@
           });
       });
       return attributes;
+    },
+    getAttributeValue : function(uris, name){
+      var values = {};
+      $.each(uris, function(idx, uri){
+        var url = uri + "/" + encodeURIComponent(name);
+        $.agorae.httpSend(url,
+        {
+          type: "GET",
+          async: false,
+          success: function(attribute){
+            var corpus, attributevalue;
+            for(corpus in attribute)
+              break;
+            if(!corpus) return;
+            attribute = attribute[corpus];
+            attribute = attribute[name];
+            for(attributevalue in attribute)
+            {
+              if(!(attributevalue in values)) values[attributevalue] = [];
+              values[attributevalue].push({"uri": uri, "attributename": name, "attributevalue": attributevalue});
+            }
+          }
+        });
+      });
+      return values;
+    },
+    searchItem : function(uris){
+      var items = [], _items ={};
+      $.each(uris, function(idx, uri){
+        $.agorae.httpSend(uri,
+        {
+          type: "GET",
+          async: false,
+          success: function(doc){
+            $.log(doc);
+            var corpus, attributename, attributevalue, item;
+            for(corpus in doc)
+              break;
+            if(!corpus) return;
+            doc = doc[corpus];
+
+            for(attributename in doc)
+              break;
+            if(!attributename) return;
+            doc = doc[attributename];
+
+            for(attributevalue in doc)
+              break;
+            if(!attributevalue) return;
+            doc = doc[attributevalue];
+
+            if(!doc.item) return;
+            for(var i=0; item = doc.item[i]; i++)
+            {
+              items.push({"item": item.id, "name": item.name, "corpus": corpus});
+              if(item.id in _items)
+                _items[item.id]++;
+              else
+                _items[item.id] = 1;
+            }
+          }
+        });
+      });
+      $.log(items);
+      var result = [];
+      for(var i=0, item; item = items[i]; i++)
+        if(item.item in _items && _items[item.item] == uris.length)
+          result.push(item);
+      return result;
     }
   });
 })(jQuery);
