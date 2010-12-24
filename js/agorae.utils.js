@@ -50,7 +50,7 @@ function dispatch(evt, arguments){
   $.showPage = function(url, callback){
     var d = new Date();
     if($('#main'))
-	    $('#main').html('Loading...').load(url + "?" + d.getTime(), function(){ callback(); });
+	    $('#main').html('Loading...').load(url, function(){ callback(); });
   };
 
   $.queryString = function(name)
@@ -75,7 +75,9 @@ function dispatch(evt, arguments){
     else
       return null;
   };
-
+  $.escapeHtml = function(str){
+    return $('<div/>').text(str).html();
+  };
   $.log=function(){
     if(window.console&&window.console.log)
     {

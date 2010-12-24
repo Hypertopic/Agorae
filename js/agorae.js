@@ -285,7 +285,9 @@
         });
       else
       {
-        var el = $('<li><span>' + viewpoint.name + '</span></li>')
+        $('li#' + viewpoint.id, 'ul#viewpoint').hide().remove();
+        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
+                  +'<span>' + viewpoint.name + '</span></li>')
                     .attr("id", viewpoint.id).data("viewpoint", viewpoint)
                     .attr('uri', viewpointUrl);
         if(editable)
@@ -308,12 +310,13 @@
     };
     function createViewpoint(){
       $.agorae.createViewpoint('Sans nom', function(doc){
-        appendViewpoint(0, $.agorae.config.servers[0] + doc.id, doc);
+        appendViewpoint(0, $.agorae.config.servers[0] + "viewpoint/" + doc.id, doc, true);
         $.agorae.pagehelper.checkController();
       });
     };
     function deleteViewpoint(){
       var uri = $(this).parent().attr('uri');
+          uri = $.agorae.getDocumentUri(uri);
       var self = $(this);
       $.agorae.deleteDoc(uri, function(){
         self.parent().remove();
@@ -702,7 +705,7 @@
     function onEditOn(){
       var attributes = {};
       $('div.attribute').each(function(){
-        var name = $(this).find(".attributename").text();
+        var name = $(this).find(".attributename").html();
         attributes[name] = [];
         $(this).find(".attributevalue span").each(function(){
           attributes[name].push($(this).attr("attributevalue"));
@@ -724,12 +727,12 @@
       var str = '';
       for(var name in attributes){
         str += '<div class="attribute">';
-        str += '<div style="display: inline;" class="attributename" attributename="' + encodeURIComponent(name) +'">' + name + '</div>';
+        str += '<div style="display: inline;" class="attributename" attributename="' + $.escapeHtml(name) +'">' + $.escapeHtml(name) + '</div>';
         str += '<div style="display: inline;" class="attributevalue">';
         for(var i=0, v; v = attributes[name][i]; i++)
         {
           var comma = (i < attributes[name].length - 1) ? "," : "";
-          str += '<span attributevalue="' + encodeURIComponent(v) +'">' + v + comma + '</span>';
+          str += '<span attributevalue="' + $.escapeHtml(v) +'">' + $.escapeHtml(v) + comma + '</span>';
         }
         str += '</div></div>';
       }
@@ -904,7 +907,6 @@
       });
     };
     function appendResource(idx, url){
-      $.log(url);
       var urlPath = $.url.setUrl(url).attr("path");
       var file = url;
       if(urlPath && urlPath.indexOf("/") >= 0)
@@ -914,7 +916,7 @@
         if(file == "") file = parts.pop();
       }
       var el = $('<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
-                   + '<span class="editable resource">' + file + '</span></li>')
+                   + '<span class="editable resource">' + url + '</span></li>')
                    .attr("rel", url);
       $('ul#resource').append(el);
     };
@@ -1003,12 +1005,21 @@
     function radiobar(){
       var el = '<div id="topictree">'
 		         + '<input type="radio" id="tt-cloud" name="topictree" /><label for="tt-cloud">Tag Cloud</label>'
-		         + '<input type="radio" id="tt-tree" name="topictree" checked="checked" /><label for="tt-tree">Tree</label>'
+		         + '<input type="radio" id="tt-tree" name="topictree"/><label for="tt-tree">Tree</label>'
 		         + '</div>';
     		  $("#topic-tree-dialog").nextAll('div.ui-dialog-buttonpane').prepend(el);
     		  $( "#topictree" ).buttonset();
     		  $( "#tt-cloud" ).button({ icons: {primary:'ui-icon-tag'} }).click(function(){ $('#tree').hide(); $('#tags').show(); });
     		  $( "#tt-tree" ).button({ icons: {primary:'ui-icon-bookmark'} }).click(function(){ $('#tree').show(); $('#tags').hide(); });
+      if($('#tags').css('display') != 'none'){
+        $( "#tt-tree" ).removeAttr('checked').button( "refresh" );
+        $( "#tt-cloud" ).attr('checked', true).button( "refresh" );
+      }
+      else
+      {
+        $( "#tt-cloud" ).removeAttr('checked').button( "refresh" );
+        $( "#tt-tree" ).attr('checked', true).button( "refresh" );
+      }
     };
     function showTagCloud(tags){
       $("#tags ul li").hide().remove();
@@ -1140,7 +1151,7 @@
                +'<button class="plus"></button><button class="minus"></button></li>').attr("id", uuid);
 
       for(var name in $.agorae.itemdialog.names)
-        el.find("select:first").append('<option value="' + encodeURIComponent(name) +'">' + encodeURIComponent(name) +'</option>');
+        el.find("select:first").append('<option value="' + $.escapeHtml(name) +'">' + $.escapeHtml(name) +'</option>');
       $('ul.search-condition').append(el);
       el.slideDown({duration: 500, easing: 'easeOutBounce'});
       $("button:first", 'li#' + uuid).button({
@@ -1170,7 +1181,7 @@
       $.log(values);
       for(var v in values)
       {
-        var el = $('<option value="' + encodeURIComponent(v) +'">' + encodeURIComponent(v) +'</option>');
+        var el = $('<option value="' + $.escapeHtml(v) +'">' + $.escapeHtml(v) +'</option>');
         el.attr("values", JSON.stringify(values[v]));
         valSelect.append(el);
       }
@@ -1186,7 +1197,7 @@
           $.log(values);
           for(var i=0, v; v = values[i]; i++)
           {
-            var uri = v.uri + "/" + encodeURIComponent(v.attributename) + "/" + encodeURIComponent(v.attributevalue);
+            var uri = v.uri + "/" + $.escapeHtml(v.attributename) + "/" + $.escapeHtml(v.attributevalue);
             if(uris.indexOf(uri) < 0) uris.push(uri);
           }
         });

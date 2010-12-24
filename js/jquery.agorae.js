@@ -51,8 +51,16 @@
       bAsync = (typeof(options.async) != "boolean") ? false : options.async;
       processData = (typeof(options.processData) != "boolean") ? false : options.processData;
       dataType = (typeof(options.dataType) == "string") ? options.dataType : "json";
-      var success = options.success || function(){};
 
+      if(httpAction == 'GET'){
+        if(options.cache !== false && url in $.agorae.cache)
+        {
+          options.success( $.agorae.cache[url] );
+          return;
+        }
+      }
+      else
+        $.agorae.cache = {};
       $.ajax({
         type: httpAction, url: url, contentType: cType, dataType: dataType,
         processData: processData, data: httpBody, async: bAsync,
@@ -66,7 +74,12 @@
             }
           return data;
         },
-        success: success,
+        success: function(resp){
+          if(options.cache !== false)
+            $.agorae.cache[url] = resp;
+          if(options.success)
+            options.success(resp);
+        },
         error: function(req) {
           var resp = "";
           try{ resp = $.httpData(req, "json"); } catch(e){}
@@ -207,6 +220,7 @@
         type: "GET",
         success: function(doc){
           var user;
+          if(!($.agorae.session.username in doc)) return;
           user = doc[$.agorae.session.username];
           user.id = $.agorae.session.username;
           if(user.corpus)
@@ -1114,10 +1128,19 @@
         });
       });
       $.log(items);
+      var unique = {};
       var result = [];
       for(var i=0, item; item = items[i]; i++)
         if(item.item in _items && _items[item.item] == uris.length)
-          result.push(item);
+        {
+          if(item.item in unique)
+            continue;
+          else
+          {
+            unique[item.item] = {};
+            result.push(item);
+          }
+        }
       return result;
     }
   });
