@@ -338,3 +338,18 @@ ul.search-condition button{
   padding: 0.5em 0;
   float:right;
 }
+
+#item-search-result ul{
+  list-style: none outside none; margin: 0; padding: 1em;
+  display:inline-block;
+}
+#item-search-result ul li{
+  padding: 0.6em;
+	cursor: pointer;
+	background-color: #FFECEC;
+  border-bottom: 1px solid #3E6D8E;
+  border-right:1px solid #7F9FB6;
+}
+#item-search-result ul li:hover{
+	background-color: #FFB3B3;
+}

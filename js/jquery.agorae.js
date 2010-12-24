@@ -601,6 +601,30 @@
         });
       });
     },
+    linkItem: function(topicUrl, corpusID, itemID, name, success){
+      var prefixUrl, topicID, viewpointID;
+      topicID = $.agorae.getDocumentID(topicUrl);
+      var viewpointUrl = $.agorae.getDocumentUri(topicUrl);
+      viewpointID = $.agorae.getDocumentID(viewpointUrl);
+      $.each($.agorae.config.servers, function(idx, server){
+        $.agorae.httpSend(server + itemID,
+        {
+          type: "GET",
+          cache: false,
+          success: function(item){
+            item.topics[topicID] = {"viewpoint": viewpointID};
+            $.agorae.httpSend(server + itemID + "?rev=" + item._rev,
+            {
+              type: "PUT",
+              data: item,
+              success: function(item){
+                success(item);
+              }
+            });
+          }
+        });
+      });
+    },
     renameItem: function(prefixUrl, itemID, name, success){
       $.agorae.httpSend(prefixUrl + itemID,
       {

@@ -230,7 +230,18 @@
             window.open(uris[i]);
     };
     function shortcutToItem(){
-
+      var itemID = $(this).attr("id"),
+          corpusID = $(this).attr("corpus");
+      $.log("shortcutToItem");
+      if($.agorae.config.servers)
+        for(var i=0, server; server = $.agorae.config.servers[i]; i++)
+        {
+          uri = server + 'item/' + corpusID + '/' + itemID;
+          $.agorae.getItem(uri, null, function(){
+              $.agorae.pagehelper.rewrite(uri);
+            }, function(){ return false; });
+        }
+      $.agorae.itemdialog.close();
     };
   }
   function IndexPage(){
@@ -466,6 +477,7 @@
       $('div.topic div.item-list img.add').click(createItem);
       $('div.topic div.item-list img.del').die().live('click', deleteItem);
     	$('div.topic div.item-list img.unlink').die().live('click', unlinkItem);
+    	$('div.topic div.item-list img.attach').die().live('click', function(){ $.agorae.itemdialog.open( linkItem );  return false;});
       $('div.topic ul#item span.editable').die().live('click', onItemClick);
     };
     function createTopic(){
@@ -569,6 +581,19 @@
     	});
       return false;
     };
+    function linkItem(){
+      var uri = $.getUri(),
+          itemID = $(this).attr('id'),
+          corpusID = $(this).attr('corpus'),
+          name = $(this).attr('name');
+      $.log("linkItem");
+    	$.agorae.linkItem(uri, corpusID, itemID, name, function(){
+    	  appendItem(0, {"id": itemID, "name": name, "corpus": corpusID});
+    	  $.agorae.itemdialog.close();
+    	  $.agorae.pagehelper.checkController();
+    	});
+      return false;
+    };
     function appendItem(idx, item){
       var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
                    + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
@@ -587,12 +612,12 @@
         $.agorae.getItem(uri, null, function(){
           $.agorae.pagehelper.rewrite(uri);
         }, function(){
-          if($.agorae.session.servers)
-          for(var i=0, server; server = $.agorae.session.servers[i]; i++)
+          if($.agorae.config.servers)
+          for(var i=0, server; server = $.agorae.config.servers[i]; i++)
           {
             if(server == prefixUrl) continue;
             uri = server + 'item/' + corpusID + '/' + itemID;
-            $.agorae.getItem(uri, function(){
+            $.agorae.getItem(uri, null,  function(){
                 $.agorae.pagehelper.rewrite(uri);
               }, function(){ return false; });
           }
@@ -1096,6 +1121,7 @@
     };
     this.open = function(callback){
       callback = callback || function(){};
+      $("#item-search-result ul li").die().live('click', callback);
       $("#item-dialog").dialog('option', "buttons", {
           'Rechercher': doSearch,
           'Annuler': function(){
@@ -1171,6 +1197,12 @@
         $('#item-search-condition').hide();
         var items = $.agorae.searchItem(uris);
         $.log(items);
+        $('#item-search-result').html('<ul></ul>');
+        for(var i=0, item; item = items[i]; i++)
+        {
+          var el = $('<li></li>').html(item.name).attr("id", item.item).attr("name", item.name).attr("corpus", item.corpus);
+          $("#item-search-result ul").append(el);
+        }
       }
       else
       {
