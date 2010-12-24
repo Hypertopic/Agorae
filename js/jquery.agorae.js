@@ -287,7 +287,7 @@
         type: "GET",
         success: function(viewpoint){
           viewpoint = viewpoint[viewpointID];
-          topic = viewpoint[topicID];
+          var topic = viewpoint[topicID];
           topic.name = topic.name || '';
           var narrower = [];
           if(topic.narrower)
