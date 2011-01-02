@@ -1,66 +1,4 @@
 (function($) {
-  function Session() {
-    this.login = function(){
-      $.showDialog("dialog/_login.html", {
-        modal: true,
-        load: function(dialog){
-          //Load default setting from cookie
-          var name = $.cookie('name') || '';
-          var password = $.cookie('password') || '';
-          var cookie = $.cookie('cookie') || '0';
-
-          $(dialog).find('input[name="name"]').val(name).focus(function(){ $(this).select(); });
-          $(dialog).find('input[name="password"]').val(password);
-          if(cookie == '1')
-            $(dialog).find('input[name="cookie"]').attr('checked', true);
-          else
-            $(dialog).find('input[name="cookie"]').removeAttr('checked');
-        },
-        submit: function(data, callback) {
-          if (!data.name || data.name.length == 0) {
-            callback({name: "Please enter a name."});
-            return false;
-          };
-          if (!data.password || data.password.length == 0) {
-            callback({password: "Please enter a password."});
-            return false;
-          };
-          $.agorae.login(data.name, data.password, callback, function(){
-            if(data.cookie){
-              $.cookie('cookie', '1', { expires: 365});
-              $.cookie('name', data.name, { expires: 365});
-              $.cookie('password', data.password, { expires: 365});
-              $.cookie('session.username', $.agorae.session.username);
-              $.cookie('session.password', $.agorae.session.password);
-            }
-            else
-            {
-              $.cookie('session.username', null);
-              $.cookie('session.password', null);
-              $.cookie('cookie', '0');
-              $.cookie('name', null);
-              $.cookie('password', null);
-            }
-            $.agorae.session.username = data.name;
-            $.agorae.session.password = data.password;
-            $('span.sign-in').hide().next().show();
-            $('span.item-search').show();
-            $('#index-edit-toggle').show();
-            $.agorae.pagehelper.route();
-          });
-        }
-      });
-      return false;
-    };
-
-    this.logout = function(){
-      $.cookie('session.username', null);
-      $.cookie('session.password', null);
-      $('span.sign-in').show().next().hide();
-      $('span.item-search').hide();
-      $.agorae.pagehelper.hideController();
-    };
-  }
   function PageHelper(){
     this.init = function(config){
       //resize main layer size
@@ -76,7 +14,7 @@
         if(!$.cookie('config') && typeof config == "object")
           $.agorae.config = config;
       }
-
+      
       //Personalize header and footer
       if($.agorae.config.header)
         $('div#header').html($.agorae.config.header);
@@ -242,6 +180,68 @@
             }, function(){ return false; });
         }
       $.agorae.itemdialog.close();
+    };
+  }
+  function Session() {
+    this.login = function(){
+      $.showDialog("dialog/_login.html", {
+        modal: true,
+        load: function(dialog){
+          //Load default setting from cookie
+          var name = $.cookie('name') || '';
+          var password = $.cookie('password') || '';
+          var cookie = $.cookie('cookie') || '0';
+
+          $(dialog).find('input[name="name"]').val(name).focus(function(){ $(this).select(); });
+          $(dialog).find('input[name="password"]').val(password);
+          if(cookie == '1')
+            $(dialog).find('input[name="cookie"]').attr('checked', true);
+          else
+            $(dialog).find('input[name="cookie"]').removeAttr('checked');
+        },
+        submit: function(data, callback) {
+          if (!data.name || data.name.length == 0) {
+            callback({name: "Please enter a name."});
+            return false;
+          };
+          if (!data.password || data.password.length == 0) {
+            callback({password: "Please enter a password."});
+            return false;
+          };
+          $.agorae.login(data.name, data.password, callback, function(){
+            if(data.cookie){
+              $.cookie('cookie', '1', { expires: 365});
+              $.cookie('name', data.name, { expires: 365});
+              $.cookie('password', data.password, { expires: 365});
+              $.cookie('session.username', $.agorae.session.username);
+              $.cookie('session.password', $.agorae.session.password);
+            }
+            else
+            {
+              $.cookie('session.username', null);
+              $.cookie('session.password', null);
+              $.cookie('cookie', '0');
+              $.cookie('name', null);
+              $.cookie('password', null);
+            }
+            $.agorae.session.username = data.name;
+            $.agorae.session.password = data.password;
+            $('span.sign-in').hide().next().show();
+            $('span.item-search').show();
+            $('#index-edit-toggle').show();
+            $.agorae.pagehelper.route();
+          });
+        }
+      });
+      return false;
+    };
+
+    this.logout = function(){
+      $.cookie('session.username', null);
+      $.cookie('session.password', null);
+      $('span.sign-in').show().next().hide();
+      $('span.item-search').hide();
+      $.agorae.pagehelper.hideController();
     };
   }
   function IndexPage(){
