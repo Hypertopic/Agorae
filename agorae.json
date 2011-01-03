@@ -1,15 +1,17 @@
 {
     "servers": [
-        "http://hypertopic.couchone.com/agorae/_design/argos/_rewrite/" 
+        "http://127.0.0.1:5984/agorae/_design/argos/_rewrite/" 
     ],
-    "auth": "http://hypertopic.couchone.com/_session",
-    "corpus": "65c3b1fb0cef94c9ff065f6b0700512b",
+    "auth": "http://127.0.0.1:5984/_session",
     "viewpoints": [
-        "http:///hypertopic.couchone.com/agorae/_design/argos/_rewrite/viewpoint/65c3b1fb0cef94c9ff065f6b07004668",
-        "http:///hypertopic.couchone.com/agorae/_design/argos/_rewrite/viewpoint/65c3b1fb0cef94c9ff065f6b070039a8" 
+        "65c3b1fb0cef94c9ff065f6b07004668",
+        "65c3b1fb0cef94c9ff065f6b070039a8" 
     ],
     "items": [
-		"http://hypertopic.couchone.com/agorae/_design/argos/_rewrite/item/65c3b1fb0cef94c9ff065f6b0700512b/65c3b1fb0cef94c9ff065f6b0700fd28" 
+		  {
+		    "corpus": "65c3b1fb0cef94c9ff065f6b0700512b",
+		    "item":"65c3b1fb0cef94c9ff065f6b0700fd28"
+	    }
     ],
     "header": "<span style=\"font-size: 260%;\">Tech-CICO</span><br><span style=\"font-size: 130%; font-style: italic;\">Documents partagés de Tech-CICO</span>",
     "footer": "<span>Powered by<a href=\"http://www.hypertopic.org/index.php/Agorae\">AGORAE : Espace de construction coopérative de cartes de thèmes</a><br>Copyright © 2010</span>"

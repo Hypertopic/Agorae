@@ -268,6 +268,8 @@
     	$('div.index ul#viewpoint li[uri] span').die().live('click', onViewpointClick);
     }
     function appendItem(idx, itemUrl){
+      if(typeof itemUrl == 'object')
+        itemUrl = $.agorae.config.servers[0] + 'item/' + itemUrl.corpus + '/' + itemUrl.item;
       $.agorae.getItem(itemUrl, function(item){
         if(!item) return false;
         var el = $('<li><span>' + item.name + '</span></li>').attr("id", item.id).attr("corpus", item.corpus)
@@ -276,13 +278,18 @@
       });
     };
     function appendViewpoint(idx, viewpointUrl, viewpoint, editable){
-      if(!viewpoint)
-        $.agorae.getViewpoint(viewpointUrl, function(viewpoint){
+      if(!viewpoint){
+        var showViewpoint = function(viewpoint){
           var el = $('<li><span>' + viewpoint.name + '</span></li>')
                     .attr("id", viewpoint.id).data("viewpoint", viewpoint)
                     .attr('uri', viewpointUrl);
           $('ul#viewpoint').append(el);
-        });
+        };
+        //If the 2nd parameter is not an URL then assume the viewpoint could be located on the primary server.
+        if(viewpointUrl.indexOf('http') != 0)
+          viewpointUrl = $.agorae.config.servers[0] + 'viewpoint/' + viewpointUrl;
+        $.agorae.getViewpoint(viewpointUrl, showViewpoint);
+      }
       else
       {
         $('li#' + viewpoint.id, 'ul#viewpoint').hide().remove();

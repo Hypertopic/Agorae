@@ -196,7 +196,7 @@
       });
     },
     getViewpoint: function(viewpointUrl, callback){
-      this.httpSend(viewpointUrl,
+      $.agorae.httpSend(viewpointUrl,
       {
         type: "GET",
         success: function(doc){
@@ -213,6 +213,29 @@
           $.showMessage({title: "error", content: "Cannot load viewpoint:" + viewpointUrl});
         }
       });
+    },
+    getViewpointByID: function(viewpointID, callback){
+      var found = false;
+      for(var i=0, server; server = $.agorae.config.servers[i]; i++)
+      {
+        $.agorae.httpSend(server + 'viewpoint/' + viewpointID,
+        {
+          type: "GET",
+          async: false,
+          success: function(doc){
+            var viewpointID, viewpoint;
+            for (var k in doc) {
+              viewpointID = k;
+              break;
+            }
+            viewpoint = doc[viewpointID];
+            viewpoint.id = viewpointID;
+            callback(viewpoint);
+            found = true;
+          }
+        });
+        if(found) return;
+      }
     },
     getUser: function(serverUrl, callback){
       this.httpSend(serverUrl + "user/" + $.agorae.session.username,
@@ -236,7 +259,7 @@
       var viewpoint = {};
       viewpoint.viewpoint_name = viewpointName;
       viewpoint.users = new Array($.agorae.session.username);
-      this.httpSend($.agorae.config.servers[0],
+      $.agorae.httpSend($.agorae.config.servers[0],
       {
         type: "POST",
         data: viewpoint,
@@ -728,6 +751,8 @@
       });
     },
     createItemAttribute: function(itemUrl, attributename, attributevalue, success){
+      attributename = $.trim(attributename);
+      attributevalue = $.trim(attributevalue);
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
@@ -965,26 +990,27 @@
           $.agorae.httpSend($.agorae.config.servers[0] + "user/" + $.agorae.session.username,
           {
             type: "GET",
+            async: false,
             success: function(doc){
               if(typeof doc[$.agorae.session.username] == "undefined")
                 return false;
               var user = doc[$.agorae.session.username];
               if(user.viewpoint)
-              for(var i=0, viewpoint; viewpoint = user.viewpoint[i]; i++){
-                var url = $.agorae.config.servers[0] + 'viewpoint/' + viewpoint.id;
-                if(viewpoints.indexOf(url) < 0)
-                  viewpoints.push(url);
-              }
+              for(var i=0, viewpoint; viewpoint = user.viewpoint[i]; i++)
+                viewpoints.push($.agorae.config.servers[0] + 'viewpoint/' + viewpoint.id);
             }
           });
         if($.agorae.config.viewpoints)
           for(var i=0, url; url = $.agorae.config.viewpoints[i]; i++)
-            if(viewpoints.indexOf(url) < 0)
-                  viewpoints.push(url);
+            if(viewpoints.indexOf('http') == 0)
+              viewpoints.push(url);
+            else
+              viewpoints.push($.agorae.config.servers[0] + 'viewpoint/' + url);
       }
       else
         viewpoints.push(viewpointUrl);
-
+      $.log(viewpoints);
+      viewpoints = viewpoints.unique();
       for(var i=0, url; url = viewpoints[i]; i++)
         $.agorae.httpSend(url,
         {
