@@ -529,6 +529,16 @@
       });
     },
     getCorpus: function(url, success){
+      /*if(!$.agorae.config.corpus && !$.agorae.session.username)
+      {
+        $.showMessage({title: "error", content: "Please set your default corpora in your configuration or login first."});
+        return;
+      }
+      if($.agorae.config.corpus)
+      {
+        success($.agorae.session.corpus);
+        return false;
+      }*/
       if($.agorae.session.corpus)
       {
         success($.agorae.session.corpus);
