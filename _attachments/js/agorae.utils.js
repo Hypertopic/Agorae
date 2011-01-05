@@ -91,7 +91,6 @@ function dispatch(evt, arguments){
 })(jQuery);
 
 'use strict';
-
 // Add ECMA262-5 method binding if not supported natively
 //
 if (!('bind' in Function.prototype)) {

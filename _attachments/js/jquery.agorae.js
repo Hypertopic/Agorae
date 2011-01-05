@@ -191,6 +191,7 @@
       $.agorae.httpSend(itemUrl,
       {
         type: "GET",
+        cache: false,
         success: success,
         error: error
       });
@@ -747,6 +748,22 @@
         },
         error: function(code, error, reason){
           $.showMessage({title: "error", content: "Cannot get:" + itemUrl});
+        }
+      });
+    },
+    unlinkItemResource: function(itemUrl, success){
+      $.agorae.httpSend(itemUrl,
+      {
+        type: "GET",
+        cache: false,
+        success: function(doc){
+          delete doc.resource
+          $.agorae.httpSend(itemUrl + "?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success
+          });
         }
       });
     },

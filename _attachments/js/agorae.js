@@ -679,28 +679,31 @@
           if(reserved.indexOf(n) >= 0) continue;
           appendAttribute(n, item[n]);
         }
-        onEditOff();
+        
         if(item.resource)
-        {
-          var resource = (item.resource[0] && typeof(item.resource[0]) == "object") ? item.resource[0] : item.resource;
-          $.each(resource, appendResource);
-        }
+          appendRemoteResource(item.resource);
         if(item._attachments)
           appendAttachment(item._attachments[0]);
         if(item.topic)
           $.each(item.topic, appendTopic);
+        
+        onEditOff();
       });
 
       if(uri.indexOf($.agorae.config.servers[0]) == 0)
         $.agorae.pagehelper.toggle(true, onEditOn, onEditOff);
       else
         $.agorae.pagehelper.toggle(false, onEditOn, onEditOff);
-
-      $('div.item div.resource-list img.upload').bind('click', uploadAttachment);
-      $('div.item div.resource-list img.del').bind('click', deleteAttachment);
-      $('div.item div.resource-list span.attachment').die().live('click', clickAttachment);
-      $('div.item div.resource-list img.add').bind('click', attachResource);
-      $('div.item div.resource-list span.resource').die().live('click', clickResource);
+      
+      $('div.item div.remote-resource-list img.add').bind('click', attachRemoteResource);
+      $('div.item div.remote-resource-list img.unlink').die().live('click', unlinkRemoteResource);
+      $('div.item div.remote-resource-list span.resource').die().live('click', clickRemoteResource);
+      
+      $('div.item div.local-resource-list li.attribute img.del').die().live('click', deleteAttribute);
+      $('div.item div.local-resource-list li.attachment img.del').die().live('click', deleteAttachment);
+      $('div.item div.local-resource-list img.add').bind('click', addLocalResource);
+      $('div.item div.local-resource-list img.upload').bind('click', uploadAttachment);
+      
       $('div.item div.topic-list img.attach').click(attachTopic);
       $('div.item div.topic-list ul#topic img.unlink').click(detachTopic);
 
@@ -723,6 +726,13 @@
         appendAttribute(name, attributes[name]);
       $('div.attributes').hide();
       $('ul#attribute').show();
+      $('div.local-resource-list').show();
+      $('div.remote-resource-list').show();
+      
+      if($('ul#remote-resource li').length > 0)
+        $('div.remote-resource-list img.add').removeClass('ctl').hide();
+      else
+        $('div.remote-resource-list img.add').addClass('ctl').show();
     };
     function onEditOff(){
       var attributes = {};
@@ -731,20 +741,24 @@
         if(!(name in attributes)) attributes[name] = [];
         attributes[name].push($(this).attr("attributevalue"));
       });
-      var str = '';
+      $('div.attributes').html('');
       for(var name in attributes){
-        str += '<div class="attribute">';
-        str += '<div style="display: inline;" class="attributename" attributename="' + $.escapeHtml(name) +'">' + $.escapeHtml(name) + '</div>';
-        str += '<div style="display: inline;" class="attributevalue">';
+        var el_attribute = $('<div class="attribute">');
+        var el_name = $('<div style="display: inline;" class="attributename"></div>').html(name).attr('attributename', name);
+        var el_values = $('<div style="display: inline;" class="attributevalue"></div>');
         for(var i=0, v; v = attributes[name][i]; i++)
         {
           var comma = (i < attributes[name].length - 1) ? "," : "";
-          str += '<span attributevalue="' + $.escapeHtml(v) +'">' + $.escapeHtml(v) + comma + '</span>';
+          var span_value = $('<span></span>').attr('attributevalue', v).html(v + comma);
+          el_values.append(span_value);
         }
-        str += '</div></div>';
+        el_attribute.append(el_name).append(el_values);
+        $('div.attributes').append(el_attribute);
       }
-      $('div.attributes').html('').append(str).show();
+      $('div.attributes').show();
       $('ul#attribute').hide();
+      ($('ul#local-resource li').length > 0) ? $('div.local-resource-list').show() : $('div.local-resource-list').hide();
+      ($('ul#remote-resource li').length > 0) ? $('div.remote-resource-list').show() : $('div.remote-resource-list').hide();
     };
     function parseUri(){
       var uri = $.getUri();
@@ -759,6 +773,7 @@
       result.itemUrl = result.prefixUrl + result.item;
       return result;
     };
+    
     function addAttribute(){
       $.showDialog("dialog/_attribute.html", {
         submit: function(data, callback) {
@@ -778,11 +793,9 @@
       });
     };
     function deleteAttribute(){
-      $.log('delete');
       var attributename = $(this).parent().attr("attributename");
       var attributevalue = $(this).parent().attr("attributevalue");
       var uri = $.getUri();
-      $.log(uri);
       var self = $(this);
       $.agorae.undescribeItem(uri, attributename, attributevalue, function(){
         self.parent().remove();
@@ -792,13 +805,28 @@
       value = (typeof(value[0]) == "string") ? value : value[0];
       for(var i=0, v; v = value[i]; i++)
       {
-        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
-                     + '<span class="editable attributename">' + name + '</span>'
-                     + ' : <span class="editable attributevalue">' + v + '</span></li>')
-                     .attr("attributename", name).attr("attributevalue", v);
-        $('ul#attribute').append(el);
+        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"></li>')
+                 .attr("attributename", name).attr("attributevalue", v);
+        var protocol = $.url.setUrl(v).attr("protocol");
+        if(protocol == "http" || protocol == "https" || protocol == "ftp" || protocol == "sftp")
+        {
+          //The attribute value is an URL
+          el.addClass('attribute');
+          var el_href = $('<a></a>').html(name).attr('href', v).attr('attributename', name).addClass('editable');
+          el.append(el_href);
+          $('ul#local-resource').append(el);
+        }
+        else
+        {
+          //Is noraml attribute
+          var span_name = $('<span class="editable attributename"></span>').html(name);
+          var span_value = $('<span class="editable attributevalue"></span>').html(v);
+          el.append(span_name).append(span_value);
+          $('ul#attribute').append(el);
+        }
       }
     };
+    
     function uploadAttachment() {
       $.showDialog("dialog/_upload.html", {
         load: function(elem) {
@@ -821,8 +849,9 @@
               success: function(resp) {
                 var uri = $.getUri();
                 $.agorae.getItem(uri, function(item){
+                  $.log(item);
                   if(item._attachments){
-                    $('ul#resource li[file]').remove();
+                    $('ul#local-resource li.attachment').remove();
                     appendAttachment(item._attachments[0]);
                   }
                 });
@@ -848,42 +877,68 @@
       var url = uris.itemUrl + "/" + $(this).parent().attr("file");
       window.open(url);
     };
-    function attachResource(){
+    function appendAttachment(attachments){
+      var uris = parseUri();
+      for(var file in attachments)
+      {
+        var uri = uris.itemUrl + "/" + file;
+        var contentType = (typeof attachments[file].content_type == "string") ? attachments[file].content_type : "";
+        var fancybox_group = (contentType.indexOf("image/") == 0) ? "fancybox_group" : null;
+        
+        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"></li>').addClass('attachment').attr("file", file);
+        var el_href = $('<a class="editable attachment"></a>').attr('href', uri).html(file);
+        if(fancybox_group)
+          el_href.attr('rel', fancybox_group);
+        el.append(el_href);
+        $('ul#local-resource').append(el);
+      }
+      fbox();
+    };
+    
+    function attachRemoteResource(){
       $.showDialog("dialog/_resource.html", {
         submit: function(data, callback) {
           if (!data.resource || data.resource.length == 0) {
-            callback({resource: "Please input a resource URL."});
+            callback({resource: "L'aderesse de la ressource ne doit pas être vide!"});
             return;
           }
           var form = $("#resource-form");
           var uris = parseUri();
           var itemUrl = uris.itemUrl;
           $.agorae.attachItemResource(itemUrl, data.resource, function(){
-            appendResource(0, data.resource);
+            appendRemoteResource(data.resource);
             callback();
+            $('div.remote-resource-list img.add').removeClass('ctl').hide();
             $.agorae.pagehelper.checkController();
           });
         }
       });
     };
-    function clickResource(){
-      var url = $(this).parent().attr("rel");
+    function unlinkRemoteResource(){
+      var uris = parseUri();
+      var self = $(this);
+      $.agorae.unlinkItemResource(uris.itemUrl, function(){
+        self.parent().remove();
+        $('div.remote-resource-list img.add').addClass('ctl').show();
+      });
+    };
+    function clickRemoteResource(){
+      var url = $(this).attr("rel");
       if(!$('#index-edit-toggle').attr('checked'))
       {
         window.open(url);
         return false;
       }
-      $(this).parent().attr("file", $(this).html());
+      $(this).parent().attr("url", url);
       var el = $('<input type="textbox">').val(url);
     	$(this).replaceWith(el);
     	el.focus(function() { $(this).select(); }).select()
     	  .mouseup(function(e){ e.preventDefault(); });
     	el.blur(function(){
-    	  var span = $('<span></span>').addClass('editable').addClass('resource');
+    	  var span = $('<span></span>').addClass('editable').addClass('resource').attr('rel',url);
     	  if($(this).val() == '' || $(this).val() == url)
     	  {
-
-    	    span.html($(this).parent().attr("file"));
+    	    span.html($(this).parent().attr("url"));
     	    $(this).replaceWith(span);
     	  }
     	  else
@@ -892,18 +947,11 @@
     	    var newUrl = self.val();
     	    var uris = parseUri();
     	    $.agorae.updateItemResource(uris.itemUrl, url, newUrl, function(){
-    	      var urlPath = $.url.setUrl(newUrl).attr("path");
-            var file = newUrl;
-            if(urlPath && urlPath.indexOf("/") >= 0)
-            {
-              var parts = urlPath.split("/");
-              file = parts.pop();
-              if(file == "") file = parts.pop();
-            }
-    	      span.html(file);
+    	      self.parent().attr("rel", newUrl);
+    	      span.html(newUrl).attr('rel', newUrl);
     	      self.replaceWith(span);
     	    }, function(){
-    	      span.html($(this).parent().attr("file"));
+    	      span.html($(this).parent().attr("url"));
     	      self.replaceWith(span);
     	    });
     	  }
@@ -913,44 +961,38 @@
           $(this).blur();
       });
     };
-    function appendResource(idx, url){
-      var urlPath = $.url.setUrl(url).attr("path");
-      var file = url;
-      if(urlPath && urlPath.indexOf("/") >= 0)
-      {
-        var parts = urlPath.split("/");
-        file = parts.pop();
-        if(file == "") file = parts.pop();
-      }
-      var el = $('<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
-                   + '<span class="editable resource">' + url + '</span></li>')
-                   .attr("rel", url);
-      $('ul#resource').append(el);
+    function appendRemoteResource(resource){
+      resource = (typeof resource == "string") ? resource : resource + "";
+      var el_container = $('<li></li>').append($('<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'));
+      var span_resource = $('<span class="editable resource"></span>').html(resource).attr("rel", resource);
+      el_container.append(span_resource);
+      $('ul#remote-resource').append(el_container);
     };
-    function appendAttachment(attachments){
-      var uris = parseUri();
-      for(var file in attachments)
-      {
-        var uri = uris.itemUrl + "/" + file;
-        var contentType = attachments[file].content_type;
-        var fancybox_group = (contentType.indexOf("image/") == 0) ? "fancybox_group" : "";
-        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
-                     + '<a rel="' + fancybox_group + '" class="editable attachment" href="' + uri + '">' + file + '</a></li>')
-                     .attr("file", file);
-        $('ul#resource').append(el);
-      }
-      fbox();
+    
+    function addLocalResource(){
+      $.showDialog("dialog/_localresource.html", {
+        submit: function(data, callback) {
+          if (!data.attributename || data.attributename.length == 0) {
+            callback({attributename: "Veuillez saisir le nom de la ressource"});
+            return;
+          }
+          if (!data.attributevalue || data.attributevalue.length == 0) {
+            callback({attributename: "Veuillez saisir l'aderesse de la ressource"});
+            return;
+          }
+          var protocol = $.url.setUrl(data.attributevalue).attr("protocol");
+          if(protocol != "http" && protocol != "https" && protocol != "ftp" && protocol != "sftp"){
+            callback({attributevalue: "L'aderesse de la ressource n'est pas correct!"});
+            return;
+          }
+          uri = $.getUri();
+          $.agorae.describeItem(uri, data.attributename, data.attributevalue, appendAttribute);
+          callback();
+          $.agorae.pagehelper.checkController();
+        }
+      });
     };
-    function fbox(){
-      $("a[rel=fancybox_group]").fancybox({
-				'transitionIn'		: 'none',
-				'transitionOut'		: 'none',
-				'titlePosition' 	: 'over',
-				'titleFormat'		: function(title, currentArray, currentIndex, currentOpts) {
-					return '<span id="fancybox-title-over">Image ' + (currentIndex + 1) + ' / ' + currentArray.length + (title.length ? ' &nbsp; ' + title : '') + '</span>';
-				}
-			});
-		}
+    
     function attachTopic(){
       $.agorae.topictree.openDialog(
         function(){
@@ -1007,6 +1049,17 @@
                .attr("id", topic.id).attr("viewpoint", topic.viewpoint).attr("uri", topic.uri);
       $('ul#topic').append(el);
     };
+    
+    function fbox(){
+      $("a[rel=fancybox_group]").fancybox({
+				'transitionIn'		: 'none',
+				'transitionOut'		: 'none',
+				'titlePosition' 	: 'over',
+				'titleFormat'		: function(title, currentArray, currentIndex, currentOpts) {
+					return '<span id="fancybox-title-over">Image ' + (currentIndex + 1) + ' / ' + currentArray.length + (title.length ? ' &nbsp; ' + title : '') + '</span>';
+				}
+			});
+		};
   }
   function TopicTree(){
     function radiobar(){
@@ -1188,7 +1241,7 @@
       $.log(values);
       for(var v in values)
       {
-        var el = $('<option value="' + $.escapeHtml(v) +'">' + $.escapeHtml(v) +'</option>');
+        var el = $('<option></option>').attr('value', v).html(v);
         el.attr("values", JSON.stringify(values[v]));
         valSelect.append(el);
       }
@@ -1196,15 +1249,20 @@
     function doSearch(){
       if($('#item-search-condition').css('display') != 'none')
       {
+        /*$('select.attributevalue','ul.search-condition').each(function(){
+          if($(this).val() == "")
+            $(this).parent().slideUp({duration: 500, easing: 'easeOutCubic', complete: function(){ li.remove(); }});
+        });*/
         var uris = [];
         $('select.attributevalue','ul.search-condition').each(function(){
+          if($(this).val() == "") return;
           var option = $(this).find('option:selected');
           if(!option || option.length <= 0) return;
           var values = JSON.parse(option.attr("values"));
           $.log(values);
           for(var i=0, v; v = values[i]; i++)
           {
-            var uri = v.uri + "/" + $.escapeHtml(v.attributename) + "/" + $.escapeHtml(v.attributevalue);
+            var uri = v.uri + "/" + encodeURIComponent(v.attributename) + "/" + encodeURIComponent(v.attributevalue);
             if(uris.indexOf(uri) < 0) uris.push(uri);
           }
         });

@@ -1,0 +1,38 @@
+[
+  {
+    "from" : "",
+    "to" : "index.html"
+  },
+  {
+    "from" : "js/:file",
+    "to" : "js/:file"
+  },
+  {
+    "from" : "css/:file",
+    "to" : "css/:file"
+  },
+  {
+    "from" : "css/blitzer/:file",
+    "to" : "css/blitzer/:file"
+  },
+  {
+    "from" : "css/blitzer/images/:file",
+    "to" : "css/blitzer/images/:file"
+  },
+  {
+    "from" : "fancybox/:file",
+    "to" : "fancybox/:file"
+  },
+  {
+    "from" : "page/:file",
+    "to" : "page/:file"
+  },
+  {
+    "from" : "dialog/:file",
+    "to" : "dialog/:file"
+  },
+  {
+    "from" : "config",
+    "to" : "./"
+  }
+]
