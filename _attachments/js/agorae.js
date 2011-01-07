@@ -744,7 +744,7 @@
           $.agorae.getCorpora(function(corpus){
             if(corpusSelect.find('option[uri="' + corpus.uri + '"]').length > 0) 
               return;
-            var el = $('<option></option>').val(corpus.id).attr("uri", corpusUrl).html(corpus.name + "");
+            var el = $('<option></option>').val(corpus.id).attr("uri", corpus.uri).html(corpus.name + "");
             corpusSelect.append(el);
           });
         },
@@ -894,7 +894,7 @@
           var corpusUrl = prefixUrl + "corpus/" + item.corpus;
           $.agorae.getCorpus(corpusUrl, function(corpus){
             var bars = [{'uri': '#', 'name': 'Accueil'}];
-            bars.push({'uri': corpusUrl, 'name': corpus.name + ''});
+            bars.push({'uri': '#' + corpusUrl, 'name': corpus.name + ''});
             bars.push({'name': item.name + ''});
             $.agorae.pagehelper.navigatorBar(bars);
           })
@@ -1396,7 +1396,7 @@
           $('#item-search-corpus select').find('option').remove();
           $('#item-search-corpus select').append($('<option></option>').attr("selected", true));
           $.agorae.getCorpora(function(corpus){
-            var option = $('<option></option>').val(corpus.uri).text(corpus.name);
+            var option = $('<option></option>').val(corpus.uri).text(corpus.name + "");
             $('#item-search-corpus select').append(option);
           });
           /*//Init attribute name
@@ -1426,7 +1426,7 @@
     function corpusChange(){
       $('#item-search-condition').hide().html('<ul class="search-condition"></ul>');
       if($(this).val() == "") return;
-      $.agorae.itemdialog.names = $.agorae.getAttributeName();
+      $.agorae.itemdialog.names = $.agorae.getAttributeName($(this).val());
       $('#item-search-condition').show();
       showSearchCondition();
     };
