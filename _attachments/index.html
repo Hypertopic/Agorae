@@ -21,7 +21,6 @@
 	<script type="text/javascript" src="fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
 	<script type="text/javascript" src="fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 	<script type="text/javascript" src="js/json2.js"></script>
-
 	<script type="text/javascript" src="js/jquery.agorae.js"></script>
 	<script type="text/javascript" src="js/agorae.js"></script>
 	<script type="text/javascript" src="js/agorae.utils.js"></script>
@@ -42,7 +41,7 @@
   <div id="header-toolbar">
     <div id="header-navigatorbar"><b>Accueil</b></div>
     <div id="header-buttonbar">
-      <span class="item-search hide"><img border="0" src="css/blitzer/images/search.png"><a id="item-search" href="#"><span>Rechercher items</span></a></span>
+      <span class="item-search"><img border="0" src="css/blitzer/images/search.png"><a id="item-search" href="#"><span>Rechercher items</span></a></span>
       <span><img border="0" src="css/blitzer/images/shortcut.png"><a id="shortcut" href="#"><span>Lancement rapide</span></a></span>
       <span class="sign-in"><img border="0" src="css/blitzer/images/sign-in.png"><a id="sign-in"><span>Connexion</span></a></span>
       <span class="sign-out hide"><img border="0" src="css/blitzer/images/sign-out.png"><a id="sign-out"><span>Se déconnecter</span></a></span>
@@ -77,6 +76,7 @@
 </div>
 <!-- item dialog //-->
 <div id="item-dialog" title="Rechercher Items" class="hide">
+  <div id="item-search-corpus">Corpus : <select class="corpus"></select></div>
   <div id="item-search-condition"><ul class="search-condition"></ul></div>
   <div id="item-search-result" class="hide"><ul></ul></div>
 </div>

@@ -47,7 +47,6 @@
         $.agorae.session.username = $.cookie('session.username');
         $.agorae.session.password = $.cookie('session.password');
         $('span.sign-in').hide().next().show();
-        $('span.item-search').show();
         $('#index-edit-toggle').show();
       }
       $(window).hashchange($.agorae.pagehelper.route).hashchange();
@@ -79,9 +78,18 @@
         $.showPage('page/_item.html', $.agorae.itempage.init);
         return false;
       }
+      if(uri.indexOf('/corpus/') > 0)
+      {
+        $('div#main').attr('class', 'corpus');
+        $.showPage('page/_corpus.html', $.agorae.corpuspage.init);
+        return false;
+      }
     };
     this.rewrite = function(url){
-      self.location.hash = url;
+      if(url == "" || url == "#")
+        self.location.href = "./";
+      else
+        self.location.hash = url;
     };
     this.toggle = function(show, clickon, clickoff){
       if(typeof $.agorae.session.username == "undefined" || show !== true){
@@ -131,8 +139,7 @@
         }
         obj = str;
       }
-      $('div#header-navigatorbar').html(obj);
-
+      $('div#header-navigatorbar').html(obj).data('bar', obj);
     };
     this.resize = function(){ resizeSidebar(); };
     function resizeSidebar(){
@@ -227,7 +234,6 @@
             $.agorae.session.username = data.name;
             $.agorae.session.password = data.password;
             $('span.sign-in').hide().next().show();
-            $('span.item-search').show();
             $('#index-edit-toggle').show();
             $.agorae.pagehelper.route();
           });
@@ -240,7 +246,6 @@
       $.cookie('session.username', null);
       $.cookie('session.password', null);
       $('span.sign-in').show().next().hide();
-      $('span.item-search').hide();
       $.agorae.pagehelper.hideController();
     };
   }
@@ -251,8 +256,8 @@
         $.showMessage({title: "Erreur", content: "Une erreur de configuration a été détecté! Aucun Hypertopic service trouvé."});
         return false;
       }
-      if($.agorae.config.items)
-        $.each($.agorae.config.items, appendItem);
+      if($.agorae.config.corpora)
+        $.each($.agorae.config.corpora, getCorpus);
       if($.agorae.config.viewpoints)
         $.each($.agorae.config.viewpoints, appendViewpoint);
       if($.agorae.session.username)
@@ -262,19 +267,23 @@
       $.agorae.pagehelper.navigatorBar('<b>Accueil</b>');
 
       //Enable the links
-      $('div.index ul#item li[uri] span').die().live('click', onItemClick);
-    	$('div.index div.viewpoint-list img.add').click(createViewpoint);
-    	$('div.index ul#viewpoint img.del').die().live('click', deleteViewpoint);
+      $('div.index div.corpus-list img.add').die().live('click', createCorpus);
+      $('div.index ul#corpus li[uri] span').die().live('click', onCorpusClick);
+      $('div.index ul#corpus img.del').die().live('click', deleteObject);
+      
+    	$('div.index div.viewpoint-list img.add').bind('click',createViewpoint);
+    	$('div.index ul#viewpoint img.del').die().live('click', deleteObject);
     	$('div.index ul#viewpoint li[uri] span').die().live('click', onViewpointClick);
     }
-    function appendItem(idx, itemUrl){
-      if(typeof itemUrl == 'object')
-        itemUrl = $.agorae.config.servers[0] + 'item/' + itemUrl.corpus + '/' + itemUrl.item;
-      $.agorae.getItem(itemUrl, function(item){
-        if(!item) return false;
-        var el = $('<li><span>' + item.name + '</span></li>').attr("id", item.id).attr("corpus", item.corpus)
-                  .attr("uri", itemUrl);
-        $('ul#item').append(el);
+    function getCorpus(idx, corpus){
+      if(corpus.indexOf("http") != 0)
+        corpusUrl = $.agorae.config.servers[0] + 'corpus/' + corpus;
+      else
+        corpusUrl = corpus;
+      $.agorae.getCorpus(corpusUrl, function(corpus){
+        $.log(corpus);
+        var el = $('<li><span>' + corpus.name + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
+        $('ul#corpus').append(el);
       });
     };
     function appendViewpoint(idx, viewpointUrl, viewpoint, editable){
@@ -308,25 +317,72 @@
           for(var i=0, viewpoint; viewpoint = user.viewpoint[i]; i++){
             appendViewpoint(i, server + 'viewpoint/' + viewpoint.id, viewpoint, true);
           }
+        if(user.corpus)
+          for(var i=0, corpus; corpus = user.corpus[i]; i++){
+            $('ul#corpus').find('li#' + corpus.id).hide().remove();
+            var corpusUrl = server + 'corpus/' + corpus.id;
+            var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">' 
+                      + corpus.name + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
+            $('ul#corpus').append(el);
+          }
       });
     };
-    function onItemClick(){
-      var uri = $(this).parent().attr("uri");
-      $.agorae.pagehelper.rewrite(uri);
+    
+    function createCorpus(){
+      $.agorae.createCorpus($.agorae.config.servers[0], 'Sans nom', function(corpus){
+        var corpusUrl = $.agorae.config.servers[0] + 'corpus/' + corpus.id;
+        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">' 
+                  + 'Sans nom' + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
+        $('ul#corpus').append(el);
+        $.agorae.pagehelper.checkController();
+      });
+    };
+    function onCorpusClick(){
+      if(!$('#index-edit-toggle').attr('checked'))
+      {
+        var uri = $(this).parent().attr('uri');
+        $.agorae.pagehelper.rewrite(uri);
+        return false;
+      }
+      if(!$(this).hasClass('editable'))
+        return false;
+      var corpusName = $(this).text();
+      var el = $('<input type="textbox">').val(corpusName);
+    	$(this).replaceWith(el);
+    	el.focus(function() { $(this).select(); }).select()
+    	  .mouseup(function(e){ e.preventDefault(); });
+    	el.blur(function(){
+    	  var span = $('<span></span>').addClass('editable');
+    	  if($(this).val() == '' || $(this).val() == corpusName)
+    	  {
+    	    span.html(corpusName);
+    	    $(this).replaceWith(span);
+    	  }
+    	  else
+    	  {
+    	    var self = $(this);
+    	    var newName = self.val();
+      	  var uri = $(this).parent().attr("uri");
+    	    $.agorae.renameCorpus(uri, newName, function(){
+    	      span.html(newName);
+    	      self.replaceWith(span);
+    	    }, function(){
+    	      span.html(corpusName);
+    	      self.replaceWith(span);
+    	    });
+    	  }
+    	});
+    	el.keyup(function(event){
+        if (event.keyCode == 27 || event.keyCode == 13)
+          $(this).blur();
+      });
       return false;
     };
+    
     function createViewpoint(){
       $.agorae.createViewpoint('Sans nom', function(doc){
         appendViewpoint(0, $.agorae.config.servers[0] + "viewpoint/" + doc.id, doc, true);
         $.agorae.pagehelper.checkController();
-      });
-    };
-    function deleteViewpoint(){
-      var uri = $(this).parent().attr('uri');
-          uri = $.agorae.getDocumentUri(uri);
-      var self = $(this);
-      $.agorae.deleteDoc(uri, function(){
-        self.parent().remove();
       });
     };
     function onViewpointClick(){
@@ -369,6 +425,120 @@
           $(this).blur();
       });
       return false;
+    };
+    
+    function deleteObject(){
+      var uri = $(this).parent().attr('uri');
+          uri = $.agorae.getDocumentUri(uri);
+      var self = $(this);
+      $.agorae.deleteDoc(uri, function(){
+        self.parent().remove();
+      });
+    };
+  }
+  function CorpusPage(){
+    this.init = function(){
+      var uri = $.getUri();
+      $.agorae.getCorpus(uri, function(corpus){
+        var bars = [{'uri': '#', 'name': 'Accueil'}];
+        bars.push({'name': corpus.name + ''});
+        $.agorae.pagehelper.navigatorBar(bars);
+        for(var itemID in corpus)
+          if(typeof corpus[itemID] == 'object' && corpus[itemID].name)
+          {
+            corpus[itemID].id = itemID;
+            appendItem(corpus[itemID]);
+          }
+      });
+
+      if(typeof($.agorae.config.servers[0]) == "string" && uri.indexOf($.agorae.config.servers[0]) == 0)
+        $.agorae.pagehelper.toggle(true);
+      else
+        $.agorae.pagehelper.toggle(false);
+      $('div.corpus div.item-list img.add').bind('click', createItem);
+    	$('div.corpus div.item-list img.del').die().live('click', deleteItem);
+    	$('div.corpus ul#item li[uri] span').die().live('click', onItemClick);
+    };
+    function appendItem(item){
+      var uri = $.getUri();
+      var serverUri = $.agorae.getServerUri(uri);
+      var corpusID = $.agorae.getDocumentID(uri);
+      var itemUrl = serverUri + 'item/' + corpusID + '/' + item.id; 
+      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">' 
+                + item.name + '</span></li>').attr("id", item.id).attr("uri", itemUrl);
+      $('ul#item').append(el);
+    };
+    function createItem(){
+      var uri = $.getUri();
+      $.agorae.createItemWithinCorpus(uri, 'Sans nom', function(item){
+        appendItem(item);
+        $.agorae.pagehelper.checkController();
+      });
+      return false;
+    };
+    function deleteItem(){
+      var uri = $(this).parent().attr('uri');
+      var docUri = $.agorae.getDocumentUri(uri);
+    	var self = $(this);
+      $.agorae.deleteDoc(docUri, function(){
+    	  self.parent().remove();
+    	});
+    	return false;
+    };
+    function onItemClick(){
+      var corpusUri = $.getUri(),
+          itemUri = $(this).parent().attr("uri"),
+          prefixUrl = $.agorae.getServerUri(itemUri),
+          corpusID = $.agorae.getDocumentID(corpusUri),
+          itemID = $(this).parent().attr('id');
+      if(!$('#index-edit-toggle').attr('checked'))
+      {
+        var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
+        $.agorae.getItem(uri, null, function(){
+          $.agorae.pagehelper.rewrite(uri);
+        }, function(){
+          if($.agorae.config.servers)
+          for(var i=0, server; server = $.agorae.config.servers[i]; i++)
+          {
+            if(server == prefixUrl) continue;
+            uri = server + 'item/' + corpusID + '/' + itemID;
+            $.agorae.getItem(uri, null,  function(){
+                $.agorae.pagehelper.rewrite(uri);
+              }, function(){ return false; });
+          }
+        });
+        return false;
+      }
+      var name = $(this).text();
+      var el = $('<input type="textbox">').val(name);
+    	$(this).replaceWith(el);
+    	el.focus(function() { $(this).select(); }).select()
+    	  .mouseup(function(e){ e.preventDefault(); });
+    	el.blur(function(){
+    	  var span = $('<span></span>').addClass('editable');
+    	  if($(this).val() == '' || $(this).val() == name)
+    	  {
+    	    span.html(name);
+    	    $(this).replaceWith(span);
+    	  }
+    	  else
+    	  {
+    	    var self = $(this);
+    	    var newName = self.val();
+    	    $.agorae.renameItem(prefixUrl, itemID, newName, function(){
+    	      span.html(newName);
+    	      self.replaceWith(span);
+    	    }, function(){
+    	      span.html(name);
+    	      self.replaceWith(span);
+    	    });
+    	  }
+    	});
+    	el.keyup(function(event){
+        if (event.keyCode == 27 || event.keyCode == 13)
+          $(this).blur();
+      });
+      return true;
     };
   }
   function ViewpointPage(){
@@ -563,10 +733,43 @@
       $('ul#topic').append(el);
     };
     function createItem(){
-      var uri = $.getUri();
-      $.agorae.createItem(uri, 'Sans nom', function(item){
-        appendItem(0, item);
-        $.agorae.pagehelper.checkController();
+      $.showDialog("dialog/_item.html", {
+        modal: true,
+        load: function(dialog){
+          //Load default setting from cookie
+          $(dialog).find('input[name="itemName"]').val('sans nom').focus(function(){ $(this).select(); });
+          var corpusSelect = $(dialog).find('select[name="corpus"]');
+          if(corpusSelect.find('option').length > 0) 
+            corpusSelect.find('option').remove();
+          $.agorae.getCorpora(function(corpus){
+            if(corpusSelect.find('option[uri="' + corpus.uri + '"]').length > 0) 
+              return;
+            var el = $('<option></option>').val(corpus.id).attr("uri", corpusUrl).html(corpus.name + "");
+            corpusSelect.append(el);
+          });
+        },
+        submit: function(data, callback) {
+          $.log(data);
+          if (!data.corpus || data.corpus.length == 0) {
+            callback({corpus: "Veuillez saisir le corpus!"});
+            return false;
+          };
+          if (!data.itemName || data.itemName.length == 0) {
+            callback({itemName: "Veuillez saisir le nom d'item!"});
+            return false;
+          };
+          var uri = $.getUri();
+          var corpus = data.corpus;
+          var corpusOption = $('select[name="corpus"] option[value="' + corpus + '"]');
+          var corpusName = corpusOption.text();
+          var corpusUrl = corpusOption.attr("uri");
+          
+          $.agorae.createItemWithTopicAndCorpus(uri, corpusUrl, data.itemName, function(item){
+            appendItem(0, item);
+            $.agorae.pagehelper.checkController();
+            callback();
+          });
+        }
       });
       return false;
     };
@@ -686,7 +889,16 @@
           appendAttachment(item._attachments[0]);
         if(item.topic)
           $.each(item.topic, appendTopic);
-        
+        if(item.corpus){
+          var prefixUrl = $.agorae.getServerUri(uri);
+          var corpusUrl = prefixUrl + "corpus/" + item.corpus;
+          $.agorae.getCorpus(corpusUrl, function(corpus){
+            var bars = [{'uri': '#', 'name': 'Accueil'}];
+            bars.push({'uri': corpusUrl, 'name': corpus.name + ''});
+            bars.push({'name': item.name + ''});
+            $.agorae.pagehelper.navigatorBar(bars);
+          })
+        }
         onEditOff();
       });
 
@@ -1178,14 +1390,22 @@
           //Clear search result
         },
         open: function(){
-          $('#item-search-condition').show().html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
+          $('#item-search-corpus').show();
+          $('#item-search-condition').hide().html('<ul class="search-condition"></ul>');
           $('#item-search-result').hide().html('<ul></ul>');
-          //Init attribute name
+          $('#item-search-corpus select').find('option').remove();
+          $('#item-search-corpus select').append($('<option></option>').attr("selected", true));
+          $.agorae.getCorpora(function(corpus){
+            var option = $('<option></option>').val(corpus.uri).text(corpus.name);
+            $('#item-search-corpus select').append(option);
+          });
+          /*//Init attribute name
           $.agorae.itemdialog.names = $.agorae.getAttributeName();
           $('#item-search-condition').html('<ul class="search-condition"></ul>');
-          showSearchCondition();
+          showSearchCondition();*/
         }
       });
+      $('#item-search-corpus select').bind('change', corpusChange);
       $('ul.search-condition select.attributename').die().live('change', onNameChange);
       $('ul.search-condition button.plus').die().live('click', showSearchCondition);
       $('ul.search-condition button.minus').die().live('click', removeSearchCondition);
@@ -1202,6 +1422,13 @@
     };
     this.close = function(callback){
       $("#item-dialog").dialog('close');
+    };
+    function corpusChange(){
+      $('#item-search-condition').hide().html('<ul class="search-condition"></ul>');
+      if($(this).val() == "") return;
+      $.agorae.itemdialog.names = $.agorae.getAttributeName();
+      $('#item-search-condition').show();
+      showSearchCondition();
     };
     function showSearchCondition(){
       $.log($.agorae.itemdialog.names);
@@ -1271,6 +1498,7 @@
         $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Return");
         $('#item-search-result').show().html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
         $('#item-search-condition').hide();
+        $('#item-search-corpus').hide();
         var items = $.agorae.searchItem(uris);
         $.log(items);
         $('#item-search-result').html('<ul></ul>');
@@ -1283,6 +1511,7 @@
       else
       {
         $('#item-search-condition').show();
+        $('#item-search-corpus').show();
         $('#item-search-result').hide();
         $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Rechercher");
       }
@@ -1293,6 +1522,7 @@
     session : new Session(),
     pagehelper : new PageHelper(),
     indexpage : new IndexPage(),
+    corpuspage : new CorpusPage(),
     viewpointpage : new ViewpointPage(),
     topicpage : new TopicPage(),
     itempage : new ItemPage(),

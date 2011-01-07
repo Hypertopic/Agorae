@@ -23,6 +23,8 @@
         return uri.substr(0, uri.indexOf("/topic/") + 1);
       if(uri.indexOf("/item/") >= 0)
         return uri.substr(0, uri.indexOf("/item/") + 1);
+      if(uri.indexOf("/corpus/") >= 0)
+        return uri.substr(0, uri.indexOf("/corpus/") + 1);
 
       return uri;
     },
@@ -37,6 +39,8 @@
       }
       if(uri.indexOf("/item/") >= 0)
         return uri.substr(0, uri.indexOf("/item/") + 1) + id;
+      if(uri.indexOf("/corpus/") >= 0)
+        return uri.substr(0, uri.indexOf("/corpus/") + 1) + id;
       return uri;
     },
     httpSend: function(url, options) {
@@ -153,7 +157,85 @@
           $.agorae.config = doc.agorae;
         },
         error: function(code, error, reason){
-          $.showMessage({title: "error", content: "Impossible de charger config document : " + configUrl});
+          $.showMessage({title: "error", content: "Impossible de charger config document : " + configDocUrl});
+        }
+      });
+    },
+    getCorpora: function(callback){
+      if($.agorae.config.corpora)
+        $.each($.agorae.config.corpora, function(idx, corpus){
+          var corpusUrl = (corpus.indexOf("http") != 0) ?
+                            corpusUrl = $.agorae.config.servers[0] + 'corpus/' + corpus : corpus;
+          $.agorae.getCorpus(corpusUrl, function(corpus){
+            corpus.uri = corpusUrl;
+            corpus.source = 'config';
+            callback(corpus);
+          });
+        });
+      if($.agorae.session.username)
+        $.each($.agorae.config.servers, function(idx, server){
+          $.agorae.getUser(server, function(user){
+            if(user.corpus)
+              for(var i=0, corpus; corpus = user.corpus[i]; i++){
+                var corpusUrl = server + 'corpus/' + corpus.id;
+                corpus.uri = corpusUrl;
+                corpus.source = 'config';
+                callback(corpus);
+              }
+          });
+        });
+    },
+    getCorpus: function(corpusUrl, callback){
+      $.agorae.httpSend(corpusUrl,
+      {
+        type: "GET",
+        success: function(doc){
+          var corpusID = $.agorae.getDocumentID(corpusUrl);
+          if(!(corpusID in doc)) return;
+          var corpus = doc[corpusID];
+          corpus.id = corpusID;
+          callback(corpus);
+        }
+      });
+    },
+    renameCorpus: function(url, name, success, error){
+      var url = $.agorae.getDocumentUri(url);
+      $.agorae.httpSend(url,
+      {
+        type: "GET",
+        cache: false,
+        success: function(doc){
+          doc.corpus_name = name;
+          $.agorae.httpSend(url+"?rev=" + doc._rev,
+          {
+            type: "PUT",
+            data: doc,
+            success: success
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + url});
+        }
+      });
+    },
+    deleteCorpus: function(url, success){
+      url = $.agorae.getDocumentUri(url);
+      $.agorae.httpSend(url,
+      {
+        type: "GET",
+        cache: false,
+        success: function(doc){
+          $.agorae.httpSend(url+"?rev=" + doc._rev,
+          {
+            type: "DELETE",
+            success: success,
+            error: function(code, error, reason){
+              $.showMessage({title: "error", content: "Cannot delete:" + url});
+            }
+          });
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot get:" + url});
         }
       });
     },
@@ -528,7 +610,7 @@
         }
       });
     },
-    getCorpus: function(url, success){
+    getUserCorpus: function(url, success){
       /*if(!$.agorae.config.corpus && !$.agorae.session.username)
       {
         $.showMessage({title: "error", content: "Please set your default corpora in your configuration or login first."});
@@ -579,7 +661,61 @@
           success(doc);
         },
         error: function(code, error, reason){
-          $.showMessage({title: "error", content: "Cannot create corpus!"});
+          $.showMessage({title: "Erreur", content: "Impossible de créer corpus : " + reason});
+        }
+      });
+    },
+    createItemWithinCorpus: function(corpusUrl, name, success){
+      var corpusID = $.agorae.getDocumentID(corpusUrl),
+          prefixUrl = $.agorae.getServerUri(corpusUrl);
+      var item = {
+        "item_name": name,
+        "item_corpus": corpusID,
+        "topics": {}
+      };
+
+      $.agorae.httpSend(prefixUrl,
+      {
+        type: "POST",
+        data: item,
+        success: function(doc){
+          item.id = doc.id;
+          item.corpus = item.item_corpus;
+          item.name = item.item_name;
+          delete item.item_corpus;
+          delete item.item_name;
+          success(item);
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot create item!"});
+        }
+      });
+    },
+    createItemWithTopicAndCorpus: function(topicUrl, corpusUrl, name, success){
+      var parts = topicUrl.split('/'),
+      topicID = parts.pop(),
+      viewpointID = parts.pop(),
+      prefixUrl = $.agorae.getServerUri(corpusUrl),
+      corpusID = $.agorae.getDocumentID(corpusUrl);
+      var item = {
+        "item_name": name,
+        "item_corpus": corpusID,
+        "topics": {}
+      };
+      item.topics[topicID] = {"viewpoint": viewpointID};
+      $.log(item);
+      $.agorae.httpSend(prefixUrl,
+      {
+        type: "POST",
+        data: item,
+        success: function(doc){
+          item.id = doc.id;
+          item.corpus = item.item_corpus;
+          item.name = item.item_name;
+          success(item);
+        },
+        error: function(code, error, reason){
+          $.showMessage({title: "error", content: "Cannot create item!"});
         }
       });
     },
@@ -623,7 +759,7 @@
           }
         });
       };
-      $.agorae.getCorpus(prefixUrl, crtItem);
+      $.agorae.getUserCorpus(prefixUrl, crtItem);
     },
     unlinkItem: function(topicUrl, itemID, success){
       var prefixUrl, topicID, viewpointID;
