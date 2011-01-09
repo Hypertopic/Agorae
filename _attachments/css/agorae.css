@@ -313,6 +313,11 @@ div#topictree{
   color: #333;
   text-decoration:none;
 }
+div#item-search-corpus{
+  background-color: #FFECEC;
+  border-bottom: 1px solid #3E6D8E;
+  padding: 1em;
+}
 ul.search-condition{
   list-style: none outside none; margin: 0; padding: 0 1em;
 }

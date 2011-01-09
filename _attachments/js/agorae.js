@@ -927,7 +927,7 @@
     function onEditOn(){
       var attributes = {};
       $('div.attribute').each(function(){
-        var name = $(this).find(".attributename").html();
+        var name = $(this).find(".attributename").attr('attributename');
         attributes[name] = [];
         $(this).find(".attributevalue span").each(function(){
           attributes[name].push($(this).attr("attributevalue"));
@@ -956,12 +956,12 @@
       $('div.attributes').html('');
       for(var name in attributes){
         var el_attribute = $('<div class="attribute">');
-        var el_name = $('<div style="display: inline;" class="attributename"></div>').html(name).attr('attributename', name);
+        var el_name = $('<div style="display: inline;" class="attributename"></div>').text(name).attr('attributename', name);
         var el_values = $('<div style="display: inline;" class="attributevalue"></div>');
         for(var i=0, v; v = attributes[name][i]; i++)
         {
           var comma = (i < attributes[name].length - 1) ? "," : "";
-          var span_value = $('<span></span>').attr('attributevalue', v).html(v + comma);
+          var span_value = $('<span></span>').attr('attributevalue', v).text(v + comma);
           el_values.append(span_value);
         }
         el_attribute.append(el_name).append(el_values);
@@ -1019,20 +1019,21 @@
       {
         var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"></li>')
                  .attr("attributename", name).attr("attributevalue", v);
-        var protocol = $.url.setUrl(v).attr("protocol");
+        var protocol = "";
+        try{ protocol = $.url.setUrl(v).attr("protocol"); } catch(e){}
         if(protocol == "http" || protocol == "https" || protocol == "ftp" || protocol == "sftp")
         {
           //The attribute value is an URL
           el.addClass('attribute');
-          var el_href = $('<a></a>').html(name).attr('href', v).attr('attributename', name).addClass('editable');
+          var el_href = $('<a></a>').text(name).attr('href', v).attr('attributename', name).addClass('editable');
           el.append(el_href);
           $('ul#local-resource').append(el);
         }
         else
         {
           //Is noraml attribute
-          var span_name = $('<span class="editable attributename"></span>').html(name);
-          var span_value = $('<span class="editable attributevalue"></span>').html(v);
+          var span_name = $('<span class="editable attributename"></span>').text(name);
+          var span_value = $('<span class="editable attributevalue"></span>').text(v);
           el.append(span_name).append(span_value);
           $('ul#attribute').append(el);
         }
@@ -1192,7 +1193,8 @@
             callback({attributename: "Veuillez saisir l'aderesse de la ressource"});
             return;
           }
-          var protocol = $.url.setUrl(data.attributevalue).attr("protocol");
+          var protocol;
+          try{ protocol = $.url.setUrl(data.attributevalue).attr("protocol"); }catch(e){}
           if(protocol != "http" && protocol != "https" && protocol != "ftp" && protocol != "sftp"){
             callback({attributevalue: "L'aderesse de la ressource n'est pas correct!"});
             return;
@@ -1437,8 +1439,10 @@
                + ' Valeur : <select class="attributevalue"><option value=""></option></select>'
                +'<button class="plus"></button><button class="minus"></button></li>').attr("id", uuid);
 
-      for(var name in $.agorae.itemdialog.names)
-        el.find("select:first").append('<option value="' + $.escapeHtml(name) +'">' + $.escapeHtml(name) +'</option>');
+      for(var name in $.agorae.itemdialog.names){
+        var option = $('<option></option>').val(name).text(name);
+        el.find("select:first").append(option);
+      }
       $('ul.search-condition').append(el);
       el.slideDown({duration: 500, easing: 'easeOutBounce'});
       $("button:first", 'li#' + uuid).button({
@@ -1468,7 +1472,7 @@
       $.log(values);
       for(var v in values)
       {
-        var el = $('<option></option>').attr('value', v).html(v);
+        var el = $('<option></option>').attr('value', v).text(v);
         el.attr("values", JSON.stringify(values[v]));
         valSelect.append(el);
       }
