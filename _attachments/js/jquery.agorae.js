@@ -610,6 +610,39 @@
         }
       });
     },
+    moveTopicIn2: function(url, topicID, parentTopicID){
+      var result = false;
+      var documentUri = $.agorae.getDocumentUri(url);
+      $.agorae.httpSend(documentUri,
+      {
+        type: "GET",
+        cache: false,
+        async: false,
+        success: function(viewpoint){
+          if(parentTopicID)
+          {
+            if(!(viewpoint.topics[topicID].broader)) viewpoint.topics[topicID].broader = [];
+            if(viewpoint.topics[topicID].broader.indexOf(parentTopicID) < 0)
+              viewpoint.topics[topicID].broader.push(parentTopicID);
+          }
+          else
+          {
+            viewpoint.topics[topicID].broader = [];
+          }
+          $.agorae.httpSend(documentUri + "?rev=" + viewpoint._rev,
+          {
+            type: "PUT",
+            data: viewpoint,
+            async: false,
+            success: function(){
+              result = true;
+            },
+            error: function(){}
+          });
+        }
+      });
+      return result;
+    },
     getUserCorpus: function(url, success){
       /*if(!$.agorae.config.corpus && !$.agorae.session.username)
       {

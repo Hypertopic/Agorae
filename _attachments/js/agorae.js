@@ -1327,7 +1327,37 @@
       $("#tree").jstree({
         "json_data" : tree,
         "types" : $.agorae.topictree.jstree_types,
-        "plugins" : [ "themes", "json_data", "ui", "crrm", "types" ]
+        "crrm" : {
+          "move" : {
+          "check_move" : function (m) {
+            if(m.o.attr('viewpointid') != m.np.attr('viewpointid'))
+              return false;
+              
+            var p = this._get_parent(m.o);
+            if(!p) return false;
+            p = p == -1 ? this.get_container() : p;
+            if(p === m.np) return false;
+            if(p[0] && m.np[0] && p[0] === m.np[0]) return false;
+            return true;
+            }
+          }
+        },
+        "plugins" : [ "themes", "json_data", "ui", "crrm", "types", "dnd" ]
+      }).bind("move_node.jstree", function (e, data) {
+        var movedIn = false;
+        if(data.args && data.args.length > 0)
+        {
+          var topicUrl = data.args[0].o.attr("uri"),
+              topicID =  data.args[0].o.attr("topicid"),
+              parentTopicID =  data.args[0].np.attr("topicid");
+          movedIn = $.agorae.moveTopicIn2(topicUrl, topicID, parentTopicID);
+        }
+        if(!movedIn)
+        {
+          e.stopImmediatePropagation();
+          $.jstree.rollback(data.rlbk);
+          return false;
+        }
       });
     };
     this.init = function(){
