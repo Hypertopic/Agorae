@@ -1278,8 +1278,8 @@
   function TopicTree(){
     function radiobar(){
       var el = '<div id="topictree">'
-		         + '<input type="radio" id="tt-cloud" name="topictree" /><label for="tt-cloud">Tag Cloud</label>'
-		         + '<input type="radio" id="tt-tree" name="topictree"/><label for="tt-tree">Tree</label>'
+		         + '<input type="radio" id="tt-cloud" name="topictree" /><label for="tt-cloud">Nuage</label>'
+		         + '<input type="radio" id="tt-tree" name="topictree"/><label for="tt-tree">Arborescence</label>'
 		         + '</div>';
     		  $("#topic-tree-dialog").nextAll('div.ui-dialog-buttonpane').prepend(el);
     		  $( "#topictree" ).buttonset();
@@ -1366,7 +1366,7 @@
         autoOpen: false,
         modal: true,
         width: 400,
-        title: "Thèmes",
+        title: "Rechercher par thème",
         close: function(){
           $("#tree").jstree('destroy');
         },
@@ -1393,7 +1393,7 @@
     };
     this.openDialog = function(callback){
       $("#topic-tree-dialog").dialog('option', "buttons", {
-          'Okay': callback,
+          'Sélectionner': callback,
           'Annuler': function(){
             $("#topic-tree-dialog").dialog('close');
           }
@@ -1417,7 +1417,7 @@
         autoOpen: false,
         modal: true,
         width: 500,
-        title: "Rechercher Items",
+        title: "Rechercher par attributs",
         close: function(){
           //Clear search result
         },
@@ -1529,7 +1529,7 @@
         });
         if(uris.length == 0) return;
 
-        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Return");
+        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Étape précédente");
         $('#item-search-result').show().html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
         $('#item-search-condition').hide();
         $('#item-search-corpus').hide();

@@ -191,13 +191,13 @@ div#footer{
   color: #000000;
   font-size: 1.1em;
   height: 3em;
-  padding-top: 0.5em;
+  padding-top: 1.5em;
   text-align: center;
   width: 100%;
 }
 div#footer a {
     color: #000000;
-    text-decoration: underline;
+    text-decoration: none;
 }
 div#sidebar {
     background-color: #F2F2F2;
