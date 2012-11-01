@@ -39,7 +39,7 @@ Argos has been installed at ``http://127.0.0.1:5984/argos``
 
 * Type:
 
-        couchapp push http://127.0.0.1:5984/argos 
+        couchapp push . http://127.0.0.1:5984/argos 
 
 * Go to http://127.0.0.1:5984/argos/_design/agorae/_rewrite/
 
