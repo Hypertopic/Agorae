@@ -24,11 +24,15 @@
     "to" : "dialog/*"
   },
   {
-    "from" : "agorae/_design/argos/_rewrite/",
-    "to" : "../../"
+    "from" : "argos",
+    "to" : "../.."
   },
   {
-    "from" : ":db/*",
-    "to" : "../../*"
+    "from": "argos/*",
+    "to": "../argos/_rewrite/*"
+  },
+  {
+    "from": "design",
+    "to": ""
   }
 ]

@@ -32,7 +32,7 @@ Argos has been installed at ``http://127.0.0.1:5984/argos``
 
 * Edit ``agorae.json`` to fit your settings:
   * define HTML ``footer`` and ``header``,
-  * a set of servers (e.g. ``http://127.0.0.1:5984/argos/_design/argos/_rewrite/``),
+  * a set of servers (e.g. ``http://127.0.0.1:5984/argos/_design/agorae/_rewrite/argos/``),
   * a set of ``corpora`` (IDs),
   * a set of ``viewpoints`` (IDs),
   * ``auth``, an authentication service (e.g. ``http://127.0.0.1:5984/_session``).
