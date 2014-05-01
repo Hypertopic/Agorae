@@ -877,7 +877,7 @@
         var bars = [{'uri': '#', 'name': 'Accueil'}];
         bars.push({'name': item.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
-        var reserved = ["corpus", "id", "highlight", "name", "resource", "topic", "_attachments"];
+        var reserved = ["corpus", "id", "highlight", "name", "resource", "topic", "_attachments", "_id"];
         for(var n in item){
           if(reserved.indexOf(n) >= 0) continue;
           appendAttribute(n, item[n]);
