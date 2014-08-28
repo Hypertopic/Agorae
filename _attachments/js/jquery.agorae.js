@@ -146,7 +146,6 @@
         success();
         callback();
       }
-      $.ajaxSetup({username: username, password: password});
     },
     loadConfig: function(configDocUrl){
       $.agorae.httpSend(configDocUrl,
