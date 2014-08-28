@@ -253,7 +253,7 @@
     this.init = function(){
       if(!$.agorae.config.servers)
       {
-        $.showMessage({title: "Erreur", content: "Une erreur de configuration a été détecté! Aucun Hypertopic service trouvé."});
+        $.showMessage({title: "Erreur", content: "Agorae est mal configuré : le serveur Hypertopic n'est pas indiqué."});
         return false;
       }
       if($.agorae.config.corpora)
@@ -706,7 +706,7 @@
           }
           if(topics.length == 0)
           {
-            $.showMessage({title: "Warn", content: "Please select a topic first!"});
+            $.showMessage({title: "Attention", content: "Vous devez d'abord sélectionner un thème."});
             return false;
           }
           var uri = $.getUri();
@@ -1232,7 +1232,7 @@
           }
           if(topics.length == 0)
           {
-            $.showMessage({title: "Warn", content: "Please select a topic first!"});
+            $.showMessage({title: "Attention", content: "Vous devez d'abord sélectionner un thème."});
             return false;
           }
           var uri = $.getUri();

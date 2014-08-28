@@ -24,7 +24,7 @@ function dispatch(evt, arguments){
         $("#message-dialog").dialog('destroy');
         var i18nButtons = {};
         i18nButtons['Annuler'] = function() { $(this).dialog('close');  };
-    	  i18nButtons['Okay'] = function() { $(this).dialog('close');  options.callback();  };
+    	  i18nButtons['OK'] = function() { $(this).dialog('close');  options.callback();  };
         $("#message-dialog").dialog({
           autoOpen: true,
           modal: true,
@@ -34,7 +34,7 @@ function dispatch(evt, arguments){
       else
       {
       	var i18nButtons = {};
-        i18nButtons['Okay'] = function() { $(this).dialog('close');  };
+        i18nButtons['OK'] = function() { $(this).dialog('close');  };
         $("#message-dialog").dialog('destroy');
         $("#message-dialog").dialog({
           bgiframe: true,
