@@ -44,3 +44,17 @@ Argos has been installed at ``http://127.0.0.1:5984/argos``
 
 * Go to http://127.0.0.1:5984/argos/_design/agorae/_rewrite/
 
+Installation on a different domain
+----------------------------------
+
+Agorae and Argos does not need to be installed in the same database nor
+on the same server.
+For the latter, the CouchDB server hosting Argos must be set to allow
+"cross-origin resource sharing".
+
+```ini
+[cors]
+origins = *
+headers = accept, authorization, content-type
+[httpd]
+enable_cors = true
