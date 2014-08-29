@@ -55,6 +55,10 @@
       bAsync = (typeof(options.async) != "boolean") ? false : options.async;
       processData = (typeof(options.processData) != "boolean") ? false : options.processData;
       dataType = (typeof(options.dataType) == "string") ? options.dataType : "json";
+      headers = options.anonymous? {} : {
+        Authorization: "Basic "
+        + btoa($.agorae.session.username + ":" + $.agorae.session.password)
+      };
 
       if(httpAction == 'GET'){
         if(options.cache !== false && url in $.agorae.cache)
@@ -68,6 +72,7 @@
       $.ajax({
         type: httpAction, url: url, contentType: cType, dataType: dataType,
         processData: processData, data: httpBody, async: bAsync,
+        headers: headers,
         success: function(resp){
           resp =  $.agorae.normalize(resp);
           if(options.cache !== false)
@@ -118,7 +123,9 @@
     login: function(username, password, callback, success){
       //validate username and password on the specific service.
       if($.agorae.config.auth)
-        $.agorae.httpSend($.agorae.config.auth, {type: "POST", username: username, password: password,
+        $.agorae.httpSend($.agorae.config.auth, {
+          type: "POST",
+          anonymous: true,
           data: {name: username, password: password},
           processData: true,
           success: function(){
@@ -143,6 +150,7 @@
       {
         type: "GET",
         async: false,
+        anonymous: true,
         success: function(doc){
           $.agorae.config = doc.agorae;
         },
