@@ -40,11 +40,11 @@ body
 }
 
 body.loading #dialog h2 {
-  background: url("blitzer/images/ajax-loader.gif") 98% 50% no-repeat #FFFFFF ;
+  background: url("blitzer/images/loading.gif") 98% 50% no-repeat #FFFFFF ;
   border: 0px;
 }
 #dialog h2.loading {
-  background:url("blitzer/images/ajax-loader.gif") no-repeat scroll 2% 50% #CC0000;
+  background:url("blitzer/images/loading.gif") no-repeat scroll 2% 50% #CC0000;
   padding-left:1.8em;
 }
 #dialog h3 { color: #CC0000; font-size: 100%; font-weight: bold; margin: 0 -2em;
