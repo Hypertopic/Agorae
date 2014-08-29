@@ -115,7 +115,7 @@
       });
     };
     this.checkController = function(){
-      if($('#index-edit-toggle').attr('checked'))
+      if($('#index-edit-toggle').prop('checked'))
         $('.ctl').show();
       else
         $('.ctl').hide();
@@ -151,7 +151,7 @@
     };
     function shortcutToTopic(){
       var uris = [];
-      if($('#tt-tree').attr('checked'))
+      if($('#tt-tree').prop('checked'))
         for(var i=0, t; t = $.jstree._focused().data.ui.selected[i]; i++)
           uris.push($(t).attr("uri"));
       else
@@ -338,7 +338,7 @@
       });
     };
     function onCorpusClick(){
-      if(!$('#index-edit-toggle').attr('checked'))
+      if(!$('#index-edit-toggle').prop('checked'))
       {
         var uri = $(this).parent().attr('uri');
         $.agorae.pagehelper.rewrite(uri);
@@ -386,7 +386,7 @@
       });
     };
     function onViewpointClick(){
-      if(!$('#index-edit-toggle').attr('checked'))
+      if(!$('#index-edit-toggle').prop('checked'))
       {
         var uri = $(this).parent().attr('uri');
         $.agorae.pagehelper.rewrite(uri);
@@ -491,7 +491,7 @@
           prefixUrl = $.agorae.getServerUri(itemUri),
           corpusID = $.agorae.getDocumentID(corpusUri),
           itemID = $(this).parent().attr('id');
-      if(!$('#index-edit-toggle').attr('checked'))
+      if(!$('#index-edit-toggle').prop('checked'))
       {
         var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
         $.agorae.getItem(uri, null, function(){
@@ -586,7 +586,7 @@
     };
     this.onTopicClick = function(){
       var uri = $(this).parent().attr('uri');
-      if(!$('#index-edit-toggle').attr('checked'))
+      if(!$('#index-edit-toggle').prop('checked'))
       {
         $.agorae.pagehelper.rewrite(uri);
         return false;
@@ -685,7 +685,7 @@
       $.agorae.topictree.openDialog(
         function(){
           var topics = [];
-          if($('#tt-tree').attr('checked'))
+          if($('#tt-tree').prop('checked'))
             for(var i=0, t; t = $.jstree._focused().data.ui.selected[i]; i++)
             {
               if($(t).attr("rel") == "viewpoint") continue;
@@ -819,7 +819,7 @@
           prefixUrl = $.agorae.getServerUri(uri),
           corpusID = $(this).parent().attr('corpus'),
           itemID = $(this).parent().attr('id');
-      if(!$('#index-edit-toggle').attr('checked'))
+      if(!$('#index-edit-toggle').prop('checked'))
       {
         var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
         $.agorae.getItem(uri, null, function(){
@@ -1137,7 +1137,7 @@
     };
     function clickRemoteResource(){
       var url = $(this).attr("rel");
-      if(!$('#index-edit-toggle').attr('checked'))
+      if(!$('#index-edit-toggle').prop('checked'))
       {
         window.open(url);
         return false;
@@ -1211,7 +1211,7 @@
       $.agorae.topictree.openDialog(
         function(){
           var topics = [];
-          if($('#tt-tree').attr('checked'))
+          if($('#tt-tree').prop('checked'))
             for(var i=0, t; t = $.jstree._focused().data.ui.selected[i]; i++)
             {
               if($(t).attr("rel") == "viewpoint") continue;

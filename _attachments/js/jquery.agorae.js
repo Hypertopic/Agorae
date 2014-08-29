@@ -68,17 +68,8 @@
       $.ajax({
         type: httpAction, url: url, contentType: cType, dataType: dataType,
         processData: processData, data: httpBody, async: bAsync,
-        dataFilter: function(data, type){
-          if(type == "json")
-            try{
-              var resp = JSON.parse(data);
-              return $.agorae.normalize(resp);
-            }catch(e){
-              $.log(e);
-            }
-          return data;
-        },
         success: function(resp){
+          resp =  $.agorae.normalize(resp);
           if(options.cache !== false)
             $.agorae.cache[url] = resp;
           if(options.success)

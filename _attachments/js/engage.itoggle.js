@@ -30,11 +30,11 @@
 		
 		this.each(function(){
 			var $this = $(this);
-			if($this.attr('tagName') == 'INPUT'){
+			if($this.prop('tagName') == 'INPUT'){
 				var id=$this.attr('id');
 				label(settings.keepLabel, id);
 				$this.addClass('iT_checkbox').before('<label class="itoggle" for="'+id+'"><span></span></label>');
-				if($this.attr('checked')){
+				if($this.prop('checked')){
 					$this.prev('label').addClass('iTon');
 				}else{
 					$this.prev('label').addClass('iToff');
@@ -44,7 +44,7 @@
 					var id = $(this).attr('id');
 					label(settings.keepLabel, id);
 					$(this).addClass('iT_checkbox').before('<label class="itoggle" for="'+id+'"><span></span></label>');
-					if($(this).attr('checked')){
+					if($(this).prop('checked')){
 						$(this).prev('label').addClass('iTon');
 					}else{
 						$(this).prev('label').addClass('iToff');
