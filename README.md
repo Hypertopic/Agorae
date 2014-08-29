@@ -55,6 +55,6 @@ For the latter, the CouchDB server hosting Argos must be set to allow
 ```ini
 [cors]
 origins = *
-headers = accept, authorization, content-type
+headers = accept, authorization, content-type, origin
 [httpd]
 enable_cors = true
