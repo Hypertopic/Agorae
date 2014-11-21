@@ -629,12 +629,12 @@
       var uri = $.getUri();
 
       $.agorae.getTopic(uri, function(topic){
-        var bars = [{'uri': '#', 'name': 'Accueil'}];
-        bars.push({'uri': '#' + topic.viewpointUrl, 'name': topic.viewpoint_name});
+        var bars = [{name: topic.name}];
         if(topic.broader)
           for(var i=0, t; t = topic.broader[i]; i++)
-            bars.push({'uri': '#' + topic.prefixUrl + t.id, 'name': t.name});
-        bars.push({'name': topic.name});
+            bars.unshift({uri: '#' + topic.prefixUrl + t.id, name: t.name});
+        bars.unshift({uri: '#' + topic.viewpointUrl, name: topic.viewpoint_name});
+        bars.unshift({uri: '#', name: 'Accueil'});
 
         $.agorae.pagehelper.navigatorBar(bars);
         if(topic.narrower)
