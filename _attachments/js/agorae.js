@@ -808,11 +808,17 @@
       return false;
     };
     function appendItem(idx, item){
-      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
-                   + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
-                   + '<span class="editable">' + item.name + '</span></li>')
-                   .attr("id", item.id).attr("corpus", item.corpus);
-      $('ul#item').append(el);
+      var corpus = $.agorae.getCorpus(
+        $.agorae.config.servers[0] + "corpus/" + item.corpus,
+        function(corpus) {
+          var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
+            + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
+            + '<span class="editable">' + item.name + ' (' + corpus.name[0]
+            + ')</span></li>'
+          ).attr("id", item.id).attr("corpus", item.corpus);
+          $('ul#item').append(el);
+        }
+      );
     };
     function onItemClick(){
       var uri = $.getUri(),
