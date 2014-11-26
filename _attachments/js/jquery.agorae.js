@@ -55,7 +55,7 @@
       bAsync = (typeof(options.async) != "boolean") ? false : options.async;
       processData = (typeof(options.processData) != "boolean") ? false : options.processData;
       dataType = (typeof(options.dataType) == "string") ? options.dataType : "json";
-      headers = options.anonymous? {} : {
+      headers = (options.anonymous || $.agorae.session.username===undefined)? {} : {
         Authorization: "Basic "
         + btoa($.agorae.session.username + ":" + $.agorae.session.password)
       };
