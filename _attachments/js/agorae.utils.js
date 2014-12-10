@@ -88,7 +88,7 @@ function dispatch(evt, arguments){
     a.log(this);
     return this;
   }
-  $.sortByName = function(object) {
+  $.toArray = function(object) {
     var result = [];
     for (var key in object) {
       var value = object[key];
@@ -97,8 +97,12 @@ function dispatch(evt, arguments){
         result.push(value);
       }
     }
-    return result.sort(function(a, b) {
-      return a.name[0].localeCompare(b.name[0]);
+    return result;
+  }
+  $.sortByName = function(array) {
+    return array.sort(function(a, b) {
+      return (typeof a.name == 'string') ? a.name.localeCompare(b.name)
+        : a.name[0].localeCompare(b.name[0]);
     });
   }
 })(jQuery);
