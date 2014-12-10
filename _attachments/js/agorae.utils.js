@@ -88,6 +88,19 @@ function dispatch(evt, arguments){
     a.log(this);
     return this;
   }
+  $.sortByName = function(object) {
+    var result = [];
+    for (var key in object) {
+      var value = object[key];
+      if (value.name) {
+        value.id = key;
+        result.push(value);
+      }
+    }
+    return result.sort(function(a, b) {
+      return a.name[0].localeCompare(b.name[0]);
+    });
+  }
 })(jQuery);
 
 'use strict';

@@ -443,12 +443,9 @@
         var bars = [{'uri': '#', 'name': 'Accueil'}];
         bars.push({'name': corpus.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
-        for(var itemID in corpus)
-          if(typeof corpus[itemID] == 'object' && corpus[itemID].name)
-          {
-            corpus[itemID].id = itemID;
-            appendItem(corpus[itemID]);
-          }
+        $.each($.sortByName(corpus), function(i, item) {
+          appendItem(item);
+        });
       });
 
       if(typeof($.agorae.config.servers[0]) == "string" && uri.indexOf($.agorae.config.servers[0]) == 0)
@@ -640,6 +637,7 @@
         if(topic.narrower)
           $.each(topic.narrower, appendTopic);
         if(topic.item)
+          console.log(topic.item);
           $.each(topic.item, appendItem);
       });
 
