@@ -546,7 +546,7 @@
         bars.push({'name': viewpoint.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
         if(viewpoint.upper)
-          $.each(viewpoint.upper, appendTopic);
+          $.each($.sortByName(viewpoint.upper), appendTopic);
       });
 
       if(typeof($.agorae.config.servers[0]) == "string" && uri.indexOf($.agorae.config.servers[0]) == 0)
@@ -635,7 +635,7 @@
 
         $.agorae.pagehelper.navigatorBar(bars);
         if(topic.narrower)
-          $.each(topic.narrower, appendTopic);
+          $.each($.sortByName(topic.narrower), appendTopic);
         if(topic.item)
           $.each($.sortByName(topic.item), appendItem);
       });
