@@ -121,7 +121,7 @@
         $('.ctl').hide();
     };
     this.hideController = function(){
-      $('#index-edit-toggle').removeAttr('checked').hide().parent().hide();
+      $('#index-edit-toggle').removeProp('checked').hide().parent().hide();
       $('.ctl').hide();
     };
     this.navigatorBar = function(obj){
@@ -201,10 +201,7 @@
 
           $(dialog).find('input[name="name"]').val(name).focus(function(){ $(this).select(); });
           $(dialog).find('input[name="password"]').val(password);
-          if(cookie == '1')
-            $(dialog).find('input[name="cookie"]').attr('checked', true);
-          else
-            $(dialog).find('input[name="cookie"]').removeAttr('checked');
+          $(dialog).find('input[name="cookie"]').prop('checked', cookie=='1');
         },
         submit: function(data, callback) {
           if (!data.name || data.name.length == 0) {

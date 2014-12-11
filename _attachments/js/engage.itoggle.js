@@ -103,7 +103,7 @@
 					settings.onSlide.call(this); //Generic callback after the slide has finnished
 					settings.onSlideOff.call(this); //Callback after the slide turns the toggle off
 				});
-				$('input#'+t).removeAttr('checked');
+				$('input#'+t).removeProp('checked');
 			}else{
 				settings.onClickOn.call($object);
 				$object.animate({backgroundPosition:'0% -'+h+'px'}, settings.speed, settings.easing, function(){
@@ -112,7 +112,7 @@
 					settings.onSlide.call(this); //Generic callback after the slide has finnished
 					settings.onSlideOn.call(this); //Callback after the slide turns the toggle on
 				});
-				$('input#'+t).attr('checked','checked');
+				$('input#'+t).prop('checked', true);
 			}
 			if(radio == true){
 				name = $('#'+t).attr('name');
