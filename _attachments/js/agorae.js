@@ -1277,23 +1277,30 @@
   }
   function TopicTree(){
     function radiobar(){
-      var el = '<div id="topictree">'
-		         + '<input type="radio" id="tt-cloud" name="topictree" /><label for="tt-cloud">Nuage</label>'
-		         + '<input type="radio" id="tt-tree" name="topictree"/><label for="tt-tree">Arborescence</label>'
-		         + '</div>';
-    		  $("#topic-tree-dialog").nextAll('div.ui-dialog-buttonpane').prepend(el);
-    		  $( "#topictree" ).buttonset();
-    		  $( "#tt-cloud" ).button({ icons: {primary:'ui-icon-tag'} }).click(function(){ $('#tree').hide(); $('#tags').show(); });
-    		  $( "#tt-tree" ).button({ icons: {primary:'ui-icon-bookmark'} }).click(function(){ $('#tree').show(); $('#tags').hide(); });
-      if($('#tags').css('display') != 'none'){
-        $( "#tt-tree" ).removeAttr('checked').button( "refresh" );
-        $( "#tt-cloud" ).attr('checked', true).button( "refresh" );
+      if ($('#topictree').length==0) {
+        $("#topic-tree-dialog").nextAll('.ui-dialog-buttonpane').prepend(
+          '<div id="topictree">'
+          + '<input type="radio" id="tt-cloud" name="topictree" />'
+          + '<label for="tt-cloud">Nuage</label>'
+          + '<input type="radio" id="tt-tree" name="topictree"/>'
+          + '<label for="tt-tree">Arborescence</label>'
+          +'</div>'
+        );
       }
-      else
-      {
-        $( "#tt-cloud" ).removeAttr('checked').button( "refresh" );
-        $( "#tt-tree" ).attr('checked', true).button( "refresh" );
-      }
+      $( "#topictree" ).buttonset();
+      $( "#tt-cloud" ).button({ icons: {primary:'ui-icon-tag'} })
+        .click(function() {
+          $('#tree').hide();
+          $('#tags').show();
+        });
+      $( "#tt-tree" ).button({ icons: {primary:'ui-icon-bookmark'} })
+        .click(function() {
+          $('#tree').show();
+          $('#tags').hide();
+        });
+      var cloudMode = $('#tags').css('display')!='none';
+      $("#tt-cloud").prop('checked', cloudMode).button('refresh');
+      $("#tt-tree").prop('checked', !cloudMode).button('refresh');
     };
     function showTagCloud(tags){
       $("#tags ul li").hide().remove();
