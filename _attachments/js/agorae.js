@@ -920,7 +920,7 @@
       $('div.item div.local-resource-list img.upload').bind('click', uploadAttachment);
       
       $('div.item div.topic-list img.attach').click(attachTopic);
-      $('div.item div.topic-list ul#topic img.unlink').click(detachTopic);
+      $('#topic').on('click', '.unlink', detachTopic);
 
       $('div.item div.attribute-list img.add').click(addAttribute);
       $('div.item div.attribute-list img.del').die().live('click', deleteAttribute);
