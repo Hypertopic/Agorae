@@ -807,8 +807,8 @@
         function(corpus) {
           var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png">'
             + '<img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
-            + '<span class="editable">' + item.name + '</span><span> (' + corpus.name[0]
-            + ')</span></li>'
+            + '<span class="editable">' + item.name + '</span> (' + corpus.name[0]
+            + ')</li>'
           ).attr("id", item.id).attr("corpus", item.corpus);
           $('ul#item').append(el);
         }
