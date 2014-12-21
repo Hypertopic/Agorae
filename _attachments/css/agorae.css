@@ -222,7 +222,12 @@ p.h2 img{
   margin-left: 0.2em;
   cursor: pointer;
 }
+ul li {
+  color: #999;
+}
 ul.links li span{
+  color: #666;
+  font-weight: bold;
   cursor: pointer;
 }
 ul.links li span:hover{

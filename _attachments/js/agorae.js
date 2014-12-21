@@ -618,19 +618,22 @@
       return true;
     };
   }
+  function getTopicPath(uri, callback) {
+    $.agorae.getTopic(uri, function(topic) {
+      var path = [{name: topic.name}];
+      if (topic.broader)
+        for (var i=0, t; t = topic.broader[i]; i++)
+          path.unshift({uri: '#' + topic.prefixUrl + t.id, name: t.name});
+      path.unshift({uri: '#' + topic.viewpointUrl, name: topic.viewpoint_name});
+      callback(path, topic);
+    });
+  }
   function TopicPage(){
     this.init = function(){
       var uri = $.getUri();
-
-      $.agorae.getTopic(uri, function(topic){
-        var bars = [{name: topic.name}];
-        if(topic.broader)
-          for(var i=0, t; t = topic.broader[i]; i++)
-            bars.unshift({uri: '#' + topic.prefixUrl + t.id, name: t.name});
-        bars.unshift({uri: '#' + topic.viewpointUrl, name: topic.viewpoint_name});
-        bars.unshift({uri: '#', name: 'Accueil'});
-
-        $.agorae.pagehelper.navigatorBar(bars);
+      getTopicPath(uri, function(path, topic) {
+        path.unshift({uri: '#', name: 'Accueil'});
+        $.agorae.pagehelper.navigatorBar(path);
         if(topic.narrower)
           $.each($.sortByName(topic.narrower), appendTopic);
         if(topic.item)
@@ -1258,10 +1261,15 @@
         var ret = $.agorae.getTopicName(topic.id, topic.viewpoint);
         $.extend(topic, ret);
       }
-      var el = $('<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">'
-               + '<span class="editable">' + topic.name + '</span></li>')
-               .attr("id", topic.id).attr("viewpoint", topic.viewpoint).attr("uri", topic.uri);
-      $('ul#topic').append(el);
+      getTopicPath(topic.uri, function(path) {
+        var html = '<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">';
+        for (var i=0; i<path.length-1; i++)
+          html += path[i].name + ' &gt; ';
+        html += '<span class="editable">' + topic.name + '</span></li>';
+        var el = $(html).attr("id", topic.id)
+          .attr("viewpoint", topic.viewpoint).attr("uri", topic.uri);
+        $('ul#topic').append(el);
+      });
     };
     
     function fbox(){
