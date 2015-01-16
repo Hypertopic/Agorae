@@ -24,6 +24,10 @@
     "to" : "dialog/*"
   },
   {
+    "from": "argos/",
+    "to": "../argos/_rewrite/"
+  },
+  {
     "from": "argos/*",
     "to": "../argos/_rewrite/*"
   },
