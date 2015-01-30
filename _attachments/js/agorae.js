@@ -1261,15 +1261,17 @@
         var ret = $.agorae.getTopicName(topic.id, topic.viewpoint);
         $.extend(topic, ret);
       }
-      getTopicPath(topic.uri, function(path) {
-        var html = '<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">';
-        for (var i=0; i<path.length-1; i++)
-          html += path[i].name + ' &gt; ';
-        html += '<span class="editable">' + topic.name + '</span></li>';
-        var el = $(html).attr("id", topic.id)
-          .attr("viewpoint", topic.viewpoint).attr("uri", topic.uri);
-        $('ul#topic').append(el);
-      });
+      if (topic.uri) {
+        getTopicPath(topic.uri, function(path) {
+          var html = '<li><img class="unlink ctl hide" src="css/blitzer/images/unlink.png">';
+          for (var i=0; i<path.length-1; i++)
+            html += path[i].name + ' &gt; ';
+          html += '<span class="editable">' + topic.name + '</span></li>';
+          var el = $(html).attr("id", topic.id)
+            .attr("viewpoint", topic.viewpoint).attr("uri", topic.uri);
+          $('ul#topic').append(el);
+        });
+      }
     };
     
     function fbox(){
