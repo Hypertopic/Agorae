@@ -47,7 +47,7 @@
         $.agorae.session.username = $.cookie('session.username');
         $.agorae.session.password = $.cookie('session.password');
         $('span.sign-in').hide().next().show();
-        $('#index-edit-toggle').show();
+        $('#toggle').show();
       }
       $(window).hashchange($.agorae.pagehelper.route).hashchange();
     };
@@ -93,35 +93,32 @@
     };
     this.toggle = function(show, clickon, clickoff){
       if(typeof $.agorae.session.username == "undefined" || show !== true){
-        $('input#index-edit-toggle').hide();
+        $('#toggle').hide();
         return false;
       }
-      $('input#index-edit-toggle').show().iToggle({
-      	easing: 'easeOutExpo',
-      	type: 'radio',
-      	keepLabel: true,
-      	easing: 'easeInExpo',
-      	speed: 300,
-      	onClickOn: function(){
-      	  if(clickon) clickon();
-      		$('.ctl').show();
-      		$('ul.links').addClass('editing').removeClass('links');
-      	},
-      	onClickOff: function(){
-      	  if(clickoff) clickoff();
-      	  $('.ctl').hide();
-      	  $('ul.editing').addClass('links').removeClass('editing');
-      	}
+      $('#toggle').show().toggles({
+        width: 50,
+        height: 20
+      }).on('toggle', function(e, active) {
+        if (active) {
+          if(clickon) clickon();
+          $('.ctl').show();
+          $('ul.links').addClass('editing').removeClass('links');
+        } else {
+          if(clickoff) clickoff();
+          $('.ctl').hide();
+          $('ul.editing').addClass('links').removeClass('editing');
+        }
       });
     };
     this.checkController = function(){
-      if($('#index-edit-toggle').prop('checked'))
+      if ($('#toggle').data('toggles').active)
         $('.ctl').show();
       else
         $('.ctl').hide();
     };
     this.hideController = function(){
-      $('#index-edit-toggle').removeProp('checked').hide().parent().hide();
+      $('#toggle').toggle(false).hide();
       $('.ctl').hide();
     };
     this.navigatorBar = function(obj){
@@ -231,7 +228,7 @@
             $.agorae.session.username = data.name;
             $.agorae.session.password = data.password;
             $('span.sign-in').hide().next().show();
-            $('#index-edit-toggle').show();
+            $('#toggle').show();
             $.agorae.pagehelper.route();
           });
         }
@@ -278,7 +275,6 @@
       else
         corpusUrl = corpus;
       $.agorae.getCorpus(corpusUrl, function(corpus){
-        $.log(corpus);
         var el = $('<li><span>' + corpus.name + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
         $('ul#corpus').append(el);
       });
@@ -335,8 +331,7 @@
       });
     };
     function onCorpusClick(){
-      if(!$('#index-edit-toggle').prop('checked'))
-      {
+      if (!$('#toggle').data('toggles').active) {
         var uri = $(this).parent().attr('uri');
         $.agorae.pagehelper.rewrite(uri);
         return false;
@@ -383,8 +378,7 @@
       });
     };
     function onViewpointClick(){
-      if(!$('#index-edit-toggle').prop('checked'))
-      {
+      if (!$('#toggle').data('toggles').active) {
         var uri = $(this).parent().attr('uri');
         $.agorae.pagehelper.rewrite(uri);
         return false;
@@ -485,8 +479,7 @@
           prefixUrl = $.agorae.getServerUri(itemUri),
           corpusID = $.agorae.getDocumentID(corpusUri),
           itemID = $(this).parent().attr('id');
-      if(!$('#index-edit-toggle').prop('checked'))
-      {
+      if (!$('#toggle').data('toggles').active) {
         var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
         $.agorae.getItem(uri, null, function(){
           $.agorae.pagehelper.rewrite(uri);
@@ -580,8 +573,7 @@
     };
     this.onTopicClick = function(){
       var uri = $(this).parent().attr('uri');
-      if(!$('#index-edit-toggle').prop('checked'))
-      {
+      if (!$('#toggle').data('toggles').active) {
         $.agorae.pagehelper.rewrite(uri);
         return false;
       }
@@ -822,7 +814,7 @@
           prefixUrl = $.agorae.getServerUri(uri),
           corpusID = $(this).parent().attr('corpus'),
           itemID = $(this).parent().attr('id');
-      if(!$('#index-edit-toggle').prop('checked'))
+      if (!$('#toggle').data('toggles').active)
       {
         var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
         $.agorae.getItem(uri, null, function(){
@@ -1140,8 +1132,7 @@
     };
     function clickRemoteResource(){
       var url = $(this).attr("rel");
-      if(!$('#index-edit-toggle').prop('checked'))
-      {
+      if (!$('#toggle').data('toggles').active) {
         window.open(url);
         return false;
       }

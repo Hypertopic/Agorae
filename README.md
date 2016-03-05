@@ -59,3 +59,24 @@ origins = *
 headers = accept, authorization, content-type, origin
 [httpd]
 enable_cors = true
+
+Tests requirements
+------------------
+
+* Ruby
+* PhantomJS
+
+Tests installation procedure
+----------------------------
+
+* In any folder:
+
+        sudo gem install poltergeist rspec
+
+
+Tests running
+-------------
+
+* In the `Agorae` folder:
+
+        rspec spec/features/*

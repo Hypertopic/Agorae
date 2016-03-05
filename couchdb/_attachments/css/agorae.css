@@ -365,3 +365,6 @@ ul.search-condition button{
 #item-search-result ul li:hover{
 	background-color: #FFB3B3;
 }
+#toggle {
+  float: right;
+}
