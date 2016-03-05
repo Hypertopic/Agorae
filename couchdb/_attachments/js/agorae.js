@@ -1,4 +1,8 @@
 (function($) {
+  function isToggleOn() {
+    var data = $('#toggle').data('toggles');
+    return (data)? data.active : false;
+  };
   function PageHelper(){
     this.init = function(config){
       //resize main layer size
@@ -112,7 +116,7 @@
       });
     };
     this.checkController = function(){
-      if ($('#toggle').data('toggles').active)
+      if (isToggleOn())
         $('.ctl').show();
       else
         $('.ctl').hide();
@@ -331,7 +335,7 @@
       });
     };
     function onCorpusClick(){
-      if (!$('#toggle').data('toggles').active) {
+      if (!isToggleOn()) {
         var uri = $(this).parent().attr('uri');
         $.agorae.pagehelper.rewrite(uri);
         return false;
@@ -378,7 +382,7 @@
       });
     };
     function onViewpointClick(){
-      if (!$('#toggle').data('toggles').active) {
+      if (!isToggleOn()) {
         var uri = $(this).parent().attr('uri');
         $.agorae.pagehelper.rewrite(uri);
         return false;
@@ -479,7 +483,7 @@
           prefixUrl = $.agorae.getServerUri(itemUri),
           corpusID = $.agorae.getDocumentID(corpusUri),
           itemID = $(this).parent().attr('id');
-      if (!$('#toggle').data('toggles').active) {
+      if (!isToggleOn()) {
         var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
         $.agorae.getItem(uri, null, function(){
           $.agorae.pagehelper.rewrite(uri);
@@ -573,7 +577,7 @@
     };
     this.onTopicClick = function(){
       var uri = $(this).parent().attr('uri');
-      if (!$('#toggle').data('toggles').active) {
+      if (!isToggleOn()) {
         $.agorae.pagehelper.rewrite(uri);
         return false;
       }
@@ -814,8 +818,7 @@
           prefixUrl = $.agorae.getServerUri(uri),
           corpusID = $(this).parent().attr('corpus'),
           itemID = $(this).parent().attr('id');
-      if (!$('#toggle').data('toggles').active)
-      {
+      if (!isToggleOn()) {
         var uri = prefixUrl + 'item/' + corpusID + '/' + itemID;
         $.agorae.getItem(uri, null, function(){
           $.agorae.pagehelper.rewrite(uri);
@@ -1132,7 +1135,7 @@
     };
     function clickRemoteResource(){
       var url = $(this).attr("rel");
-      if (!$('#toggle').data('toggles').active) {
+      if (!isToggleOn()) {
         window.open(url);
         return false;
       }
