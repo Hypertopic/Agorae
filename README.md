@@ -59,6 +59,7 @@ origins = *
 headers = accept, authorization, content-type, origin
 [httpd]
 enable_cors = true
+```
 
 Tests requirements
 ------------------
