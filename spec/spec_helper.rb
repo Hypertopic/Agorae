@@ -30,6 +30,10 @@ def click_last(list)
   find("##{list} li:last-child .editable").click
 end
 
+def click_on_link(text)
+  find('span', :text => "#{text}").click
+end
+
 def type(*keys_sequences)
   keys_sequences.each do |s|
     find('input[type=textbox]').native.send_keys s
