@@ -20,8 +20,8 @@ feature 'AjouterAttribut' do
     fill_in 'Nom', :with => attribute_name
     fill_in 'Valeur', :with => attribute_value
     click_on 'Créer'
-	expect(page).to have_content(attribute_name)
-	expect(page).to have_content(attribute_value)
+    expect(page).to have_content(attribute_name)
+    expect(page).to have_content(attribute_value)
   end
 
 end
