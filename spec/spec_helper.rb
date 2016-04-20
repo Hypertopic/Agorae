@@ -26,8 +26,17 @@ def click_plus_sign_next_to(list)
   find(".#{list}-list .add").click
 end
 
+def click_del_sign_next_to(text)
+  find("span.editable", text: "#{text}").find(:xpath, '..').find('.del').click
+end
+
 def click_last(list)
   find("##{list} li:last-child .editable").click
+end
+
+def edit_last(list, text)
+  find("##{list} li:last-child .editable").click
+  find("#item li:last-child input[type='textbox']").set("#{text}")
 end
 
 def click_on_link(text)
