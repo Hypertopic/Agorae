@@ -1,9 +1,14 @@
 require 'capybara/rspec'
-require 'capybara/poltergeist'
+require 'capybara/webkit'
 
 Capybara.run_server = false
-Capybara.default_driver = :poltergeist
+Capybara.default_driver = :webkit
+Capybara.default_wait_time = 5
 Capybara.app_host = "http://agorae.test.hypertopic.org"
+
+Capybara::Webkit.configure do |config|
+  config.allow_url("agorae.test.hypertopic.org")
+end
 
 $home_page = '/'
 
