@@ -4,6 +4,7 @@ require 'capybara/poltergeist'
 Capybara.run_server = false
 Capybara.default_driver = :poltergeist
 Capybara.app_host = "http://agorae.test.hypertopic.org"
+Capybara.default_selector = :xpath
 
 $home_page = '/'
 
@@ -24,6 +25,10 @@ end
 
 def click_plus_sign_next_to(list)
   find(".#{list}-list .add").click
+end
+
+def click_del_sign_before(item, list)
+  find('span', :text => "#{text}").find(:xpath, "..").find('.del').click
 end
 
 def click_last(list)
