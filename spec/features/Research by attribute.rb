@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 feature 'Research by attribute' do
 
     scenario 'by responsible' do
