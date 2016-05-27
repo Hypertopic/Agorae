@@ -9,7 +9,7 @@ feature 'Enrichir son profil avec une compétence / centre d intérêt existant'
       click_on_link 'Etudiant'
       click_on_link 'Baptiste BAINIER'
       toggle_edit
-      click_on_plus_sign_next_to 'Themes' #Ajouter cette fonctinalite
+      click_plus_sign_next_to 'topic'
       toggle_arborescence 'Competences'
       click_on 'Symphony'
       click_on_link 'Ajouter'
@@ -21,7 +21,7 @@ feature 'Enrichir son profil avec une compétence / centre d intérêt existant'
         log_in_as 'alice', 'lapinblanc'
         click_on_link 'Competences'
         toggle_edit
-        click_on_plus_sign_next_to 'Themes' #Ajouter cette fonctionalite
+        click_plus_sign_next_to 'topic'
         click_on_link 'sans nom'
         type 'Nodejs'
         toggle_edit
