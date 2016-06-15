@@ -1,0 +1,29 @@
+sudo: false
+
+services: couchdb
+
+language:
+- ruby
+- python
+
+rvm:
+- 2.2
+
+cache:
+- bundler
+- pip
+
+install:
+# Install Argos
+- curl -X PUT localhost:5984/argos
+- pip install --user couchapp
+- wget https://github.com/Hypertopic/Argos/archive/master.zip
+- unzip master.zip
+- couchapp push Argos-master http://localhost:5984/argos
+# Install Agorae
+- cp couchdb/agorae.sample.json couchdb/agorae.json
+- couchapp push couchdb http://localhost:5984/argos
+# Install testing environment
+- gem install poltergeist rspec
+
+script: rspec spec/features/*
