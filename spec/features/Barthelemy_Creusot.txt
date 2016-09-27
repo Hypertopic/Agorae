@@ -1,0 +1,28 @@
+TP 1 : Ecriture de test avec Capybara
+
+- Consulter une donnée
+- Rechercher par attributs
+- Rechercher par thème
+- Ajouter un item
+- Supprimer un item
+
+Authentification n'est pas une foncitonnalité.
+
+1) Prérequis : authentification, selectionner un corpus et un thème
+2) Rechercher un donnée existante ou non existante
+3) Rechercher un donnée existante ou non existante
+4) Prérequis : authentification
+5) Prérequis : authentification, ajouter un item
+
+Test pour la fonctionnalité 1
+
+feature 'consulter' do
+  visit '/'
+  click on 'Se connecter'
+  fill_in 'Nom d'utilisateur', :with => 'creusota'
+  fill_in 'Mot de passe', :with => '12345678'
+  click on 'Se connecter'
+  click on 'UV'
+  click on 'GL02 – Fondements de l'ingénierie logicielle'
+  expect(page).to have_content 'IntervenantAurélien Bénel,Matthieu Tixier'
+end

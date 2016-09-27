@@ -1,0 +1,14 @@
+require 'spec_helper'
+
+feature 'Enrichir son profil avec une compétence / centre d'intérêt existant' do
+
+  background do
+      se_connecter
+      visit '/mon-profil/'
+      click_on 'Editer mon profil'
+      click_on 'Competences'
+      fill_in 'Competences', :with => 'Robotique'
+      click_on 'Ajouter une compétence'
+      click_on 'Valider'
+    end
+end
