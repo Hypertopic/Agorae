@@ -1,0 +1,18 @@
+require 'spec_helper'
+
+feature 'Add UV' do
+
+  $corpus = a_string
+
+  scenario 'for create a new corpus' do
+    visit $home_page
+    click_on 'Se connecter'
+    log_in_as 'alice', 'lapinblanc'
+    toggle_edit
+    click_plus_sign_next_to 'Corpus'
+    click_last 'Corpus'
+    type $corpus, : return
+    expect(page).to have_content($corpus)
+  end
+
+end
