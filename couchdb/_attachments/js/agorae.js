@@ -18,7 +18,7 @@
         if(!$.cookie('config') && typeof config == "object")
           $.agorae.config = config;
       }
-      
+
       //Personalize header and footer
       if($.agorae.config.header)
         $('div#header').html($.agorae.config.header);
@@ -268,7 +268,7 @@
       $('div.index div.corpus-list img.add').die().live('click', createCorpus);
       $('div.index ul#corpus li[uri] span').die().live('click', onCorpusClick);
       $('div.index ul#corpus img.del').die().live('click', deleteObject);
-      
+
     	$('div.index div.viewpoint-list img.add').bind('click',createViewpoint);
     	$('div.index ul#viewpoint img.del').die().live('click', deleteObject);
     	$('div.index ul#viewpoint li[uri] span').die().live('click', onViewpointClick);
@@ -318,17 +318,17 @@
           for(var i=0, corpus; corpus = user.corpus[i]; i++){
             $('ul#corpus').find('li#' + corpus.id).hide().remove();
             var corpusUrl = server + 'corpus/' + corpus.id;
-            var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">' 
+            var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">'
                       + corpus.name + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
             $('ul#corpus').append(el);
           }
       });
     };
-    
+
     function createCorpus(){
       $.agorae.createCorpus($.agorae.config.servers[0], 'Sans nom', function(corpus){
         var corpusUrl = $.agorae.config.servers[0] + 'corpus/' + corpus.id;
-        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">' 
+        var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">'
                   + 'Sans nom' + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
         $('ul#corpus').append(el);
         $.agorae.pagehelper.checkController();
@@ -374,7 +374,7 @@
       });
       return false;
     };
-    
+
     function createViewpoint(){
       $.agorae.createViewpoint('Sans nom', function(doc){
         appendViewpoint(0, $.agorae.config.servers[0] + "viewpoint/" + doc.id, doc, true);
@@ -421,7 +421,7 @@
       });
       return false;
     };
-    
+
     function deleteObject(){
       var uri = $(this).parent().attr('uri');
           uri = $.agorae.getDocumentUri(uri);
@@ -455,15 +455,24 @@
       var uri = $.getUri();
       var serverUri = $.agorae.getServerUri(uri);
       var corpusID = $.agorae.getDocumentID(uri);
-      var itemUrl = serverUri + 'item/' + corpusID + '/' + item.id; 
-      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">' 
+      var itemUrl = serverUri + 'item/' + corpusID + '/' + item.id;
+      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">'
                 + item.name + '</span></li>').attr("id", item.id).attr("uri", itemUrl);
       $('ul#item').append(el);
+    };
+    function prependItem(item){
+      var uri = $.getUri();
+      var serverUri = $.agorae.getServerUri(uri);
+      var corpusID = $.agorae.getDocumentID(uri);
+      var itemUrl = serverUri + 'item/' + corpusID + '/' + item.id;
+      var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">'
+                + item.name + '</span></li>').attr("id", item.id).attr("uri", itemUrl);
+      $('ul#item').prepend(el);
     };
     function createItem(){
       var uri = $.getUri();
       $.agorae.createItemWithinCorpus(uri, 'Sans nom', function(item){
-        appendItem(item);
+        prependItem(item);
         $.agorae.pagehelper.checkController();
       });
       return false;
@@ -732,10 +741,10 @@
           //Load default setting from cookie
           $(dialog).find('input[name="itemName"]').val('sans nom').focus(function(){ $(this).select(); });
           var corpusSelect = $(dialog).find('select[name="corpus"]');
-          if(corpusSelect.find('option').length > 0) 
+          if(corpusSelect.find('option').length > 0)
             corpusSelect.find('option').remove();
           $.agorae.getCorpora(function(corpus){
-            if(corpusSelect.find('option[uri="' + corpus.uri + '"]').length > 0) 
+            if(corpusSelect.find('option[uri="' + corpus.uri + '"]').length > 0)
               return;
             var el = $('<option></option>').val(corpus.id).attr("uri", corpus.uri).html(corpus.name + "");
             corpusSelect.append(el);
@@ -756,7 +765,7 @@
           var corpusOption = $('select[name="corpus"] option[value="' + corpus + '"]');
           var corpusName = corpusOption.text();
           var corpusUrl = corpusOption.attr("uri");
-          
+
           $.agorae.createItemWithTopicAndCorpus(uri, corpusUrl, data.itemName, function(item){
             appendItem(0, item);
             $.agorae.pagehelper.checkController();
@@ -880,7 +889,7 @@
           if(reserved.indexOf(n) >= 0) continue;
           appendAttribute(n, item[n]);
         }
-        
+
         if(item.resource)
           appendRemoteResource(item.resource);
         if(item._attachments)
@@ -904,16 +913,16 @@
         $.agorae.pagehelper.toggle(true, onEditOn, onEditOff);
       else
         $.agorae.pagehelper.toggle(false, onEditOn, onEditOff);
-      
+
       $('div.item div.remote-resource-list img.add').bind('click', attachRemoteResource);
       $('div.item div.remote-resource-list img.unlink').die().live('click', unlinkRemoteResource);
       $('div.item div.remote-resource-list span.resource').die().live('click', clickRemoteResource);
-      
+
       $('div.item div.local-resource-list li.attribute img.del').die().live('click', deleteAttribute);
       $('div.item div.local-resource-list li.attachment img.del').die().live('click', deleteAttachment);
       $('div.item div.local-resource-list img.add').bind('click', addLocalResource);
       $('div.item div.local-resource-list img.upload').bind('click', uploadAttachment);
-      
+
       $('div.item div.topic-list img.attach').click(attachTopic);
       $('#topic').on('click', '.unlink', detachTopic);
 
@@ -938,7 +947,7 @@
       $('ul#attribute').show();
       $('div.local-resource-list').show();
       $('div.remote-resource-list').show();
-      
+
       if($('ul#remote-resource li').length > 0)
         $('div.remote-resource-list img.add').removeClass('ctl').hide();
       else
@@ -983,7 +992,7 @@
       result.itemUrl = result.prefixUrl + result.item;
       return result;
     };
-    
+
     function addAttribute(){
       $.showDialog("dialog/_attribute.html", {
         submit: function(data, callback) {
@@ -1037,7 +1046,7 @@
         }
       }
     };
-    
+
     function uploadAttachment() {
       $.showDialog("dialog/_upload.html", {
         load: function(elem) {
@@ -1095,7 +1104,7 @@
         var uri = uris.itemUrl + "/" + file;
         var contentType = (typeof attachments[file].content_type == "string") ? attachments[file].content_type : "";
         var fancybox_group = (contentType.indexOf("image/") == 0) ? "fancybox_group" : null;
-        
+
         var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"></li>').addClass('attachment').attr("file", file);
         var el_href = $('<a class="editable attachment"></a>').attr('href', uri).html(file);
         if(fancybox_group)
@@ -1105,7 +1114,7 @@
       }
       fbox();
     };
-    
+
     function attachRemoteResource(){
       $.showDialog("dialog/_resource.html", {
         submit: function(data, callback) {
@@ -1178,7 +1187,7 @@
       el_container.append(span_resource);
       $('ul#remote-resource').append(el_container);
     };
-    
+
     function addLocalResource(){
       $.showDialog("dialog/_localresource.html", {
         submit: function(data, callback) {
@@ -1203,7 +1212,7 @@
         }
       });
     };
-    
+
     function attachTopic(){
       $.agorae.topictree.openDialog(
         function(){
@@ -1267,7 +1276,7 @@
         });
       }
     };
-    
+
     function fbox(){
       $("a[rel=fancybox_group]").fancybox({
 				'transitionIn'		: 'none',
@@ -1343,7 +1352,7 @@
           "check_move" : function (m) {
             if(m.o.attr('viewpointid') != m.np.attr('viewpointid'))
               return false;
-              
+
             var p = this._get_parent(m.o);
             if(!p) return false;
             p = p == -1 ? this.get_container() : p;
