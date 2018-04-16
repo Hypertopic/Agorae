@@ -1031,7 +1031,8 @@
       var attributevalue = $(this).parent().attr("attributevalue");
       var uri = $.getUri();
       var uris = parseUri();
-      var el = $('<input type="textbox">').val(attributevalue);
+      var corpusAttributeValues = Object.keys($.agorae.getAttributeValue([uris.prefixUrl+"attribute/"+uris.corpus], attributename));
+      var el = $('<input type="textbox">').val(attributevalue).autocomplete({ source: corpusAttributeValues });
 
     	$(this).replaceWith(el);
     	el.focus(function() { $(this).select(); }).select()
