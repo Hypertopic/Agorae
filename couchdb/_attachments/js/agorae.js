@@ -932,6 +932,7 @@
 
       $('div.item div.attribute-list img.add').click(addAttribute);
       $('div.item div.attribute-list img.del').die().live('click', deleteAttribute);
+      $('div.item div.attribute-list span.editable').die().live('click', updateAttributeValue);
 
       $('div.item ul#topic li[uri] span').die().live('click', $.agorae.viewpointpage.onTopicClick);
     };
@@ -1025,6 +1026,42 @@
         self.parent().remove();
       });
     };
+    function updateAttributeValue(){
+      var attributename = $(this).parent().attr("attributename");
+      var attributevalue = $(this).parent().attr("attributevalue");
+      var uri = $.getUri();
+      var uris = parseUri();
+      var el = $('<input type="textbox">').val(attributevalue);
+
+    	$(this).replaceWith(el);
+    	el.focus(function() { $(this).select(); }).select()
+    	  .mouseup(function(e){ e.preventDefault(); });
+    	el.blur(function(){
+    	  var span = $('<span></span>').addClass('editable');
+        var self = $(this);
+
+        if(self.val() == '' || self.val() == attributevalue)
+    	  {
+    	    span.html(attributevalue);
+    	    self.replaceWith(span);
+    	  }
+    	  else
+    	  {
+    	    var newAttributevalue = $.trim(self.val());
+          $.agorae.undescribeItem(uri, attributename, attributevalue, function(){});
+          self.parent().attr("attributevalue", newAttributevalue)
+            $.agorae.describeItem(uri, attributename, newAttributevalue, function(){
+      	      span.html(newAttributevalue);
+      	      self.replaceWith(span);
+      	    });
+        }
+      });
+    	el.keyup(function(event){
+        if (event.keyCode == 27 || event.keyCode == 13)
+          $(this).blur();
+      });
+      return true;
+    }
     function appendAttribute(name, value){
       value = (typeof(value[0]) == "string") ? value : value[0];
       for(var i=0, v; v = value[i]; i++)
