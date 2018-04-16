@@ -885,9 +885,13 @@
         bars.push({'name': item.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
         var reserved = ["corpus", "id", "highlight", "name", "resource", "topic", "_attachments", "_id"];
-        for(var n in item){
-          if(reserved.indexOf(n) >= 0) continue;
-          appendAttribute(n, item[n]);
+        var corpusAttributes = $.agorae.getAttributeName(item.corpus)
+        for(var n in corpusAttributes){
+          if(item.hasOwnProperty(n)){
+            appendAttribute(n, item[n]);
+          }else{
+            appendAttribute(n, ["corpusAttribute"]);
+          }
         }
 
         if(item.resource)
@@ -976,6 +980,7 @@
       }
       $('div.attributes').show();
       $('ul#attribute').hide();
+      $("div.attribute").filter(function(){ return $(this).find("span[attributevalue]").text() === "corpusAttribute";}).hide();
       ($('ul#local-resource li').length > 0) ? $('div.local-resource-list').show() : $('div.local-resource-list').hide();
       ($('ul#remote-resource li').length > 0) ? $('div.remote-resource-list').show() : $('div.remote-resource-list').hide();
     };
@@ -1026,6 +1031,9 @@
       {
         var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"></li>')
                  .attr("attributename", name).attr("attributevalue", v);
+        if(v === "corpusAttribute"){
+           el = $('<li></li>').attr("attributename", name).attr("attributevalue", v);
+        }
         var protocol = "";
         try{ protocol = $.url.setUrl(v).attr("protocol"); } catch(e){}
         if(protocol == "http" || protocol == "https" || protocol == "ftp" || protocol == "sftp")
@@ -1041,6 +1049,9 @@
           //Is noraml attribute
           var span_name = $('<span class="editable attributename"></span>').text(name);
           var span_value = $('<span class="editable attributevalue"></span>').text(v);
+          if(v === "corpusAttribute"){
+            span_value = $('<span class="editable attributevalue"></span>').text("Cliquez pour éditer");
+          }
           el.append(span_name).append(span_value);
           $('ul#attribute').append(el);
         }
