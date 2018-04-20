@@ -16,6 +16,10 @@
     "to" : "fancybox/*"
   },
   {
+    "from" : "i18n/*",
+    "to" : "i18n/*"
+  },
+  {
     "from" : "page/*",
     "to" : "page/*"
   },

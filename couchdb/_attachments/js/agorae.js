@@ -20,10 +20,18 @@
       }
 
       //Personalize header and footer
-      if($.agorae.config.header)
+      if($.i18n("agorae-header") != "agorae-header"){
+        $('div#header').html($.i18n("agorae-header"));
+      }else if($.agorae.config.header){
         $('div#header').html($.agorae.config.header);
-      if($.agorae.config.footer)
+      }
+      if($.i18n("agorae-footer") != "agorae-footer"){
+        $('div#footer').html($.i18n("agorae-footer"));
+      }else if($.agorae.config.footer){
         $('div#footer').html($.agorae.config.footer);
+      }
+      // init i18n language select
+      $.agorae.i18nlist.init();
 
       //init topic tree dialog
       $.agorae.topictree.init();
@@ -1479,6 +1487,44 @@
       }
     };
   }
+  function I18nList(){
+    this.init = function(){
+      var availableLanguages = Object.keys($.agorae.config.i18n);
+      if(availableLanguages.length > 1){
+      var selectList = $("#languages");
+      for(idx in availableLanguages){
+        if(availableLanguages.hasOwnProperty(idx)){
+          var lang = availableLanguages[idx];
+          var opt = $("<option>"+lang.toUpperCase()+"</option>").val(lang);
+          if($.i18n().locale === lang){
+            opt.attr("selected", "selected");
+          }
+          selectList.append(opt);
+        }
+      }
+      $("#i18n-button").show();
+      selectList.on('change', function(){
+        var selectedLanguage = $("#languages").val();
+        $.cookie('locale', selectedLanguage, { expires: 365});
+        $.i18n().locale = selectedLanguage;
+        // update language
+
+        //Personalized header and footer
+        if($.i18n("agorae-header"))
+          $('div#header').html($.i18n("agorae-header"));
+        if($.i18n("agorae-footer"))
+          $('div#footer').html($.i18n("agorae-footer"));
+        //init topic tree dialog
+        $.agorae.topictree.init();
+        //init item search dialog
+        $.agorae.itemdialog.init();
+
+        $("body").i18n();
+
+      });
+    }
+  }
+  }
   function ItemDialog(){
     this.init = function(){
       $("#item-dialog").dialog({
@@ -1630,6 +1676,7 @@
     topicpage : new TopicPage(),
     itempage : new ItemPage(),
     topictree : new TopicTree(),
-    itemdialog : new ItemDialog()
+    itemdialog : new ItemDialog(),
+    i18nlist : new I18nList()
   });
 })(jQuery);

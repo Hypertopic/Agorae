@@ -26,10 +26,44 @@
 	<script type="text/javascript" src="js/agorae.js"></script>
 	<script type="text/javascript" src="js/agorae.utils.js"></script>
 
+	<!-- Internationalization -->
+	<script type="text/javascript" src="i18n/jquery.i18n.js"></script>
+	<script type="text/javascript" src="i18n/jquery.i18n.messagestore.js"></script>
+	<script type="text/javascript" src="i18n/jquery.i18n.fallbacks.js"></script>
+	<script type="text/javascript" src="i18n/jquery.i18n.parser.js"></script>
+	<script type="text/javascript" src="i18n/jquery.i18n.emitter.js"></script>
+	<script type="text/javascript" src="i18n/jquery.i18n.language.js"></script>
+
 	<script language="javascript">
 	$(function(){
 		var design = "design";
-		$.agorae.pagehelper.init(design);
+		// I18n setup
+		$.agorae.loadConfig(design);
+		if($.agorae.config.i18n){
+			if(!$.cookie('locale')){
+				$.i18n().locale = navigator.language || navigator.userLanguage;
+			}else{
+				$.i18n().locale = $.cookie('locale');
+			}
+
+			var languages = Object.keys($.agorae.config.i18n);
+			if(languages.length == 1){
+				$.i18n().locale = languages[0];
+			}
+
+			$.i18n().load($.agorae.config.i18n).done(function(){
+				if(languages.length > 0){
+					// Init Agorae setup
+					$.agorae.pagehelper.init(design);
+					$('body').i18n();
+				}
+			});
+
+		}else{
+			// Init Agorae setup
+			$.agorae.pagehelper.init(design);
+		}
+
 	});
 	</script>
 	<title>Agorae</title>
@@ -46,6 +80,7 @@
       <span><img border="0" src="css/blitzer/images/shortcut.png"><a id="shortcut" href="#"><span>Rechercher par thème</span></a></span>
       <span class="sign-in"><img border="0" src="css/blitzer/images/sign-in.png"><a id="sign-in" href="#">Se connecter</a></span>
       <span class="sign-out hide"><img border="0" src="css/blitzer/images/sign-out.png"><a id="sign-out"><span>Se déconnecter</span></a></span>
+			<span id="i18n-button" class="hide"><img border="0" src="css/blitzer/images/i18n_symbol.png"><select id="languages"></select></span>
     </div>
   </div>
   <div id="content">
