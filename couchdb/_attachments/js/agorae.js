@@ -211,6 +211,7 @@
           $(dialog).find('input[name="name"]').val(name).focus(function(){ $(this).select(); });
           $(dialog).find('input[name="password"]').val(password);
           $(dialog).find('input[name="cookie"]').prop('checked', cookie=='1');
+          $(dialog).i18n();
         },
         submit: function(data, callback) {
           if (!data.name || data.name.length == 0) {
@@ -259,7 +260,7 @@
     this.init = function(){
       if(!$.agorae.config.servers)
       {
-        $.showMessage({title: "Erreur", content: "Agorae est mal configuré : le serveur Hypertopic n'est pas indiqué."});
+        $.showMessage({title: $.i18n("Erreur"), content: $.i18n("Agorae est mal configuré : le serveur Hypertopic n'est pas indiqué.")});
         return false;
       }
       if($.agorae.config.corpora)
@@ -270,7 +271,7 @@
         $.each($.agorae.config.servers, appendUser);
 
       $.agorae.pagehelper.toggle(true);
-      $.agorae.pagehelper.navigatorBar('<b>Accueil</b>');
+      $.agorae.pagehelper.navigatorBar('<b>'+$.i18n('Accueil')+'</b>');
 
       //Enable the links
       $('div.index div.corpus-list img.add').die().live('click', createCorpus);
@@ -280,6 +281,9 @@
     	$('div.index div.viewpoint-list img.add').bind('click',createViewpoint);
     	$('div.index ul#viewpoint img.del').die().live('click', deleteObject);
     	$('div.index ul#viewpoint li[uri] span').die().live('click', onViewpointClick);
+
+      // I18n update
+      $("body").i18n();
     }
     function getCorpus(idx, corpus){
       if(corpus.indexOf("http") != 0)
@@ -334,10 +338,10 @@
     };
 
     function createCorpus(){
-      $.agorae.createCorpus($.agorae.config.servers[0], 'Sans nom', function(corpus){
+      $.agorae.createCorpus($.agorae.config.servers[0], $.i18n('Sans nom'), function(corpus){
         var corpusUrl = $.agorae.config.servers[0] + 'corpus/' + corpus.id;
         var el = $('<li><img class="del ctl hide" src="css/blitzer/images/delete.png"><span class="editable">'
-                  + 'Sans nom' + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
+                  + $.i18n('Sans nom') + '</span></li>').attr("id", corpus.id).attr("uri", corpusUrl);
         $('ul#corpus').append(el);
         $.agorae.pagehelper.checkController();
       });
@@ -384,7 +388,7 @@
     };
 
     function createViewpoint(){
-      $.agorae.createViewpoint('Sans nom', function(doc){
+      $.agorae.createViewpoint($.i18n('Sans nom'), function(doc){
         appendViewpoint(0, $.agorae.config.servers[0] + "viewpoint/" + doc.id, doc, true);
         $.agorae.pagehelper.checkController();
       });
@@ -443,7 +447,7 @@
     this.init = function(){
       var uri = $.getUri();
       $.agorae.getCorpus(uri, function(corpus){
-        var bars = [{'uri': '#', 'name': 'Accueil'}];
+        var bars = [{'uri': '#', 'name': $.i18n('Accueil')}];
         bars.push({'name': corpus.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
         $.each($.sortByName($.toArray(corpus)), function(i, item) {
@@ -479,7 +483,7 @@
     };
     function createItem(){
       var uri = $.getUri();
-      $.agorae.createItemWithinCorpus(uri, 'Sans nom', function(item){
+      $.agorae.createItemWithinCorpus(uri, $.i18n('Sans nom'), function(item){
         prependItem(item);
         $.agorae.pagehelper.checkController();
       });
@@ -553,7 +557,7 @@
     this.init = function(){
       var uri = $.getUri();
       $.agorae.getViewpoint(uri, function(viewpoint){
-        var bars = [{'uri': '#', 'name': 'Accueil'}];
+        var bars = [{'uri': '#', 'name': $.i18n('Accueil')}];
         bars.push({'name': viewpoint.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
         if(viewpoint.upper)
@@ -567,10 +571,13 @@
       $('div.viewpoint div.topic-list img.add').click(createTopic);
     	$('div.viewpoint div.topic-list img.del').die().live('click', $.agorae.viewpointpage.deleteTopic);
     	$('div.viewpoint ul#topic li[uri] span').die().live('click', $.agorae.viewpointpage.onTopicClick);
+
+      // I18n update
+      $("body").i18n();
     };
     function createTopic(){
       var uri = $.getUri();
-      $.agorae.createTopic(uri, 'sans nom', function(doc){
+      $.agorae.createTopic(uri, $.i18n('Sans nom'), function(doc){
         appendTopic(0, doc);
         $.agorae.pagehelper.checkController();
       });
@@ -645,7 +652,7 @@
     this.init = function(){
       var uri = $.getUri();
       getTopicPath(uri, function(path, topic) {
-        path.unshift({uri: '#', name: 'Accueil'});
+        path.unshift({uri: '#', name: $.i18n('Accueil')});
         $.agorae.pagehelper.navigatorBar(path);
         if(topic.narrower)
           $.each($.sortByName(topic.narrower), appendTopic);
@@ -669,10 +676,13 @@
     	$('div.topic div.item-list img.unlink').die().live('click', unlinkItem);
     	$('div.topic div.item-list img.attach').die().live('click', function(){ $.agorae.itemdialog.open( linkItem );  return false;});
       $('div.topic ul#item span.editable').die().live('click', onItemClick);
+
+      // I18n update
+      $("body").i18n();
     };
     function createTopic(){
       var uri = $.getUri();
-      $.agorae.createTopic(uri, 'Sans nom', function(topic){
+      $.agorae.createTopic(uri, $.i18n('Sans nom'), function(topic){
         var parts = uri.split("/");
         parts.pop();
         parts.push(topic.id);
@@ -747,7 +757,7 @@
         modal: true,
         load: function(dialog){
           //Load default setting from cookie
-          $(dialog).find('input[name="itemName"]').val('sans nom').focus(function(){ $(this).select(); });
+          $(dialog).find('input[name="itemName"]').val($.i18n('Sans nom')).focus(function(){ $(this).select(); });
           var corpusSelect = $(dialog).find('select[name="corpus"]');
           if(corpusSelect.find('option').length > 0)
             corpusSelect.find('option').remove();
@@ -757,6 +767,7 @@
             var el = $('<option></option>').val(corpus.id).attr("uri", corpus.uri).html(corpus.name + "");
             corpusSelect.append(el);
           });
+          $(dialog).i18n();
         },
         submit: function(data, callback) {
           $.log(data);
@@ -889,7 +900,7 @@
       var uri = $.getUri();
       $.agorae.getItem(uri, function(item){
         $.log(item);
-        var bars = [{'uri': '#', 'name': 'Accueil'}];
+        var bars = [{'uri': '#', 'name': $.i18n('Accueil')}];
         bars.push({'name': item.name + ''});
         $.agorae.pagehelper.navigatorBar(bars);
         var reserved = ["corpus", "id", "highlight", "name", "resource", "topic", "_attachments", "_id"];
@@ -912,7 +923,7 @@
           var prefixUrl = $.agorae.getServerUri(uri);
           var corpusUrl = prefixUrl + "corpus/" + item.corpus;
           $.agorae.getCorpus(corpusUrl, function(corpus){
-            var bars = [{'uri': '#', 'name': 'Accueil'}];
+            var bars = [{'uri': '#', 'name': $.i18n('Accueil')}];
             bars.push({'uri': '#' + corpusUrl, 'name': corpus.name + ''});
             bars.push({'name': item.name + ''});
             $.agorae.pagehelper.navigatorBar(bars);
@@ -943,6 +954,9 @@
       $('div.item div.attribute-list span.editable').die().live('click', updateAttributeValue);
 
       $('div.item ul#topic li[uri] span').die().live('click', $.agorae.viewpointpage.onTopicClick);
+
+      // I18n update
+      $("body").i18n();
     };
     function onEditOn(){
       var attributes = {};
@@ -1009,6 +1023,9 @@
 
     function addAttribute(){
       $.showDialog("dialog/_attribute.html", {
+        load: function(dialog){
+          $(dialog).i18n();
+        },
         submit: function(data, callback) {
           if (!data.attributename || data.attributename.length == 0) {
             callback({attributename: "Veuillez saisir le nom d'attribut"});
@@ -1106,7 +1123,8 @@
 
     function uploadAttachment() {
       $.showDialog("dialog/_upload.html", {
-        load: function(elem) {
+        load: function(dialog) {
+          $(dialog).i18n();
         },
         submit: function(data, callback) {
           if (!data._attachments || data._attachments.length == 0) {
@@ -1174,6 +1192,9 @@
 
     function attachRemoteResource(){
       $.showDialog("dialog/_resource.html", {
+        load: function(dialog){
+          $(dialog).i18n();
+        },
         submit: function(data, callback) {
           if (!data.resource || data.resource.length == 0) {
             callback({resource: "L'aderesse de la ressource ne doit pas être vide!"});
@@ -1247,6 +1268,9 @@
 
     function addLocalResource(){
       $.showDialog("dialog/_localresource.html", {
+        load: function(dialog){
+          $(dialog).i18n();
+        },
         submit: function(data, callback) {
           if (!data.attributename || data.attributename.length == 0) {
             callback({attributename: "Veuillez saisir le nom de la ressource"});
@@ -1351,9 +1375,9 @@
         $("#topic-tree-dialog").nextAll('.ui-dialog-buttonpane').prepend(
           '<div id="topictree">'
           + '<input type="radio" id="tt-cloud" name="topictree" />'
-          + '<label for="tt-cloud">Nuage</label>'
+          + '<label for="tt-cloud">'+$.i18n('Nuage')+'</label>'
           + '<input type="radio" id="tt-tree" name="topictree"/>'
-          + '<label for="tt-tree">Arborescence</label>'
+          + '<label for="tt-tree">'+$.i18n('Arborescence')+'</label>'
           +'</div>'
         );
       }
@@ -1443,7 +1467,7 @@
         autoOpen: false,
         modal: true,
         width: 400,
-        title: "Rechercher par thème",
+        title: $.i18n("Rechercher par thème"),
         close: function(){
           $("#tree").jstree('destroy');
         },
@@ -1469,12 +1493,12 @@
       });
     };
     this.openDialog = function(callback){
-      $("#topic-tree-dialog").dialog('option', "buttons", {
-          'Sélectionner': callback,
-          'Annuler': function(){
-            $("#topic-tree-dialog").dialog('close');
-          }
-      }).dialog('open');
+      var labelAction = {};
+      labelAction[$.i18n('Sélectionner')] = callback;
+      labelAction[$.i18n('Annuler')] = function(){
+        $("#topic-tree-dialog").dialog('close');
+      }
+      $("#topic-tree-dialog").dialog('option', "buttons", labelAction).dialog('open');
     };
     this.closeDialog = function(){
       $("#topic-tree-dialog").dialog('close');
@@ -1532,7 +1556,7 @@
         autoOpen: false,
         modal: true,
         width: 500,
-        title: "Rechercher par attributs",
+        title: $.i18n("Rechercher par attributs"),
         close: function(){
           //Clear search result
         },
@@ -1560,12 +1584,12 @@
     this.open = function(callback){
       callback = callback || function(){};
       $("#item-search-result ul li").die().live('click', callback);
-      $("#item-dialog").dialog('option', "buttons", {
-          'Rechercher': doSearch,
-          'Annuler': function(){
-            $("#item-dialog").dialog('close');
-          }
-      }).dialog('open');
+      var labelAction = {};
+      labelAction[$.i18n('Rechercher')] = doSearch;
+      labelAction[$.i18n('Annuler')] = function(){
+        $("#item-dialog").dialog('close');
+      };
+      $("#item-dialog").dialog('option', "buttons", labelAction).dialog('open');
     };
     this.close = function(callback){
       $("#item-dialog").dialog('close');
@@ -1580,8 +1604,8 @@
     function showSearchCondition(){
       $.log($.agorae.itemdialog.names);
       var uuid = $.agorae.newUUID();
-      var el = $('<li style="display: none">Nom : <select class="attributename"><option value=""></option></select>'
-               + ' Valeur : <select class="attributevalue"><option value=""></option></select>'
+      var el = $('<li style="display: none">'+$.i18n("Nom :")+' <select class="attributename"><option value=""></option></select>'
+               + ' '+$.i18n("Valeur :")+'<select class="attributevalue"><option value=""></option></select>'
                +'<button class="plus"></button><button class="minus"></button></li>').attr("id", uuid);
 
       for(var name in $.agorae.itemdialog.names){
@@ -1644,7 +1668,7 @@
         });
         if(uris.length == 0) return;
 
-        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Étape précédente");
+        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html($.i18n("Étape précédente"));
         $('#item-search-result').show().html('<img src="css/blitzer/images/loading.gif" style="padding-left: 1em;">');
         $('#item-search-condition').hide();
         $('#item-search-corpus').hide();
@@ -1662,7 +1686,7 @@
         $('#item-search-condition').show();
         $('#item-search-corpus').show();
         $('#item-search-result').hide();
-        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html("Rechercher");
+        $(this).parents(".ui-dialog").find(".ui-dialog-buttonset").find("button:first span").html($.i18n("Rechercher"));
       }
     };
   }
