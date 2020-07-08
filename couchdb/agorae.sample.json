@@ -5,8 +5,6 @@
     "auth": "http://agorae.local:5984/_session",
     "viewpoints": [],
     "corpora" : [],
-    "header": "<a href='/' style=\"font-size: 260%;color:#FFF;text-decoration:none;\">Tech-CICO</a><br><span style=\"font-size: 130%; font-style: italic;\">Documents partagés de Tech-CICO</span>",
-    "footer": "<span>Powered by<a href=\"http://hypertopic.org/Knowledge_management.html\">AGORAE : Espace de construction coopérative de cartes de thèmes</a><br>Copyright © 2010</span>"
     "i18n": {
       "fr": "i18n/languages/agorae-fr.json",
       "en": "i18n/languages/agorae-en.json"

@@ -1,6 +1,6 @@
 {
-	"agorae-header": "<a href='/' style=\"font-size: 260%;color:#FFF;text-decoration:none;\">Agorae</a><br><span style=\"font-size: 130%; font-style: italic;\">Header to setup with configuration and languages files.</span>",
-	"agorae-footer": "<span>Powered by<a href=\"http://hypertopic.org/Knowledge_management.html\">dev AGORAE : Cooperative knowledge map making space</a><br>Copyright © 2010</span>",
+	"agorae-header": "<a href='/' style=\"font-size: 260%;color:#FFF;text-decoration:none;\">Title</a><br><span style=\"font-size: 130%; font-style: italic;\">And subtitle to setup within translation files</span>",
+	"agorae-footer": "<span>Powered by <a href=\"https://hypertopic.org/agorae\">AGORAE</a>: Cooperative space for knowledge map making</a><br>© Tech-CICO, 2020</span>",
 	"agorae-introduction": "This digital space enables a community to share a set of items. The community members describe the items according to consensual attributes, as well as with topics belonging to different viewpoints.",
 	"Erreur": "Error",
 	"Agorae est mal configuré : le serveur Hypertopic n'est pas indiqué.": "Agorae configuration issue: Hypertopic server is missing.",
