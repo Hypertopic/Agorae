@@ -3,7 +3,7 @@ require 'capybara/poltergeist'
 
 Capybara.run_server = false
 Capybara.default_driver = :poltergeist
-Capybara.app_host = "http://agorae.test.hypertopic.org"
+Capybara.app_host = "http://agorae.local:5984"
 
 $home_page = '/'
 
@@ -12,10 +12,10 @@ def in_dialog()
 end
 
 def log_in_as(login, password)
-  fill_in "Nom d'utilisateur", :with => login
-  fill_in 'Mot de passe', :with => password
-  in_dialog.click_on 'Se connecter'
-  expect(page).not_to have_content 'Connectez-vous'
+  fill_in 'Username', :with => login
+  fill_in 'Password', :with => password
+  in_dialog.click_on 'Log in'
+  expect(page).not_to have_content 'Please log in'
 end
 
 def toggle_edit()

@@ -1,28 +1,31 @@
-sudo: false
+services: docker
 
-services: couchdb
+addons:
+  hosts:
+    - agorae.local
 
 language:
 - ruby
-- python
 
 rvm:
-- 2.2
+- 2.7
 
 cache:
 - bundler
-- pip
 
 install:
+# Install CouchDB
+- docker run -d -p 5984:5984 -v "$(pwd)"/.couchdb.ini:/opt/couchdb/etc/local.d/docker.ini --name couchdb1 couchdb:2
 # Install Argos
-- curl -X PUT localhost:5984/argos
-- pip install --user couchapp
 - wget https://github.com/Hypertopic/Argos/archive/v3.zip
 - unzip v3.zip
-- couchapp push Argos-3 http://localhost:5984/argos
+- docker run --rm -v "$(pwd)"/Argos-3/app:/app --link couchdb1:couchdb -e URI=http://couchdb:5984/argos benel/couchapp push .
 # Install Agorae
 - cp couchdb/agorae.sample.json couchdb/agorae.json
-- couchapp push couchdb http://localhost:5984/argos
+- docker run --rm -v "$(pwd)"/couchdb:/app --link couchdb1:couchdb -e URI=http://couchdb:5984/argos benel/couchapp push .
+# Set up a user
+- curl -X PUT localhost:5984/_users
+- curl -X PUT localhost:5984/_users/org.couchdb.user:alice -H 'Accept:application/json' -H 'Content-Type:application/json' -d '{"name":"alice", "password":"lapinblanc", "roles":[], "type":"user"}'
 # Install testing environment
 - gem install poltergeist rspec
 

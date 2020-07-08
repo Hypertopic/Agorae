@@ -6,7 +6,7 @@ feature 'Create a viewpoint' do
 
   scenario 'a private one' do
     visit $home_page
-    click_on 'Se connecter'
+    click_on 'Log in'
     log_in_as 'alice', 'lapinblanc'
     toggle_edit
     click_plus_sign_next_to 'viewpoint'
