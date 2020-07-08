@@ -17,9 +17,9 @@ install:
 # Install Argos
 - curl -X PUT localhost:5984/argos
 - pip install --user couchapp
-- wget https://github.com/Hypertopic/Argos/archive/master.zip
-- unzip master.zip
-- couchapp push Argos-master http://localhost:5984/argos
+- wget https://github.com/Hypertopic/Argos/archive/v3.zip
+- unzip v3.zip
+- couchapp push Argos-3 http://localhost:5984/argos
 # Install Agorae
 - cp couchdb/agorae.sample.json couchdb/agorae.json
 - couchapp push couchdb http://localhost:5984/argos
