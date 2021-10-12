@@ -9,9 +9,10 @@ function Header() {
       <LogoBox>
         <img src="/img/agorae-simple-logo.png" alt="Agorae Logo picture" />
         <div className="title">Agorae</div>
+        <div className="minidesc">Map21 Project</div>
       </LogoBox>
       <SearchBox>
-        <input type="text" placeholder="Search for topics, names, authors and more" name="" id="" />
+        <input type="text" placeholder="Search for topics, names, authors and more..." name="" id="" />
       </SearchBox>
       <RightBox>
         <Link href="/topics">
@@ -40,7 +41,13 @@ function Header() {
 }
 
 const HeaderBox = styled.div`
-  background-color: white;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  background-color: rgba(255, 255, 255, 0.8);
   height: 50px;
   box-shadow: 0px 14px 62px rgba(0, 0, 0, 0.06);
   justify-content: space-around;
@@ -52,16 +59,25 @@ const LogoBox = styled.div`
   font-weight: bold;
   display: flex;
   justify-content: space-between;
+  color: #4b4a4a;
   img {
     margin-top: auto;
     margin-bottom: auto;
-    width: 40px;
+    width: 35px;
     margin-right: 10px;
   }
   .title {
     margin-top: auto;
     margin-bottom: auto;
     font-size: 20px;
+  }
+  .minidesc{
+    margin-top: auto;
+    margin-bottom: auto;
+    padding-left: 10px;
+    font-weight: 400;
+    font-size: 13px;
+    font-family: 'Domine', serif;
   }
 `;
 
@@ -71,7 +87,7 @@ const SearchBox = styled.div`
   width: 600px;
   input[type="text"] {
     height: 28px;
-    background: #f5f5f5;
+    background: #0144621c;
     border-radius: 5px;
 
     border: none;
@@ -81,7 +97,7 @@ const SearchBox = styled.div`
   }
 
   input[type="text"]::placeholder {
-    opacity: 0.5;
+    color: #01153277;
   }
 `;
 
@@ -97,7 +113,7 @@ const RightBox = styled.div`
     font-size: 16px;
   }
 
-  span{
+  span {
     font-size: 17px;
   }
 `;
