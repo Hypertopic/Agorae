@@ -2,33 +2,38 @@ import React from "react";
 import styled from "styled-components";
 import Image from "next/image";
 import Link from "next/link";
+import { GetStaticPropsContext } from "next";
+import { useTranslations } from "next-intl";
 
 function Header() {
+  const t = useTranslations("header");
   return (
     <HeaderBox>
       <LogoBox>
-        <img src="/img/agorae-simple-logo.png" alt="Agorae Logo picture" />
+        <Link href="/">
+          <img src="/img/agorae-simple-logo.png" alt="Agorae Logo picture" />
+        </Link>
         <div className="title">Agorae</div>
         <div className="minidesc">Map21 Project</div>
       </LogoBox>
       <SearchBox>
-        <input type="text" placeholder="Search for topics, names, authors and more..." name="" id="" />
+        <input type="text" placeholder={t("search")} name="" id="" />
       </SearchBox>
       <RightBox>
         <Link href="/topics">
-          <a>Topics</a>
+          <a>{t("topics")}</a>
         </Link>
         <Link href="">
-          <a>About</a>
+          <a>{t("about")}</a>
         </Link>
         <Link href="">
-          <a>Propose new Item</a>
+          <a>{t("propose")}</a>
         </Link>
         <Link href="">
-          <a>FAQ</a>
+          <a>{t("faq")}</a>
         </Link>
         <Link href="">
-          <a>Contact Us</a>
+          <a>{t("contact-us")}</a>
         </Link>
         <Link href="">
           <a>
@@ -38,6 +43,18 @@ function Header() {
       </RightBox>
     </HeaderBox>
   );
+}
+
+// languages
+export function getStaticProps({ locale }: GetStaticPropsContext) {
+  return {
+    props: {
+      // You can get the messages from anywhere you like, but the recommended
+      // pattern is to put them in JSON files separated by language and read
+      // the desired one based on the `locale` received from Next.js.
+      messages: require(`../lang/locales/${locale}.json`),
+    },
+  };
 }
 
 const HeaderBox = styled.div`
@@ -65,19 +82,23 @@ const LogoBox = styled.div`
     margin-bottom: auto;
     width: 35px;
     margin-right: 10px;
+
+    :hover{
+      cursor: pointer;
+    }
   }
   .title {
     margin-top: auto;
     margin-bottom: auto;
     font-size: 20px;
   }
-  .minidesc{
+  .minidesc {
     margin-top: auto;
     margin-bottom: auto;
     padding-left: 10px;
     font-weight: 400;
     font-size: 13px;
-    font-family: 'Domine', serif;
+    font-family: "Domine", serif;
   }
 `;
 

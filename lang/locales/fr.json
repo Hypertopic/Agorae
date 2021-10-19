@@ -1,0 +1,14 @@
+{
+  "header": {
+    "topics": "Sujets",
+    "about": "A propos",
+    "propose": "Proposer un item",
+    "faq": "FAQ",
+    "contact-us": "Contact",
+    "search": "Chercher des sujets, noms, autheurs.."
+  },
+  "homepage": {
+    "title": "Bienvenue à la Platforme {name}",
+    "description": "{name} is a common mapping device for a generic co-built knowledge map about transitions. This generic scheme is adaptable to specific requirements of each organisation facing transition goals"
+  }
+}
