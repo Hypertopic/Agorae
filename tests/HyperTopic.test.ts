@@ -1,8 +1,12 @@
 import HyperTopic from "../services/HyperTopic";
+import { getAgoraeConfig } from "../services/Config";
 
-const Hyper = new HyperTopic(["http://localhost:5984/argos/_design/argos/_rewrite"]);
+// Config
+const agoraeConfig = getAgoraeConfig();
+
+const Hyper = new HyperTopic([agoraeConfig.argos.url]);
 
 test("Check basic HyperTopic call", async () => {
-  const data = await Hyper.getView("/item/Vitraux%20-%20B%C3%A9nel/85bb03f5e4930f3b9d1ef9afbfa92421b8e2e23b");
+  const data = await Hyper.getView(`/item/${agoraeConfig.argos.corpus}/85bb03f5e4930f3b9d1ef9afbfa92421b8e2e23b`);
   console.log(data);
 });

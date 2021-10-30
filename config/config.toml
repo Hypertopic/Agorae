@@ -1,0 +1,19 @@
+#-------------------------------------------------------------------------------
+# Agorae V2 Config file 
+# ------------------------------------------------------------------------------
+# Created:     30/10/2021
+# Refer to Agorae Docs for more information
+#-------------------------------------------------------------------------------
+# Author : Sweave (Badr BENNASRI)
+#-------------------------------------------------------------------------------
+
+[website]
+color = "soon"
+secondary_title = "Map21 Project"
+title = "Agorae"
+
+[argos]
+url = "http://localhost:5984/argos/_design/argos/_rewrite"
+corpus = "Vitraux%20-%20B%C3%A9nel"
+order = ""
+

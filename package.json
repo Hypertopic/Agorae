@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@ltd/j-toml": "^1.23.0",
     "hypertopic": "^3.4.3",
     "next": "11.1.2",
     "next-intl": "^2.0.5",
