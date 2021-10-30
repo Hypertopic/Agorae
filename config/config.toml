@@ -8,12 +8,12 @@
 #-------------------------------------------------------------------------------
 
 [website]
-color = "soon"
-secondary_title = "Map21 Project"
 title = "Agorae"
+secondary_title = "Map21 Project"
+color = "soon"
 
 [argos]
 url = "http://localhost:5984/argos/_design/argos/_rewrite"
-corpus = "Vitraux%20-%20B%C3%A9nel"
+corpus = "Vitraux - Bénel"
 order = ""
 
