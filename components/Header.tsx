@@ -27,16 +27,16 @@ function Header() {
         <Link href="/topics">
           <a>{t("header.topics")}</a>
         </Link>
-        <Link href="">
+        <Link href="/about">
           <a>{t("header.about")}</a>
         </Link>
-        <Link href="">
+        <Link href="/propose">
           <a>{t("header.propose")}</a>
         </Link>
-        <Link href="">
+        <Link href="/faq">
           <a>{t("header.faq")}</a>
         </Link>
-        <Link href="">
+        <Link href="/contact-us">
           <a>{t("header.contact-us")}</a>
         </Link>
 
