@@ -2,17 +2,19 @@ import Footer from "@components/Footer";
 import Header from "@components/Header";
 import type { GetStaticPropsContext, NextPage } from "next";
 import styled from "styled-components";
+import { getAgoraeConfig } from "../services/Config";
 import { useTranslation } from "react-i18next";
 
 const Home: NextPage = () => {
   const { t, i18n } = useTranslation();
+  const config = getAgoraeConfig();
 
   return (
     <div>
       <Header title="Home" desc="Homepage "></Header>
       <Hero>
-        <h1>{t("homepage.title", { name: "Agorae" })} </h1>
-        <p>{t("homepage.description", { name: "Agorae" })}</p>
+        <h1>{t("homepage.title", { name: config.website.title })} </h1>
+        <p>{t("homepage.description", { name: config.website.title })}</p>
       </Hero>
       <Footer></Footer>
     </div>
