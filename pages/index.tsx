@@ -4,11 +4,19 @@ import type { GetStaticPropsContext, NextPage } from "next";
 import styled from "styled-components";
 import { getAgoraeConfig } from "../services/Config";
 import { useTranslation } from "react-i18next";
+import AgoraeService from "@services/Agorae";
 
 const Home: NextPage = () => {
   const { t, i18n } = useTranslation();
   const config = getAgoraeConfig();
+  const Agorae = new AgoraeService()
 
+  async function test(){
+    const data = await Agorae.getAllCorpusItems();
+    console.log(data);
+  };
+
+  test()
   return (
     <div>
       <Header title="Home" desc="Homepage "></Header>

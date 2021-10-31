@@ -9,6 +9,6 @@
   },
   "homepage": {
     "title": "Bienvenue à la Platforme {{name}}",
-    "description": "{{name}} is a common mapping device for a generic co-built knowledge map about transitions. This generic scheme is adaptable to specific requirements of each organisation facing transition goals"
+    "description": "{{name}} est un dispositif de cartographie commun pour une carte de connaissances générique co-construite sur les transitions. Ce schéma générique est adaptable aux besoins spécifiques de chaque organisation confrontée à des objectifs de transition"
   }
 }
