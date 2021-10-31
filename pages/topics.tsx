@@ -5,9 +5,8 @@ import React from "react";
 function Topics() {
   return (
     <div>
-      <Header></Header>
+      <Header title="Topics"></Header>
       Hello
-      
     </div>
   );
 }

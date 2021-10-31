@@ -9,7 +9,7 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <Header></Header>
+      <Header title="Home" desc="Homepage "></Header>
       <Hero>
         <h1>{t("homepage.title", { name: "Agorae" })} </h1>
         <p>{t("homepage.description", { name: "Agorae" })}</p>
@@ -18,8 +18,6 @@ const Home: NextPage = () => {
     </div>
   );
 };
-
-
 
 const Hero = styled.div`
   margin-top: 30px;
