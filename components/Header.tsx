@@ -1,12 +1,16 @@
 import React from "react";
 import styled from "styled-components";
-import Image from "next/image";
 import Link from "next/link";
-import { GetStaticPropsContext } from "next";
-import { useTranslations } from "next-intl";
+import { useTranslation } from "react-i18next";
 
 function Header() {
-  const t = useTranslations("header");
+  const { t, i18n } = useTranslation();
+
+  function changeLanguage(lang) {
+    window.localStorage.setItem("lng", lang);
+    i18n.changeLanguage(lang);
+  }
+
   return (
     <HeaderBox>
       <LogoBox>
@@ -17,44 +21,50 @@ function Header() {
         <div className="minidesc">Map21 Project</div>
       </LogoBox>
       <SearchBox>
-        <input type="text" placeholder={t("search")} name="" id="" />
+        <input type="text" placeholder={t("header.search")} name="" id="" />
       </SearchBox>
       <RightBox>
         <Link href="/topics">
-          <a>{t("topics")}</a>
+          <a>{t("header.topics")}</a>
         </Link>
         <Link href="">
-          <a>{t("about")}</a>
+          <a>{t("header.about")}</a>
         </Link>
         <Link href="">
-          <a>{t("propose")}</a>
+          <a>{t("header.propose")}</a>
         </Link>
         <Link href="">
-          <a>{t("faq")}</a>
+          <a>{t("header.faq")}</a>
         </Link>
         <Link href="">
-          <a>{t("contact-us")}</a>
+          <a>{t("header.contact-us")}</a>
+        </Link>
+
+        <Link href="">
+          <a
+            onClick={() => {
+              changeLanguage("fr");
+            }}
+            style={{ fontSize: "small" }}
+          >
+            {" "}
+            FR 🇫🇷{" "}
+          </a>
         </Link>
         <Link href="">
-          <a>
-            <span className="material-icons">language</span>
+          <a
+            onClick={() => {
+              changeLanguage("en");
+            }}
+            style={{ fontSize: "small" }}
+          >
+            {" "}
+            EN 🇬🇧{" "}
           </a>
         </Link>
       </RightBox>
     </HeaderBox>
   );
-}
-
-// languages
-export function getStaticProps({ locale }: GetStaticPropsContext) {
-  return {
-    props: {
-      // You can get the messages from anywhere you like, but the recommended
-      // pattern is to put them in JSON files separated by language and read
-      // the desired one based on the `locale` received from Next.js.
-      messages: require(`../lang/locales/${locale}.json`),
-    },
-  };
 }
 
 const HeaderBox = styled.div`
@@ -83,7 +93,7 @@ const LogoBox = styled.div`
     width: 35px;
     margin-right: 10px;
 
-    :hover{
+    :hover {
       cursor: pointer;
     }
   }

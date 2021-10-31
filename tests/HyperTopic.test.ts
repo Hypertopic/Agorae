@@ -1,12 +1,19 @@
 import HyperTopic from "../services/HyperTopic";
 import { getAgoraeConfig } from "../services/Config";
+import AgoraeService from "../services/Agorae";
 
 // Config
 const agoraeConfig = getAgoraeConfig();
 
 const Hyper = new HyperTopic([agoraeConfig.argos.url]);
+const Agorae = new AgoraeService()
 
-test("Check basic HyperTopic call", async () => {
-  const data = await Hyper.getView(`/corpus/${agoraeConfig.argos.corpus}`);
-  console.log(data[agoraeConfig.argos.corpus]);
+
+
+
+test("Check another call", async () => {
+  const data = await Agorae.getAllCorpusItems();
+  const result = data[agoraeConfig.argos.corpus];
+  const array = result.map(item => item);
+  console.log(array[0]);
 });
