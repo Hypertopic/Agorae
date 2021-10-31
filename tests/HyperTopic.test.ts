@@ -9,11 +9,8 @@ const Hyper = new HyperTopic([agoraeConfig.argos.url]);
 const Agorae = new AgoraeService()
 
 
-
-
 test("Check another call", async () => {
   const data = await Agorae.getAllCorpusItems();
   const result = data[agoraeConfig.argos.corpus];
-  const array = result.map(item => item);
-  console.log(array[0]);
+  console.log(result);
 });

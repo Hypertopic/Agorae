@@ -2,23 +2,27 @@ import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import { getAgoraeConfig } from "../services/Config";
 
-function Header() {
+function Header(props) {
   const { t, i18n } = useTranslation();
+  const config = getAgoraeConfig();
 
   function changeLanguage(lang) {
     window.localStorage.setItem("lng", lang);
     i18n.changeLanguage(lang);
   }
 
+  console.log(config)
+
   return (
     <HeaderBox>
       <LogoBox>
-        <Link href="/">
+        <Link passHref href="/">
           <img src="/img/agorae-simple-logo.png" alt="Agorae Logo picture" />
         </Link>
-        <div className="title">Agorae</div>
-        <div className="minidesc">Map21 Project</div>
+        <div className="title">{config.website.title}</div>
+        <div className="minidesc">{config.website.secondary_title}</div>
       </LogoBox>
       <SearchBox>
         <input type="text" placeholder={t("header.search")} name="" id="" />
