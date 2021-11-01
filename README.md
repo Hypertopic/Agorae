@@ -45,23 +45,26 @@ Agorae (this repository) is the Web side of the project that can be connected to
 
 
 Install the node packages : 
-- `npm install` 
+
+`npm install` 
 
 You're installing it in a pipeline ? : 
-- `npm ci` 
+
+`npm ci` 
 ## Dev Environment 
 
 
 To run on a Dev-friendly (NextJS Dev) environment :
 
-- `npm run dev`
+`npm run dev`
 
 > Please refer to : https://nextjs.org/docs/api-reference/cli#development 
 ## Build project 
 
 
-- `npm run build`
-- `npm run start`
+`npm run build`
+
+`npm run start`
 
 > Please refer to : https://nextjs.org/docs/api-reference/cli#production 
 

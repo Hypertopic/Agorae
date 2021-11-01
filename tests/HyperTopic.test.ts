@@ -1,11 +1,11 @@
 import { getAgoraeConfig } from "../services/Config";
-import AgoraeService from "../services/Agorae";
+import ArgosService from "../services/Argos";
 
 // Config
 const agoraeConfig = getAgoraeConfig();
 
 // To change to ArgosService
-const Agorae = new AgoraeService()
+const Agorae = new ArgosService()
 
 
 test("Check for corpus items", async () => {

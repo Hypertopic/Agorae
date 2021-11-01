@@ -1,5 +1,5 @@
-import HyperTopic from "../services/HyperTopic";
-import { getAgoraeConfig } from "../services/Config";
+import HyperTopic from "./HyperTopic";
+import { getAgoraeConfig } from "./Config";
 
 /**
   ------------------------------------------------------------------------------
@@ -7,12 +7,16 @@ import { getAgoraeConfig } from "../services/Config";
   -----------------------------------------------------------------------------
 **/
 
-export default class AgoraeService {
+export default class ArgosService {
   // Init
   private agoraeConfig = getAgoraeConfig();
   private ht = new HyperTopic([this.agoraeConfig.argos.url]);
 
-  // Get all Items
+  /**
+   * Corpus Methods
+   * @returns
+   */
+
   async getAllCorpusItems() {
     const data = await this.ht.getView(`/corpus/${this.agoraeConfig.argos.corpus}`);
     const corpusData = data[this.agoraeConfig.argos.corpus];
@@ -24,5 +28,16 @@ export default class AgoraeService {
     const filteredKeys = keys.filter((key) => key[0] !== "name" && key[0] !== "user");
 
     return filteredKeys;
+  }
+
+  async getCorpusItemsWithPagination(page: number, perPage: number) {
+    let originalArray = this.getAllCorpusItems();
+    let array = originalArray.then((data) => {
+      const start = (page - 1) * perPage;
+      const end = page * perPage;
+      return data.slice(start, end);
+    });
+    let length = originalArray.then((data) => data.length);
+    return { elements: array, length: length };
   }
 }

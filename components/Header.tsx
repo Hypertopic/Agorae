@@ -104,6 +104,13 @@ function Header(props) {
   );
 }
 
+
+/**
+ * Styling
+ * CSS with Styled Components
+ * https://styled-components.com/docs 
+ */
+
 const HeaderBox = styled.div`
   position: fixed;
   top: 0;

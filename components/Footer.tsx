@@ -9,6 +9,12 @@ function Footer() {
   );
 }
 
+/**
+ * Styling
+ * CSS with Styled Components
+ * https://styled-components.com/docs 
+ */
+
 const FooterBox = styled.div`
   position: fixed;
   text-align: center;
