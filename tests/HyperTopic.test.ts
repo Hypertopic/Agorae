@@ -5,11 +5,8 @@ import ArgosService from "../services/Argos";
 const agoraeConfig = getAgoraeConfig();
 
 // To change to ArgosService
-const Agorae = new ArgosService()
-
+const Agorae = new ArgosService();
 
 test("Check for corpus items", async () => {
-  const data = await Agorae.getAllCorpusItems();
-  const result = data[agoraeConfig.argos.corpus];
-  console.log(result);
+  console.log("will be implemented later...");
 });
