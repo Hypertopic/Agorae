@@ -1,0 +1,17 @@
+{
+  "header": {
+    "topics": "Sujets",
+    "about": "A Propos",
+    "propose": "Proposer un item",
+    "faq": "FAQ",
+    "contact-us": "Contact",
+    "search": "Chercher des sujets, noms, autheurs.."
+  },
+  "homepage": {
+    "title": "Bienvenue à la Platforme {{name}}",
+    "description": "{{name}} est un dispositif de cartographie commun pour une carte de connaissances générique co-construite sur les transitions. Ce schéma générique est adaptable aux besoins spécifiques de chaque organisation confrontée à des objectifs de transition"
+  },
+  "item_element":{
+    "more_details" : "En savoir plus"
+  }
+}
