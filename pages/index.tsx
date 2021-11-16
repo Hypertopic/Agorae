@@ -26,13 +26,12 @@ const Home = () => {
   // Get
   async function getCorpusItems(page) {
     const Argos = new ArgosService();
-    const data = await Argos.getCorpusItemsWithPagination(page, 8);
+    const data = await Argos.getCorpusItemsWithPagination(page, 8, config.argos.home_corpus);
     const elements = await data.elements;
     const length = await data.length;
 
     // Calculate page nbr
     let pagesNbr = length / 8;
-    
 
     // Set states
     setElements(elements);
@@ -53,23 +52,21 @@ const Home = () => {
       );
     } else {
       return (
-        
-        <div style={{top: "-120px",position:"relative"}}>
-          <PagesLinks pagesCount={pagesNumber} ></PagesLinks>
+        <div style={{ top: "-120px", position: "relative" }}>
+          <PagesLinks pagesCount={pagesNumber}></PagesLinks>
           <ElementsList>
-          
-          {elements.map((item) => (
-            <ItemElement
-              title={item["1"].name}
-              preview={item["1"].thumbnail}
-              creator={item["1"].creator}
-              creation_date={item["1"].creation_date}
-              description={item["1"].description}
-              key={item["1"].key}
-              id={item["O"]}
-            />
-          ))}
-        </ElementsList>
+            {elements.map((item) => (
+              <ItemElement
+                title={item["1"].name}
+                preview={item["1"].thumbnail}
+                creator={item["1"].creator}
+                creation_date={item["1"].creation_date}
+                description={item["1"].description}
+                key={item["1"].key}
+                id={item["O"]}
+              />
+            ))}
+          </ElementsList>
         </div>
       );
     }
@@ -87,11 +84,10 @@ const Home = () => {
   );
 };
 
-
 /**
  * Styling
  * CSS with Styled Components
- * https://styled-components.com/docs 
+ * https://styled-components.com/docs
  */
 
 const ElementsList = styled.div`

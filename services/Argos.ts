@@ -17,7 +17,7 @@ export default class ArgosService {
    * @returns
    */
 
-  async getAllCorpusItems() {
+  async getAllCorpusItemsOld() {
     const data = await this.ht.getView(`/corpus/${this.agoraeConfig.argos.corpus}`);
     const corpusData = data[this.agoraeConfig.argos.corpus];
 
@@ -30,14 +30,48 @@ export default class ArgosService {
     return filteredKeys;
   }
 
-  async getCorpusItemsWithPagination(page: number, perPage: number) {
-    let originalArray = this.getAllCorpusItems();
-    let array = originalArray.then((data) => {
-      const start = (page - 1) * perPage;
-      const end = page * perPage;
-      return data.slice(start, end);
+  /**
+   * Generic async foreach method
+   * @param array
+   * @param callback
+   */
+  async asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
+  async getAllCorpusItems(corpus) {
+    let corpuses = [];
+    let result = [];
+
+    if (corpus === "*") {
+      corpuses = this.agoraeConfig.argos.available_corpuses;
+    } else {
+      corpuses = corpus;
+    }
+
+    await this.asyncForEach(corpuses, async (corpus) => {
+      const data = await this.ht.getView(`/corpus/${corpus}`);
+      const corpusData = data[corpus];
+
+      // Create an array of elements
+      const keys = Object.entries(corpusData);
+
+      // Remove elements with array key "name" and "user" from keys array
+      const filteredKeys = keys.filter((key) => key[0] !== "name" && key[0] !== "user");
+
+      result = result.concat(filteredKeys);
     });
-    let length = originalArray.then((data) => data.length);
-    return { elements: array, length: length };
+
+    return result;
+  }
+
+  async getCorpusItemsWithPagination(page: number, perPage: number, corpus) {
+    let OriginalArray = await this.getAllCorpusItems(corpus);
+    let PaginatedArray = OriginalArray.slice(page * perPage, (page + 1) * perPage);
+    let ArrayLength = OriginalArray.length;
+
+    return { elements: PaginatedArray, length: ArrayLength };
   }
 }

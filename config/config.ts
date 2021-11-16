@@ -4,7 +4,7 @@
 // Created:     30/10/2021
 // Refer to Agorae Docs for more information
 //-------------------------------------------------------------------------------
-// Author : Sweave (Badr BENNASRI)
+// Author : Sweave (Badr B.)
 //-------------------------------------------------------------------------------
 
 const configFile = {
@@ -23,7 +23,8 @@ const configFile = {
   },
   argos: {
     url: "http://localhost:5984/argos/_design/argos/_rewrite",
-    corpus: "Vitraux - Bénel",
+    available_corpuses: ["Vitraux - Bénel", "Vitraux - Bénel"],
+    home_corpus: ["Vitraux - Bénel"], // can be * if you want to use all available corpuses
     order: "",
   },
 };
