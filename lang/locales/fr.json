@@ -13,5 +13,14 @@
   },
   "item_element":{
     "more_details" : "En savoir plus"
+  },
+  "contact": {
+    "title": "Contactez nous",
+    "description": "Si vous avez des questions ou des commentaires merci de nous contacter ",
+    "values": {
+      "name": "Nom",
+      "email": "Email",
+      "message": "Message"
+    }
   }
 }

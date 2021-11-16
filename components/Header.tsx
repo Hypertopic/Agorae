@@ -72,7 +72,7 @@ function Header(props) {
           <Link href="/faq">
             <a>{t("header.faq")}</a>
           </Link>
-          <Link href="/contact-us">
+          <Link href="/contact">
             <a>{t("header.contact-us")}</a>
           </Link>
 
