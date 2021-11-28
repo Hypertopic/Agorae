@@ -23,7 +23,7 @@ const configFile = {
   },
   argos: {
     url: "http://localhost:5984/argos/_design/argos/_rewrite",
-    available_corpuses: ["Vitraux - Bénel", "Vitraux - Bénel"],
+    available_corpuses: ["Vitraux - Bénel", "Corpus de Test"],
     home_corpus: ["Vitraux - Bénel"], // can be * if you want to use all available corpuses
     order: "",
   },

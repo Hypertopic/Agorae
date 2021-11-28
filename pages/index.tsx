@@ -31,7 +31,7 @@ const Home = () => {
     const length = await data.length;
 
     // Calculate page nbr
-    let pagesNbr = length / 8;
+    let pagesNbr = Math.ceil(length / 8);
 
     // Set states
     setElements(elements);
