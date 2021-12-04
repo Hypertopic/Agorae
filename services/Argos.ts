@@ -72,7 +72,7 @@ export default class ArgosService {
     let AdaptedPageNumber = page - 1;
     let PaginatedArray = OriginalArray.slice(AdaptedPageNumber * perPage, (AdaptedPageNumber + 1) * perPage);
     let ArrayLength = OriginalArray.length;
-    
+    console.log(PaginatedArray);
     return { elements: PaginatedArray, length: ArrayLength };
   }
 }

@@ -59,9 +59,9 @@ const Home = () => {
               <ItemElement
                 title={item["1"].name}
                 preview={item["1"].thumbnail}
-                creator={item["1"].creator}
-                creation_date={item["1"].creation_date}
-                description={item["1"].description}
+                creator={item["1"]['048 organisation:']}
+                creation_date={item["1"]['045 date de début:']}
+                description={item["1"]['030 résumé:']}
                 key={item["1"].key}
                 id={item["O"]}
               />
