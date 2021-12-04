@@ -18,7 +18,11 @@ function ItemElement({ title, preview, creator, description, id, creation_date }
         <Date>{creation_date}</Date>
       </InfoBox>
       <Bottom>
-        <Button>{t("item_element.more_details")}</Button>
+        <Button>
+          <Link href={"/corpus/id/"+id}>
+            <a>{t("item_element.more_details")}</a>
+          </Link>
+        </Button>
       </Bottom>
     </ElementBox>
   );
@@ -54,7 +58,7 @@ const Title = styled.div`
   font-weight: bold;
 `;
 const Author = styled.div`
-padding-top: 5px;
+  padding-top: 5px;
   font-size: 16px;
   opacity: 0.5;
 `;

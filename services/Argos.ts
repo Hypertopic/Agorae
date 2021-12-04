@@ -75,4 +75,14 @@ export default class ArgosService {
     console.log(PaginatedArray);
     return { elements: PaginatedArray, length: ArrayLength };
   }
+
+  /**
+   * Item Method
+   * @returns
+   */
+
+   async getItemData(corpusID,itemID) {
+    const data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
+    return data
+  }
 }

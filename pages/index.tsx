@@ -63,7 +63,7 @@ const Home = () => {
                 creation_date={item["1"]['045 date de début:']}
                 description={item["1"]['030 résumé:']}
                 key={item["1"].key}
-                id={item["O"]}
+                id={item[0]}
               />
             ))}
           </ElementsList>
