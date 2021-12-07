@@ -1,6 +1,7 @@
 {
   "header": {
-    "topics": "Topics",
+    "corpus": "Corpuses",
+    "viewpoint" : "Viewpoints", 
     "about": "About",
     "propose": "Propose new Item",
     "faq": "FAQ",

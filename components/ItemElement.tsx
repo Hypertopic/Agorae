@@ -9,7 +9,7 @@ function ItemElement({ title, preview, creator, description, id, creation_date }
   return (
     <ElementBox id={id}>
       <Preview>
-        <img src={preview} alt={`Picture of ` + title} />
+        <img src={preview ? preview : "/img/imgnotfound.png"} alt={`Picture of ` + title} />
       </Preview>
       <InfoBox>
         <Title>{title}</Title>
@@ -18,17 +18,20 @@ function ItemElement({ title, preview, creator, description, id, creation_date }
         <Date>{creation_date}</Date>
       </InfoBox>
       <Bottom>
-        <Button>{t("item_element.more_details")}</Button>
+        <Button>
+          <Link href={"/corpus/id/"+id}>
+            <a>{t("item_element.more_details")}</a>
+          </Link>
+        </Button>
       </Bottom>
     </ElementBox>
   );
 }
 
-
 /**
  * Styling
  * CSS with Styled Components
- * https://styled-components.com/docs 
+ * https://styled-components.com/docs
  */
 
 const ElementBox = styled.div`
@@ -44,23 +47,29 @@ const ElementBox = styled.div`
 const Preview = styled.div`
   img {
     width: 100%;
-    height: 150px;
   }
 `;
 const InfoBox = styled.div`
   padding: 20px;
+  height: 190px;
 `;
 const Title = styled.div`
   font-size: 20px;
   font-weight: bold;
 `;
 const Author = styled.div`
+  padding-top: 5px;
   font-size: 16px;
   opacity: 0.5;
 `;
 const Description = styled.div`
   padding-top: 10px;
-  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
 `;
 const Date = styled.div`
   padding-top: 10px;

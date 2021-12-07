@@ -69,9 +69,20 @@ export default class ArgosService {
 
   async getCorpusItemsWithPagination(page: number, perPage: number, corpus) {
     let OriginalArray = await this.getAllCorpusItems(corpus);
-    let PaginatedArray = OriginalArray.slice(page * perPage, (page + 1) * perPage);
+    let AdaptedPageNumber = page - 1;
+    let PaginatedArray = OriginalArray.slice(AdaptedPageNumber * perPage, (AdaptedPageNumber + 1) * perPage);
     let ArrayLength = OriginalArray.length;
-
+    console.log(PaginatedArray);
     return { elements: PaginatedArray, length: ArrayLength };
+  }
+
+  /**
+   * Item Method
+   * @returns
+   */
+
+   async getItemData(corpusID,itemID) {
+    const data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
+    return data
   }
 }

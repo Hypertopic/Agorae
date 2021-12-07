@@ -22,9 +22,9 @@ const configFile = {
     theme_color: "#fbfdff",
   },
   argos: {
-    url: "http://localhost:5984/argos/_design/argos/_rewrite",
-    available_corpuses: ["Vitraux - Bénel", "Vitraux - Bénel"],
-    home_corpus: ["Vitraux - Bénel"], // can be * if you want to use all available corpuses
+    url: "http://95.142.173.52:5984/argosmap21v4/_design/argos/_rewrite",
+    available_corpuses: ["2ba774a7cbd1e14fa45e57ba0000f2ac", "2ba774a7cbd1e14fa45e57ba0000fa79", "6cc411d06b5890af3601957b5d014265", "6cc411d06b5890af3601957b5d015025"],
+    home_corpus: ["2ba774a7cbd1e14fa45e57ba0000fa79"], // can be * if you want to use all available corpuses
     order: "",
   },
 };

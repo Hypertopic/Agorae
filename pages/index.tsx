@@ -31,7 +31,7 @@ const Home = () => {
     const length = await data.length;
 
     // Calculate page nbr
-    let pagesNbr = length / 8;
+    let pagesNbr = Math.ceil(length / 8);
 
     // Set states
     setElements(elements);
@@ -59,11 +59,11 @@ const Home = () => {
               <ItemElement
                 title={item["1"].name}
                 preview={item["1"].thumbnail}
-                creator={item["1"].creator}
-                creation_date={item["1"].creation_date}
-                description={item["1"].description}
+                creator={item["1"]['048 organisation:']}
+                creation_date={item["1"]['045 date de début:']}
+                description={item["1"]['030 résumé:']}
                 key={item["1"].key}
-                id={item["O"]}
+                id={item[0]}
               />
             ))}
           </ElementsList>

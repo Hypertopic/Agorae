@@ -60,8 +60,11 @@ function Header(props) {
           <input type="text" placeholder={t("header.search")} name="" id="" />
         </SearchBox>
         <RightBox>
-          <Link href="/topics">
-            <a>{t("header.topics")}</a>
+          <Link href="/corpus">
+            <a>{t("header.corpus")}</a>
+          </Link>
+          <Link href="/viewpoint">
+            <a>{t("header.viewpoint")}</a>
           </Link>
           <Link href="/about">
             <a>{t("header.about")}</a>
