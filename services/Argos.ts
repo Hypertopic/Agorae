@@ -61,6 +61,12 @@ export default class ArgosService {
       // Remove elements with array key "name" and "user" from keys array
       const filteredKeys = keys.filter((key) => key[0] !== "name" && key[0] !== "user");
 
+      // Add CorpusID to each element
+      filteredKeys.forEach((element) => {
+       element[1]['corpus_id'] = [corpus];
+       
+      });
+
       result = result.concat(filteredKeys);
     });
 
@@ -83,6 +89,11 @@ export default class ArgosService {
 
    async getItemData(corpusID,itemID) {
     const data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
-    return data
+
+    const itemData = data[corpusID][itemID];
+    // Add CorpusID to each element
+    itemData['corpus_id'] = [corpusID];
+    
+    return itemData
   }
 }

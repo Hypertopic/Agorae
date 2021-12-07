@@ -18,6 +18,7 @@ const Home = () => {
 
   const localPage = p ? p : "1";
 
+
   // React State
   const [elements, setElements] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,6 +63,7 @@ const Home = () => {
                 creator={item["1"]['048 organisation:']}
                 creation_date={item["1"]['045 date de début:']}
                 description={item["1"]['030 résumé:']}
+                corpus_id={item["1"].corpus_id}
                 key={item["1"].key}
                 id={item[0]}
               />

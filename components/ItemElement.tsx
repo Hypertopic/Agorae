@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import Image from "next/image";
 
-function ItemElement({ title, preview, creator, description, id, creation_date }) {
+function ItemElement({ title, preview, creator, description, id, creation_date, corpus_id }) {
   const { t, i18n } = useTranslation();
   return (
     <ElementBox id={id}>
@@ -19,7 +19,7 @@ function ItemElement({ title, preview, creator, description, id, creation_date }
       </InfoBox>
       <Bottom>
         <Button>
-          <Link href={"/corpus/id/"+id}>
+          <Link href={"/corpus/"+corpus_id+"/item/"+id}>
             <a>{t("item_element.more_details")}</a>
           </Link>
         </Button>
