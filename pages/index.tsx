@@ -9,6 +9,7 @@ import ItemElement from "@components/ItemElement";
 import { useRouter } from "next/router";
 import ElementsLoader from "@components/ElementsLoader";
 import PagesLinks from "@components/PagesLinks";
+import { AnimatePresence } from "framer-motion";
 
 const Home = () => {
   const { t, i18n } = useTranslation();
@@ -53,6 +54,7 @@ const Home = () => {
       );
     } else {
       return (
+        <AnimatePresence>
         <div style={{ top: "-120px", position: "relative" }}>
           <PagesLinks pagesCount={pagesNumber}></PagesLinks>
           <ElementsList>
@@ -70,6 +72,7 @@ const Home = () => {
             ))}
           </ElementsList>
         </div>
+        </AnimatePresence>
       );
     }
   }

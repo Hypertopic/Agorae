@@ -3,12 +3,25 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion"
 import PreviewRender from "./UI/PreviewRender";
 
 function ItemElement({ title, preview, creator, description, id, creation_date, corpus_id }) {
   const { t, i18n } = useTranslation();
   return (
-    <ElementBox id={id}>
+    
+    <ElementBox
+      as={motion.div}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+      }}
+      exit={{ opacity: 0 }}
+      id={title}
+    >
       <Preview>
         <PreviewRender source={preview} alt={`Picture of ` + title} />
       </Preview>
@@ -36,6 +49,11 @@ function ItemElement({ title, preview, creator, description, id, creation_date, 
  */
 
 const ElementBox = styled.div`
+  transition-property: opacity;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+
+  opacity: 1;
   box-shadow: 0 9px 11px 2px rgb(3 27 78 / 5%);
   width: 40px;
   background-color: white;
