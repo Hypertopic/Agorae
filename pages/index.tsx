@@ -59,7 +59,7 @@ const Home = () => {
             {elements.map((item) => (
               <ItemElement
                 title={item["1"].name}
-                preview={item["1"].thumbnail}
+                preview={item["1"]['image/video'] ? item["1"]['image/video'] : '/img/imgnotfound.png'}
                 creator={item["1"]['048 organisation:']}
                 creation_date={item["1"]['045 date de début:']}
                 description={item["1"]['030 résumé:']}

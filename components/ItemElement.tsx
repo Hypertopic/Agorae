@@ -3,13 +3,14 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import Image from "next/image";
+import PreviewRender from "./UI/PreviewRender";
 
 function ItemElement({ title, preview, creator, description, id, creation_date, corpus_id }) {
   const { t, i18n } = useTranslation();
   return (
     <ElementBox id={id}>
       <Preview>
-        <img src={preview ? preview : "/img/imgnotfound.png"} alt={`Picture of ` + title} />
+        <PreviewRender source={preview} alt={`Picture of ` + title} />
       </Preview>
       <InfoBox>
         <Title>{title}</Title>
@@ -19,7 +20,7 @@ function ItemElement({ title, preview, creator, description, id, creation_date, 
       </InfoBox>
       <Bottom>
         <Button>
-          <Link href={"/corpus/"+corpus_id+"/item/"+id}>
+          <Link href={"/corpus/" + corpus_id + "/item/" + id}>
             <a>{t("item_element.more_details")}</a>
           </Link>
         </Button>
