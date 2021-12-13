@@ -11,7 +11,7 @@ const configFile = {
   website: {
     title: "Agorae",
     secondary_title: "Map21 Project",
-    color: "soon",
+    colors: ["#0393f4", "#3f51b5"]
   },
   seo: {
     title: "Agorae",

@@ -2,7 +2,7 @@ import Footer from "@components/Footer";
 import React, { useState, useEffect } from "react";
 import Header from "@components/Header";
 import styled from "styled-components";
-import { getAgoraeConfig } from "../services/Config";
+import { getAgoraeConfig } from "@services/Config";
 import { useTranslation } from "react-i18next";
 import ArgosService from "@services/Argos";
 import ItemElement from "@components/ItemElement";
@@ -18,7 +18,6 @@ const Home = () => {
   const config = getAgoraeConfig();
 
   const localPage = p ? p : "1";
-
 
   // React State
   const [elements, setElements] = useState([]);
@@ -55,23 +54,23 @@ const Home = () => {
     } else {
       return (
         <AnimatePresence>
-        <div style={{ top: "-120px", position: "relative" }}>
-          <PagesLinks pagesCount={pagesNumber}></PagesLinks>
-          <ElementsList>
-            {elements.map((item) => (
-              <ItemElement
-                title={item["1"].name}
-                preview={item["1"]['image/video'] ? item["1"]['image/video'] : '/img/imgnotfound.png'}
-                creator={item["1"]['048 organisation:']}
-                creation_date={item["1"]['045 date de début:']}
-                description={item["1"]['030 résumé:']}
-                corpus_id={item["1"].corpus_id}
-                key={item["1"].key}
-                id={item[0]}
-              />
-            ))}
-          </ElementsList>
-        </div>
+          <div style={{ top: "-120px", position: "relative" }}>
+            <PagesLinks pagesCount={pagesNumber}></PagesLinks>
+            <ElementsList>
+              {elements.map((item) => (
+                <ItemElement
+                  title={item["1"].name}
+                  preview={item["1"]["image/video"] ? item["1"]["image/video"] : "/img/imgnotfound.png"}
+                  creator={item["1"]["048 organisation:"]}
+                  creation_date={item["1"]["045 date de début:"]}
+                  description={item["1"]["030 résumé:"]}
+                  corpus_id={item["1"].corpus_id}
+                  key={item["1"].key}
+                  id={item[0]}
+                />
+              ))}
+            </ElementsList>
+          </div>
         </AnimatePresence>
       );
     }
@@ -95,6 +94,7 @@ const Home = () => {
  * https://styled-components.com/docs
  */
 
+const config = getAgoraeConfig();
 const ElementsList = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -108,7 +108,7 @@ const Hero = styled.div`
   padding-top: 30px;
   color: white;
   text-align: center;
-  background-image: linear-gradient(39deg, #0393f4 0, #3f51b5);
+  background-image: linear-gradient(39deg, ${config.website.colors[0]}, ${config.website.colors[1]});
   height: 320px;
 
   h1 {
