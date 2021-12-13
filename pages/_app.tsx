@@ -1,12 +1,12 @@
-import "../styles/globals.css";
+import "../public/styles/globals.css";
 import type { AppProps } from "next/app";
 import i18n from "i18next";
 import { useTranslation, initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
 // Language imports
-import translationFR from "../lang/fr.json";
-import translationEN from "../lang/en.json";
+import translationFR from "../config/lang/fr.json";
+import translationEN from "../config/lang/en.json";
 
 i18n
   .use(initReactI18next)
