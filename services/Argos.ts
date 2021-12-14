@@ -63,8 +63,7 @@ export default class ArgosService {
 
       // Add CorpusID to each element
       filteredKeys.forEach((element) => {
-       element[1]['corpus_id'] = [corpus];
-       
+        element[1]["corpus_id"] = [corpus];
       });
 
       result = result.concat(filteredKeys);
@@ -87,13 +86,32 @@ export default class ArgosService {
    * @returns
    */
 
-   async getItemData(corpusID,itemID) {
+  async getItemData(corpusID, itemID) {
     const data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
 
     const itemData = data[corpusID][itemID];
     // Add CorpusID to each element
-    itemData['corpus_id'] = [corpusID];
+    itemData["corpus_id"] = [corpusID];
+
+    return itemData;
+  }
+
+  /**
+   * Get All Corpuses
+   *
+   */
+  async getAllCorpuses() {
+    const availableCorpuses = this.agoraeConfig.argos.available_corpuses;
+    let corpuses = [];
+
+    await this.asyncForEach(availableCorpuses, async (corpusID) => {
+      const data = await this.ht.getView(`/corpus/${corpusID}`);
+
+      let corpus_name = data[corpusID].name;
+      let corpus_id = corpusID;
+      corpuses.push({ corpus_name, corpus_id });
+    });
     
-    return itemData
+    return corpuses;
   }
 }

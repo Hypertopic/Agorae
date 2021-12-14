@@ -62,6 +62,13 @@ const ElementBox = styled.div`
   overflow: hidden;
   margin-right: 25px;
   margin-bottom: 60px;
+  transition: transform .2s;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 14px 62px rgb(0 0 0 / 20%);
+    cursor: pointer;
+  }
 `;
 const Preview = styled.div`
   img {
