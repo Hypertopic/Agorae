@@ -1,8 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
-function Separator() {
-  return <SeparatorDiv></SeparatorDiv>;
+interface SepProps {
+  readonly size: number;
+}
+
+function Separator({ size }) {
+  return <SeparatorDiv size={size}></SeparatorDiv>;
 }
 
 export default Separator;
@@ -13,6 +17,6 @@ export default Separator;
  * https://styled-components.com/docs
  */
 
-const SeparatorDiv = styled.div`
-  padding-top: 50px;
+const SeparatorDiv = styled.div<SepProps>`
+  padding-top: ${(props) => props.size}0px;
 `;

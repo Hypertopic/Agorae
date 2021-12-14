@@ -11,10 +11,10 @@ function Contact() {
     <div>
       <Header title="Contact" desc="Contact page "></Header>
       <Layout>
-        <Separator></Separator>
+      <Separator size={5}></Separator>
         <h1>{t("contact.title")}</h1>
         <p>{t("contact.description")}</p>
-        <Separator></Separator>
+        <Separator size={2}></Separator>
         <Formik
           initialValues={{ name: "", email: "", message: "" }}
           validate={(values) => {

@@ -114,4 +114,25 @@ export default class ArgosService {
     
     return corpuses;
   }
+
+  /**
+   * Get All Corpuses
+   *
+   */
+   async getAllViewpoints() {
+    const availableViewpoints = this.agoraeConfig.argos.available_viewpoints;
+    let viewpoints = [];
+
+    await this.asyncForEach(availableViewpoints, async (viewpointID) => {
+      const data = await this.ht.getView(`/viewpoint/${viewpointID}`);
+
+      let viewpoint_name = data[viewpointID].name;
+      let viewpoint_id = viewpointID;
+      viewpoints.push({ viewpoint_name, viewpoint_id });
+    });
+    console.log(viewpoints);
+    
+    
+    return viewpoints;
+  }
 }

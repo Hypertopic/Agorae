@@ -27,7 +27,7 @@ const Corpus = () => {
     return (
       <div>
         <Header></Header>
-        <Separator></Separator>
+        <Separator size={5}></Separator>
         <div style={{ margin: "auto", textAlign: "center" }}>
           <ElementsLoader></ElementsLoader>
         </div>
@@ -37,10 +37,10 @@ const Corpus = () => {
     return (
       <div>
         <Header></Header>
-        <Separator></Separator>
-        <div style={{ margin: "50px" }}>
+        <Separator size={5}></Separator>
+        <Layout>
           <h1>Corpuses</h1>
-          <Separator></Separator>
+          <Separator size={1}></Separator>
           <ListOfCorpuses>
             {readableCorpuses.map((corpus) => (
               <Link key={corpus.corpus_id} href={"/corpus/" + corpus.corpus_id}>
@@ -50,7 +50,7 @@ const Corpus = () => {
               </Link>
             ))}
           </ListOfCorpuses>
-        </div>
+        </Layout>
       </div>
     );
   }

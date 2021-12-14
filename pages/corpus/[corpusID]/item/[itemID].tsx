@@ -25,7 +25,7 @@ const Comment = () => {
   return (
     <>
       <Header></Header>
-      <Separator></Separator>
+      <Separator size={5}></Separator>
       <h3>{corpusID} {">"} {itemID}</h3>
       <h1>{ItemData.name}</h1>
       <img src={ItemData["image/video"]} alt="" />
