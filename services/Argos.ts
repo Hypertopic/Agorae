@@ -74,10 +74,10 @@ export default class ArgosService {
 
   async getCorpusItemsWithPagination(page: number, perPage: number, corpus) {
     let OriginalArray = await this.getAllCorpusItems(corpus);
+
     let AdaptedPageNumber = page - 1;
     let PaginatedArray = OriginalArray.slice(AdaptedPageNumber * perPage, (AdaptedPageNumber + 1) * perPage);
     let ArrayLength = OriginalArray.length;
-    console.log(PaginatedArray);
     return { elements: PaginatedArray, length: ArrayLength };
   }
 
@@ -111,15 +111,27 @@ export default class ArgosService {
       let corpus_id = corpusID;
       corpuses.push({ corpus_name, corpus_id });
     });
-    
+
     return corpuses;
   }
 
+
   /**
-   * Get All Corpuses
+   * Get Corpus Metadata
    *
    */
-   async getAllViewpoints() {
+  async getCorpusMetaData(corpusID) {
+    const data = await this.ht.getView(`/corpus/${corpusID}`);
+    let corpus_name = data[corpusID].name;
+    let corpus_id = corpusID;
+    return { corpus_name, corpus_id };
+  }
+
+  /**
+   * Get All Viewpoints
+   *
+   */
+  async getAllViewpoints() {
     const availableViewpoints = this.agoraeConfig.argos.available_viewpoints;
     let viewpoints = [];
 
@@ -130,9 +142,7 @@ export default class ArgosService {
       let viewpoint_id = viewpointID;
       viewpoints.push({ viewpoint_name, viewpoint_id });
     });
-    console.log(viewpoints);
-    
-    
+
     return viewpoints;
   }
 }

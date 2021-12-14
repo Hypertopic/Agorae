@@ -36,7 +36,7 @@ const Corpus = () => {
   } else {
     return (
       <div>
-        <Header></Header>
+        <Header title="Corpuses"></Header>
         <Separator size={5}></Separator>
         <Layout>
           <h1>Corpuses</h1>

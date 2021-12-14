@@ -20,7 +20,6 @@ function Viewpoint() {
 
   useEffect(() => {
     getViewpoints();
-    console.log(readableViewpoints);
   }, [isLoading]);
 
   if (isLoading) {
@@ -36,7 +35,7 @@ function Viewpoint() {
   } else {
     return (
       <div>
-        <Header></Header>
+        <Header title="Viewpoints"></Header>
         <Separator size={5}></Separator>
         <Layout>
           <h1>Viewpoints</h1>

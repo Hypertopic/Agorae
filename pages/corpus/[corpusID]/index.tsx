@@ -1,20 +1,20 @@
-import Footer from "@components/Footer";
-import React, { useState, useEffect } from "react";
-import Header from "@components/Header";
-import styled from "styled-components";
-import { getAgoraeConfig } from "@services/Config";
-import { useTranslation } from "react-i18next";
-import ArgosService from "@services/Argos";
-import ItemElement from "@components/ItemElement";
-import { useRouter } from "next/router";
 import ElementsLoader from "@components/ElementsLoader";
+import Footer from "@components/Footer";
+import Header from "@components/Header";
+import ItemElement from "@components/ItemElement";
 import PagesLinks from "@components/PagesLinks";
+import ArgosService from "@services/Argos";
+import { getAgoraeConfig } from "@services/Config";
 import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import styled from "styled-components";
 
-const Home = () => {
+function Corpus() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { p } = router.query;
+  const { p, corpusID } = router.query;
   const config = getAgoraeConfig();
 
   const localPage = p ? p : "1";
@@ -23,11 +23,13 @@ const Home = () => {
   const [elements, setElements] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [pagesNumber, setPagesNumber] = useState(0);
+  const [corpusMetaData, setCorpusMetaData] = useState<any>({});
 
   // Get
   async function getCorpusItems(page) {
     const Argos = new ArgosService();
-    const data = await Argos.getCorpusItemsWithPagination(page, 8, config.argos.home_corpus);
+
+    const data = await Argos.getCorpusItemsWithPagination(page, 8, [corpusID]);
     const elements = await data.elements;
     const length = await data.length;
 
@@ -40,11 +42,16 @@ const Home = () => {
     setPagesNumber(pagesNbr);
   }
 
- 
+  async function getCorpusMetaData(corpusID) {
+    const Argos = new ArgosService();
+    const metadata = await Argos.getCorpusMetaData(corpusID);
+    setCorpusMetaData(metadata);
+  }
 
   useEffect(() => {
     getCorpusItems(localPage);
-  }, [localPage]);
+    getCorpusMetaData(corpusID);
+  }, [localPage, corpusID]);
 
   function renderElements() {
     if (isLoading) {
@@ -57,7 +64,7 @@ const Home = () => {
       return (
         <AnimatePresence>
           <div style={{ top: "-120px", position: "relative" }}>
-            <PagesLinks withViewpointID={false} withCorpusID={false} pagesCount={pagesNumber}></PagesLinks>
+            <PagesLinks withCorpusID={corpusID} withViewpointID={false} pagesCount={pagesNumber}></PagesLinks>
             <ElementsList>
               {elements.map((item) => (
                 <ItemElement
@@ -79,16 +86,15 @@ const Home = () => {
   }
   return (
     <div>
-      <Header title="Home" desc="Homepage "></Header>
+      <Header title={corpusMetaData.corpus_name} desc={corpusMetaData.corpus_name}></Header>
       <Hero>
-        <h1>{t("homepage.title", { name: config.website.title })} </h1>
-        <p>{t("homepage.description", { name: config.website.title })}</p>
+        <h1>{corpusMetaData.corpus_name}</h1>
       </Hero>
       {renderElements()}
       <Footer></Footer>
     </div>
   );
-};
+}
 
 /**
  * Styling
@@ -111,7 +117,7 @@ const Hero = styled.div`
   color: white;
   text-align: center;
   background-image: linear-gradient(39deg, ${config.website.colors[0]}, ${config.website.colors[1]});
-  height: 320px;
+  height: 250px;
 
   h1 {
     padding-top: 10px;
@@ -125,4 +131,4 @@ const Hero = styled.div`
     font-size: 18px;
   }
 `;
-export default Home;
+export default Corpus;

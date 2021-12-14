@@ -15,7 +15,6 @@ const Comment = () => {
   async function getItemData(corpusID, itemID) {
     const itemData = await Argos.getItemData(corpusID, itemID);
     router.isReady ? setItemData(itemData) : " ";
-    console.log(itemData);
   }
 
   useEffect(() => {
