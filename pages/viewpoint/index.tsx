@@ -1,5 +1,6 @@
 import ElementsLoader from "@components/ElementsLoader";
 import Header from "@components/Header";
+import FancyRender from "@components/UI/FancyRender";
 import Separator from "@components/UI/Separator";
 import ArgosService from "@services/Argos";
 import Link from "next/link";
@@ -40,13 +41,15 @@ function Viewpoint() {
         <Layout>
           <h1>Viewpoints</h1>
           <Separator size={1}></Separator>
-          {readableViewpoints.map((viewpoint) => (
-            <Link key={viewpoint.viewpoint_id} href={"/viewpoint/" + viewpoint.viewpoint_id}>
-              <a>
-                <CorpusElement key={viewpoint["viewpoint_id"]}>{viewpoint["viewpoint_name"]}</CorpusElement>
-              </a>
-            </Link>
-          ))}
+          <FancyRender>
+            {readableViewpoints.map((viewpoint) => (
+              <Link key={viewpoint.viewpoint_id} href={"/viewpoint/" + viewpoint.viewpoint_id}>
+                <a>
+                  <CorpusElement key={viewpoint["viewpoint_id"]}>{viewpoint["viewpoint_name"]}</CorpusElement>
+                </a>
+              </Link>
+            ))}
+          </FancyRender>
         </Layout>
       </div>
     );

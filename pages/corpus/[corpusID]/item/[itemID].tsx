@@ -18,7 +18,9 @@ const Comment = () => {
   }
 
   useEffect(() => {
-    getItemData(corpusID, itemID);
+    if (corpusID && itemID) {
+      getItemData(corpusID, itemID);
+    }
   }, [router.isReady]);
 
   return (

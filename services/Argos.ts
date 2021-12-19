@@ -12,10 +12,7 @@ export default class ArgosService {
   private agoraeConfig = getAgoraeConfig();
   private ht = new HyperTopic([this.agoraeConfig.argos.url]);
 
-  /**
-   * Corpus Methods
-   * @returns
-   */
+  /** CORPUS */
 
   async getAllCorpusItemsOld() {
     const data = await this.ht.getView(`/corpus/${this.agoraeConfig.argos.corpus}`);
@@ -87,9 +84,9 @@ export default class ArgosService {
    */
 
   async getItemData(corpusID, itemID) {
-    const data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
+    let data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
 
-    const itemData = data[corpusID][itemID];
+    let itemData = await data[corpusID][itemID];
     // Add CorpusID to each element
     itemData["corpus_id"] = [corpusID];
 
@@ -115,10 +112,8 @@ export default class ArgosService {
     return corpuses;
   }
 
-
   /**
    * Get Corpus Metadata
-   *
    */
   async getCorpusMetaData(corpusID) {
     const data = await this.ht.getView(`/corpus/${corpusID}`);
@@ -127,9 +122,10 @@ export default class ArgosService {
     return { corpus_name, corpus_id };
   }
 
+  /** VIEWPOINTS */
+
   /**
    * Get All Viewpoints
-   *
    */
   async getAllViewpoints() {
     const availableViewpoints = this.agoraeConfig.argos.available_viewpoints;
@@ -144,5 +140,23 @@ export default class ArgosService {
     });
 
     return viewpoints;
+  }
+
+  /**
+   * Get Viewpoint Metadata
+   */
+  async getViewpointMetaData(viewpointID) {
+    const data = await this.ht.getView(`/viewpoint/${viewpointID}`);
+    let viewpoint_name = data[viewpointID].name;
+    let viewpoint_id = viewpointID;
+    return { viewpoint_name, viewpoint_id };
+  }
+
+  async getViewpointItems(viewpointID) {
+    const data = await this.ht.getView(`/viewpoint/${viewpointID}`);
+    const viewpointData = data[viewpointID].upper;
+    console.log(viewpointData);
+    
+    return viewpointData;
   }
 }

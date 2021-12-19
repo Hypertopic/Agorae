@@ -139,9 +139,11 @@ const LogoBox = styled.div`
     margin-bottom: auto;
     width: 35px;
     margin-right: 10px;
+    transition:  0.3s;
 
     :hover {
       cursor: pointer;
+      transform: scale(1.2);
     }
   }
   .title {

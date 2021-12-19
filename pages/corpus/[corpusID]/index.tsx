@@ -49,8 +49,10 @@ function Corpus() {
   }
 
   useEffect(() => {
-    getCorpusItems(localPage);
-    getCorpusMetaData(corpusID);
+    if (localPage && corpusID) {
+      getCorpusItems(localPage);
+      getCorpusMetaData(corpusID);
+    }
   }, [localPage, corpusID]);
 
   function renderElements() {

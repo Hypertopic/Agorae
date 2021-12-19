@@ -6,6 +6,7 @@ import ArgosService from "@services/Argos";
 import { getAgoraeConfig } from "@services/Config";
 import Link from "next/link";
 import ElementsLoader from "@components/ElementsLoader";
+import FancyRender from "@components/UI/FancyRender";
 
 const Corpus = () => {
   const [readableCorpuses, setReadableCorpuses] = useState([]);
@@ -41,6 +42,7 @@ const Corpus = () => {
         <Layout>
           <h1>Corpuses</h1>
           <Separator size={1}></Separator>
+          <FancyRender>
           <ListOfCorpuses>
             {readableCorpuses.map((corpus) => (
               <Link key={corpus.corpus_id} href={"/corpus/" + corpus.corpus_id}>
@@ -50,6 +52,7 @@ const Corpus = () => {
               </Link>
             ))}
           </ListOfCorpuses>
+          </FancyRender>
         </Layout>
       </div>
     );
