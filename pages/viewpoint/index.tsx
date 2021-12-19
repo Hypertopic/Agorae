@@ -56,12 +56,6 @@ function Viewpoint() {
   }
 }
 
-/**
- * Styling
- * CSS with Styled Components
- * https://styled-components.com/docs
- */
-
 const Layout = styled.div`
   margin-left: 50px;
   margin-right: 50px;

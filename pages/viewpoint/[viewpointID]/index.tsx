@@ -30,7 +30,7 @@ function Viewpoint() {
     setViewpointMetaData(metadata);
   }
 
-  // Get Viewpoint Items (viewpoints topics)
+  // Get Viewpoint Items (actual viewpoints)
   async function getViewpointItems(viewpointID) {
     const Argos = new ArgosService();
     const elements = await Argos.getViewpointItems(viewpointID);
@@ -81,12 +81,6 @@ function Viewpoint() {
 }
 
 export default Viewpoint;
-
-/**
- * Styling
- * CSS with Styled Components
- * https://styled-components.com/docs
- */
 
 const Layout = styled.div`
   margin-left: 50px;
