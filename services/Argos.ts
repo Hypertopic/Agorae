@@ -8,29 +8,13 @@ import { getAgoraeConfig } from "./Config";
 **/
 
 export default class ArgosService {
-  // Init
+
+  // Initialize the service
   private agoraeConfig = getAgoraeConfig();
   private ht = new HyperTopic([this.agoraeConfig.argos.url]);
 
-  /** CORPUS */
-
-  async getAllCorpusItemsOld() {
-    const data = await this.ht.getView(`/corpus/${this.agoraeConfig.argos.corpus}`);
-    const corpusData = data[this.agoraeConfig.argos.corpus];
-
-    // Create an array of elements
-    const keys = Object.entries(corpusData);
-
-    // Remove elements with array key "name" and "user" from keys array
-    const filteredKeys = keys.filter((key) => key[0] !== "name" && key[0] !== "user");
-
-    return filteredKeys;
-  }
-
   /**
    * Generic async foreach method
-   * @param array
-   * @param callback
    */
   async asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -38,6 +22,15 @@ export default class ArgosService {
     }
   }
 
+  /**
+   *
+   * CORPUSES
+   *
+   * */
+
+  /**
+   * Get ALL Items from a Corpus
+   */
   async getAllCorpusItems(corpus) {
     let corpuses = [];
     let result = [];
@@ -69,7 +62,10 @@ export default class ArgosService {
     return result;
   }
 
-  async getCorpusItemsWithPagination(page: number, perPage: number, corpus) {
+  /**
+   * Get Corpus Items with Pagination
+   */
+  async getCorpusItemsWithPagination(page: number, perPage: number, corpus: string) {
     let OriginalArray = await this.getAllCorpusItems(corpus);
 
     let AdaptedPageNumber = page - 1;
@@ -79,11 +75,9 @@ export default class ArgosService {
   }
 
   /**
-   * Item Method
-   * @returns
+   * Get a single Item data
    */
-
-  async getItemData(corpusID, itemID) {
+  async getItemData(corpusID: string, itemID: string) {
     let data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
 
     let itemData = await data[corpusID][itemID];
@@ -95,7 +89,6 @@ export default class ArgosService {
 
   /**
    * Get All Corpuses
-   *
    */
   async getAllCorpuses() {
     const availableCorpuses = this.agoraeConfig.argos.available_corpuses;
@@ -115,14 +108,18 @@ export default class ArgosService {
   /**
    * Get Corpus Metadata
    */
-  async getCorpusMetaData(corpusID) {
+  async getCorpusMetaData(corpusID: string) {
     const data = await this.ht.getView(`/corpus/${corpusID}`);
     let corpus_name = data[corpusID].name;
     let corpus_id = corpusID;
     return { corpus_name, corpus_id };
   }
 
-  /** VIEWPOINTS */
+  /**
+   *
+   * VIEWPOINTS
+   *
+   * */
 
   /**
    * Get All Viewpoints
@@ -145,18 +142,19 @@ export default class ArgosService {
   /**
    * Get Viewpoint Metadata
    */
-  async getViewpointMetaData(viewpointID) {
+  async getViewpointMetaData(viewpointID: string) {
     const data = await this.ht.getView(`/viewpoint/${viewpointID}`);
     let viewpoint_name = data[viewpointID].name;
     let viewpoint_id = viewpointID;
     return { viewpoint_name, viewpoint_id };
   }
 
-  async getViewpointItems(viewpointID) {
+  /**
+   * Get a single Viewpoint Items
+   */
+  async getViewpointItems(viewpointID: string) {
     const data = await this.ht.getView(`/viewpoint/${viewpointID}`);
     const viewpointData = data[viewpointID].upper;
-    console.log(viewpointData);
-    
     return viewpointData;
   }
 }
