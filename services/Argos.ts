@@ -8,7 +8,6 @@ import { getAgoraeConfig } from "./Config";
 **/
 
 export default class ArgosService {
-
   // Initialize the service
   private agoraeConfig = getAgoraeConfig();
   private ht = new HyperTopic([this.agoraeConfig.argos.url]);
@@ -65,7 +64,7 @@ export default class ArgosService {
   /**
    * Get Corpus Items with Pagination
    */
-  async getCorpusItemsWithPagination(page: number, perPage: number, corpus: string) {
+  async getCorpusItemsWithPagination(page: number, perPage: number, corpus) {
     let OriginalArray = await this.getAllCorpusItems(corpus);
 
     let AdaptedPageNumber = page - 1;
@@ -156,5 +155,15 @@ export default class ArgosService {
     const data = await this.ht.getView(`/viewpoint/${viewpointID}`);
     const viewpointData = data[viewpointID].upper;
     return viewpointData;
+  }
+
+  /**
+   * Get Items & and shared topics from a Topic
+   */
+  async getTopicItems(topicID, viewpointID) {
+    const data = await this.ht.getView(`/topic/${topicID}/${viewpointID}`);
+    const topicData = data[topicID][viewpointID];
+    const result = { topics : topicData.narrower, items: topicData.item };
+    return result;
   }
 }

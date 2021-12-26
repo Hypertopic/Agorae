@@ -22,7 +22,7 @@ const configFile = {
     theme_color: "#fbfdff",
   },
   argos: {
-    url: "http://95.142.173.52:5984/argosmap21v4/_design/argos/_rewrite",
+    url: "http://95.142.173.52:5984/argos/_design/argos/_rewrite",
     available_corpuses: [
       "2ba774a7cbd1e14fa45e57ba0000f2ac",
       "2ba774a7cbd1e14fa45e57ba0000fa79",
