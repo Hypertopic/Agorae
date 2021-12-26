@@ -1,4 +1,5 @@
 import Header from "@components/Header";
+import Layout from "@components/Layout";
 import Separator from "@components/UI/Separator";
 import ArgosService from "@services/Argos";
 import { useRouter } from "next/router";
@@ -24,13 +25,14 @@ const Comment = () => {
   }, [router.isReady]);
 
   return (
-    <>
-      <Header></Header>
+    <Layout title={"Item : " + ItemData.name}>
       <Separator size={5}></Separator>
-      <h3>{corpusID} {">"} {itemID}</h3>
+      <h3>
+        {corpusID} {">"} {itemID}
+      </h3>
       <h1>{ItemData.name}</h1>
       <img src={ItemData["image/video"]} alt="" />
-    </>
+    </Layout>
   );
 };
 

@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import ElementsLoader from "@components/ElementsLoader";
 import PagesLinks from "@components/PagesLinks";
 import { AnimatePresence } from "framer-motion";
+import Layout from "@components/Layout";
 
 const Home = () => {
   const { t, i18n } = useTranslation();
@@ -78,15 +79,13 @@ const Home = () => {
     }
   }
   return (
-    <div>
-      <Header title="Home" desc="Homepage "></Header>
+    <Layout title="Homepage">
       <Hero>
         <h1>{t("homepage.title", { name: config.website.title })} </h1>
         <p>{t("homepage.description", { name: config.website.title })}</p>
       </Hero>
       {renderElements()}
-      <Footer></Footer>
-    </div>
+    </Layout>
   );
 };
 

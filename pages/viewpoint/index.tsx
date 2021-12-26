@@ -1,5 +1,6 @@
 import ElementsLoader from "@components/ElementsLoader";
 import Header from "@components/Header";
+import Layout from "@components/Layout";
 import FancyRender from "@components/UI/FancyRender";
 import Separator from "@components/UI/Separator";
 import ArgosService from "@services/Argos";
@@ -25,20 +26,18 @@ function Viewpoint() {
 
   if (isLoading) {
     return (
-      <div>
-        <Header></Header>
+      <Layout title="Loading..">
         <Separator size={5}></Separator>
         <div style={{ margin: "auto", textAlign: "center" }}>
           <ElementsLoader></ElementsLoader>
         </div>
-      </div>
+      </Layout>
     );
   } else {
     return (
-      <div>
-        <Header title="Viewpoints"></Header>
+      <Layout title="Viewpoints">
         <Separator size={5}></Separator>
-        <Layout>
+        <CSSLayout>
           <h1>Viewpoints</h1>
           <Separator size={1}></Separator>
           <FancyRender>
@@ -50,13 +49,13 @@ function Viewpoint() {
               </Link>
             ))}
           </FancyRender>
-        </Layout>
-      </div>
+        </CSSLayout>
+      </Layout>
     );
   }
 }
 
-const Layout = styled.div`
+const CSSLayout = styled.div`
   margin-left: 50px;
   margin-right: 50px;
 `;

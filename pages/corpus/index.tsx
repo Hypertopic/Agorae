@@ -7,6 +7,7 @@ import { getAgoraeConfig } from "@services/Config";
 import Link from "next/link";
 import ElementsLoader from "@components/ElementsLoader";
 import FancyRender from "@components/UI/FancyRender";
+import Layout from "@components/Layout";
 
 const Corpus = () => {
   const [readableCorpuses, setReadableCorpuses] = useState([]);
@@ -26,35 +27,33 @@ const Corpus = () => {
 
   if (isLoading) {
     return (
-      <div>
-        <Header></Header>
+      <Layout title="Loading..">
         <Separator size={5}></Separator>
         <div style={{ margin: "auto", textAlign: "center" }}>
           <ElementsLoader></ElementsLoader>
         </div>
-      </div>
+      </Layout>
     );
   } else {
     return (
-      <div>
-        <Header title="Corpuses"></Header>
+      <Layout title="Corpuses" desc="Corpuses">
         <Separator size={5}></Separator>
-        <Layout>
+        <CSSLayout>
           <h1>Corpuses</h1>
           <Separator size={1}></Separator>
           <FancyRender>
-          <ListOfCorpuses>
-            {readableCorpuses.map((corpus) => (
-              <Link key={corpus.corpus_id} href={"/corpus/" + corpus.corpus_id}>
-                <a>
-                  <CorpusElement key={corpus["corpus_id"]}>{corpus["corpus_name"]}</CorpusElement>
-                </a>
-              </Link>
-            ))}
-          </ListOfCorpuses>
+            <ListOfCorpuses>
+              {readableCorpuses.map((corpus) => (
+                <Link key={corpus.corpus_id} href={"/corpus/" + corpus.corpus_id}>
+                  <a>
+                    <CorpusElement key={corpus["corpus_id"]}>{corpus["corpus_name"]}</CorpusElement>
+                  </a>
+                </Link>
+              ))}
+            </ListOfCorpuses>
           </FancyRender>
-        </Layout>
-      </div>
+        </CSSLayout>
+      </Layout>
     );
   }
 };
@@ -62,7 +61,7 @@ const Corpus = () => {
 export default Corpus;
 
 const config = getAgoraeConfig();
-const Layout = styled.div`
+const CSSLayout = styled.div`
   margin-left: 50px;
   margin-right: 50px;
 `;

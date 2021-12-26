@@ -2,6 +2,7 @@ import ElementsLoader from "@components/ElementsLoader";
 import Footer from "@components/Footer";
 import Header from "@components/Header";
 import ItemElement from "@components/ItemElement";
+import Layout from "@components/Layout";
 import PagesLinks from "@components/PagesLinks";
 import ArgosService from "@services/Argos";
 import { getAgoraeConfig } from "@services/Config";
@@ -87,14 +88,12 @@ function Corpus() {
     }
   }
   return (
-    <div>
-      <Header title={corpusMetaData.corpus_name} desc={corpusMetaData.corpus_name}></Header>
+    <Layout title={"Corpus : " + corpusMetaData.corpus_name}>
       <Hero>
         <h1>{corpusMetaData.corpus_name}</h1>
       </Hero>
       {renderElements()}
-      <Footer></Footer>
-    </div>
+    </Layout>
   );
 }
 
