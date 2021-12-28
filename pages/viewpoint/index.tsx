@@ -1,28 +1,27 @@
-import styled from "styled-components";
-import React, { useEffect, useState } from "react";
+import ElementsLoader from "@components/ElementsLoader";
 import Header from "@components/Header";
+import Layout from "@components/Layout";
+import FancyRender from "@components/UI/FancyRender";
 import Separator from "@components/UI/Separator";
 import ArgosService from "@services/Argos";
-import { getAgoraeConfig } from "@services/Config";
 import Link from "next/link";
-import ElementsLoader from "@components/ElementsLoader";
-import FancyRender from "@components/UI/FancyRender";
-import Layout from "@components/Layout";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 
-const Corpus = () => {
-  const [readableCorpuses, setReadableCorpuses] = useState([]);
+function Viewpoint() {
+  const [readableViewpoints, setReadableViewpoints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  async function getCorpuses() {
+  async function getViewpoints() {
     let Argos = new ArgosService();
-    let ReadableCorpusesResult = await Argos.getAllCorpuses();
+    let ReadableViewpointsResult = await Argos.getAllViewpoints();
 
-    setReadableCorpuses(ReadableCorpusesResult);
+    setReadableViewpoints(ReadableViewpointsResult);
     setIsLoading(false);
   }
 
   useEffect(() => {
-    getCorpuses();
+    getViewpoints();
   }, [isLoading]);
 
   if (isLoading) {
@@ -36,39 +35,29 @@ const Corpus = () => {
     );
   } else {
     return (
-      <Layout title="Corpuses" desc="Corpuses">
+      <Layout title="Viewpoints">
         <Separator size={5}></Separator>
         <CSSLayout>
-          <h1>Corpuses</h1>
+          <h1>Viewpoints</h1>
           <Separator size={1}></Separator>
           <FancyRender>
-            <ListOfCorpuses>
-              {readableCorpuses.map((corpus) => (
-                <Link key={corpus.corpus_id} href={"/corpus/" + corpus.corpus_id}>
-                  <a>
-                    <CorpusElement key={corpus["corpus_id"]}>{corpus["corpus_name"]}</CorpusElement>
-                  </a>
-                </Link>
-              ))}
-            </ListOfCorpuses>
+            {readableViewpoints.map((viewpoint) => (
+              <Link key={viewpoint.viewpoint_id} href={"/viewpoint/" + viewpoint.viewpoint_id}>
+                <a>
+                  <CorpusElement key={viewpoint["viewpoint_id"]}>{viewpoint["viewpoint_name"]}</CorpusElement>
+                </a>
+              </Link>
+            ))}
           </FancyRender>
         </CSSLayout>
       </Layout>
     );
   }
-};
+}
 
-export default Corpus;
-
-const config = getAgoraeConfig();
 const CSSLayout = styled.div`
   margin-left: 50px;
   margin-right: 50px;
-`;
-
-const ListOfCorpuses = styled.div`
-  display: flex;
-  flex-wrap: wrap;
 `;
 const CorpusElement = styled.div`
   padding: 19px;
@@ -86,3 +75,4 @@ const CorpusElement = styled.div`
     cursor: pointer;
   }
 `;
+export default Viewpoint;

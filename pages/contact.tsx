@@ -4,17 +4,17 @@ import React from "react";
 import styled from "styled-components";
 import { Formik } from "formik";
 import { useTranslation } from "react-i18next";
+import Layout from "@components/Layout";
 
 function Contact() {
-    const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
-    <div>
-      <Header title="Contact" desc="Contact page "></Header>
-      <Layout>
-        <Separator></Separator>
+    <Layout title="Contact" desc="Contact us">
+      <CSSLayout>
+        <Separator size={5}></Separator>
         <h1>{t("contact.title")}</h1>
         <p>{t("contact.description")}</p>
-        <Separator></Separator>
+        <Separator size={2}></Separator>
         <Formik
           initialValues={{ name: "", email: "", message: "" }}
           validate={(values) => {
@@ -64,8 +64,8 @@ function Contact() {
             </form>
           )}
         </Formik>
-      </Layout>
-    </div>
+      </CSSLayout>
+    </Layout>
   );
 }
 
@@ -77,7 +77,7 @@ export default Contact;
  * https://styled-components.com/docs
  */
 
-const Layout = styled.div`
+const CSSLayout = styled.div`
   padding-left: 40px;
   padding-right: 40px;
 `;
@@ -107,7 +107,7 @@ const InputLabel = styled.h3`
 `;
 
 const InputWarning = styled.p`
-  color: #ff000086 ;
+  color: #ff000086;
   border-radius: 3px;
   padding: 2px;
   display: block;

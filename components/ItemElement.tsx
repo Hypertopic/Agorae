@@ -3,13 +3,27 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion"
+import PreviewRender from "./UI/PreviewRender";
 
-function ItemElement({ title, preview, creator, description, id, creation_date }) {
+function ItemElement({ title, preview, creator, description, id, creation_date, corpus_id }) {
   const { t, i18n } = useTranslation();
   return (
-    <ElementBox id={id}>
+    
+    <ElementBox
+      as={motion.div}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+      }}
+      exit={{ opacity: 0 }}
+      id={title}
+    >
       <Preview>
-        <img src={preview ? preview : "/img/imgnotfound.png"} alt={`Picture of ` + title} />
+        <PreviewRender source={preview} alt={`Picture of ` + title} />
       </Preview>
       <InfoBox>
         <Title>{title}</Title>
@@ -19,7 +33,7 @@ function ItemElement({ title, preview, creator, description, id, creation_date }
       </InfoBox>
       <Bottom>
         <Button>
-          <Link href={"/corpus/id/"+id}>
+          <Link href={"/corpus/" + corpus_id + "/item/" + id}>
             <a>{t("item_element.more_details")}</a>
           </Link>
         </Button>
@@ -35,6 +49,11 @@ function ItemElement({ title, preview, creator, description, id, creation_date }
  */
 
 const ElementBox = styled.div`
+  transition-property: opacity;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+
+  opacity: 1;
   box-shadow: 0 9px 11px 2px rgb(3 27 78 / 5%);
   width: 40px;
   background-color: white;
@@ -43,6 +62,13 @@ const ElementBox = styled.div`
   overflow: hidden;
   margin-right: 25px;
   margin-bottom: 60px;
+  transition: transform .2s;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 14px 62px rgb(0 0 0 / 20%);
+    cursor: pointer;
+  }
 `;
 const Preview = styled.div`
   img {

@@ -14,6 +14,8 @@
  <img alt="GitHub issues" src="https://img.shields.io/github/issues/hypertopic/agorae">
 </p>
 
+![image](https://user-images.githubusercontent.com/29493708/146692341-b1635219-f3fc-4d65-81bd-26b1d6f9a5b6.png)
+
 
 
 
@@ -39,7 +41,7 @@ Agorae (this repository) is the Web side of the project that can be connected to
 - NodeJS v14+ 
 - Argos V2
 
-> To install Argos and know more about the Argos Project refer to : https://github.com/Hypertopic/Argos 
+ℹ️  To install Argos and know more about the Argos Project refer to : https://github.com/Hypertopic/Argos 
 
 ## Install Agorae V2 
 
@@ -58,7 +60,7 @@ To run on a Dev-friendly (NextJS Dev) environment :
 
 `npm run dev`
 
-> Please refer to : https://nextjs.org/docs/api-reference/cli#development 
+ℹ️ Docs : https://nextjs.org/docs/api-reference/cli#development 
 ## Build project 
 
 
@@ -66,7 +68,7 @@ To run on a Dev-friendly (NextJS Dev) environment :
 
 `npm run start`
 
-> Please refer to : https://nextjs.org/docs/api-reference/cli#production 
+ℹ️ Docs : https://nextjs.org/docs/api-reference/cli#production 
 
 ## Export the project 
 
@@ -75,7 +77,7 @@ To run on a Dev-friendly (NextJS Dev) environment :
 
 The exported app supports almost every feature of Next.js, including dynamic routes, prefetching, preloading and dynamic imports.
 
-> Please refer to : https://nextjs.org/docs/advanced-features/static-html-export 
+ℹ️ Docs : https://nextjs.org/docs/advanced-features/static-html-export 
 
 ## Testing the project  
 
@@ -84,5 +86,5 @@ The exported app supports almost every feature of Next.js, including dynamic rou
 - Move to source project (`/`)
 - Run `npm run test` to trigger the checks 
 
-> Please refer to : https://jestjs.io/docs/getting-started 
+ℹ️  Docs : https://jestjs.io/docs/getting-started 
 

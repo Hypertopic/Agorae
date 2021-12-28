@@ -67,13 +67,20 @@ function Header(props) {
             <a>{t("header.viewpoint")}</a>
           </Link>
           <Link href="/about">
-            <a>{t("header.about")}</a>
+            <a>{t("header.about")}
+            <Soon>Soon</Soon>
+            </a>
           </Link>
           <Link href="/propose">
-            <a>{t("header.propose")}</a>
+            <a>{t("header.propose")}
+            <Soon>Soon</Soon>
+            </a>
           </Link>
           <Link href="/faq">
-            <a>{t("header.faq")}</a>
+            <a>
+              {t("header.faq")}
+              <Soon>Soon</Soon>
+            </a>
           </Link>
           <Link href="/contact">
             <a>{t("header.contact-us")}</a>
@@ -107,11 +114,10 @@ function Header(props) {
   );
 }
 
-
 /**
  * Styling
  * CSS with Styled Components
- * https://styled-components.com/docs 
+ * https://styled-components.com/docs
  */
 
 const HeaderBox = styled.div`
@@ -139,9 +145,11 @@ const LogoBox = styled.div`
     margin-bottom: auto;
     width: 35px;
     margin-right: 10px;
+    transition: 0.3s;
 
     :hover {
       cursor: pointer;
+      transform: scale(1.2);
     }
   }
   .title {
@@ -194,5 +202,12 @@ const RightBox = styled.div`
   span {
     font-size: 17px;
   }
+`;
+
+const Soon = styled.span`
+  font-size: 8px !important;
+  background-color: yellow;
+  border-radius: 4px;
+  padding: 3px;
 `;
 export default Header;

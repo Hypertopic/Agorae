@@ -2,24 +2,56 @@ import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
 
-function PagesLinks({ pagesCount }) {
+function PagesLinks({ pagesCount, withCorpusID, withViewpointID }) {
   const pagesArray = [];
   for (let i = 1; i <= pagesCount; i++) {
     pagesArray.push(i);
   }
-  return (
-    <PagesBox>
-      {pagesArray.map((page) => {
-        return (
-          <Page key={page}>
-            <Link href={"?p=" + page}>
-              <a>{page}</a>
-            </Link>
-          </Page>
-        );
-      })}
-    </PagesBox>
-  );
+  if (withCorpusID) {
+    return (
+      <PagesBox>
+        {pagesArray.map((page) => {
+          return (
+            <Page key={page}>
+              <Link href={withCorpusID + "?p=" + page}>
+                <a>{page}</a>
+              </Link>
+            </Page>
+          );
+        })}
+      </PagesBox>
+    );
+  } else if (withViewpointID) {
+    if (withCorpusID) {
+      return (
+        <PagesBox>
+          {pagesArray.map((page) => {
+            return (
+              <Page key={page}>
+                <Link href={withViewpointID + "?p=" + page}>
+                  <a>{page}</a>
+                </Link>
+              </Page>
+            );
+          })}
+        </PagesBox>
+      );
+    }
+  } else {
+    return (
+      <PagesBox>
+        {pagesArray.map((page) => {
+          return (
+            <Page key={page}>
+              <Link href={"?p=" + page}>
+                <a>{page}</a>
+              </Link>
+            </Page>
+          );
+        })}
+      </PagesBox>
+    );
+  }
 }
 
 /**

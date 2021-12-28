@@ -1,4 +1,5 @@
 import Header from "@components/Header";
+import Layout from "@components/Layout";
 import Separator from "@components/UI/Separator";
 import ArgosService from "@services/Argos";
 import { useRouter } from "next/router";
@@ -14,22 +15,24 @@ const Comment = () => {
 
   async function getItemData(corpusID, itemID) {
     const itemData = await Argos.getItemData(corpusID, itemID);
-    router.isReady ? setItemData(itemData[corpusID][itemID]) : " ";
-    console.log(ItemData);
+    router.isReady ? setItemData(itemData) : " ";
   }
 
   useEffect(() => {
-    getItemData(corpusID, itemID);
+    if (corpusID && itemID) {
+      getItemData(corpusID, itemID);
+    }
   }, [router.isReady]);
 
   return (
-    <>
-      <Header></Header>
-      <Separator></Separator>
-      <h3>{corpusID} {">"} {itemID}</h3>
+    <Layout title={"Item : " + ItemData.name}>
+      <Separator size={5}></Separator>
+      <h3>
+        {corpusID} {">"} {itemID}
+      </h3>
       <h1>{ItemData.name}</h1>
       <img src={ItemData["image/video"]} alt="" />
-    </>
+    </Layout>
   );
 };
 
