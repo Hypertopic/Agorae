@@ -1,3 +1,4 @@
+import Breadcrumb from "@components/Breadcrumb";
 import Header from "@components/Header";
 import Layout from "@components/Layout";
 import Separator from "@components/UI/Separator";
@@ -11,8 +12,6 @@ const Comment = () => {
   const Argos = new ArgosService();
   const [ItemData, setItemData] = useState<any>({});
 
-  // http://localhost:3000/corpus/2ba774a7cbd1e14fa45e57ba0000fa79/item/6cc411d06b5890af3601957b5d0024e4
-
   async function getItemData(corpusID, itemID) {
     const itemData = await Argos.getItemData(corpusID, itemID);
     router.isReady ? setItemData(itemData) : " ";
@@ -22,14 +21,13 @@ const Comment = () => {
     if (corpusID && itemID) {
       getItemData(corpusID, itemID);
     }
-  }, [router.isReady]);
+  }, [router.isReady, corpusID, itemID]);
 
   return (
     <Layout title={"Item : " + ItemData.name}>
       <Separator size={5}></Separator>
-      <h3>
-        {corpusID} {">"} {itemID}
-      </h3>
+      <Breadcrumb corpusID={corpusID} itemName={ItemData.name}></Breadcrumb>
+
       <h1>{ItemData.name}</h1>
       <img src={ItemData["image/video"]} alt="" />
     </Layout>
