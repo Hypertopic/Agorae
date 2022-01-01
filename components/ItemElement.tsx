@@ -23,7 +23,7 @@ function ItemElement({ title, preview, creator, description, id, creation_date, 
       id={title}
     >
       <Preview>
-        <PreviewRender source={preview} alt={`Picture of ` + title} />
+        <PreviewRender width={"250px"} height={"187px"} source={preview} alt={`Picture of ` + title} />
       </Preview>
       <InfoBox>
         <Title>{title}</Title>

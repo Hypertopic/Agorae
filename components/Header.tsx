@@ -67,13 +67,15 @@ function Header(props) {
             <a>{t("header.viewpoint")}</a>
           </Link>
           <Link href="/about">
-            <a>{t("header.about")}
-            <Soon>Soon</Soon>
+            <a>
+              {t("header.about")}
+              <Soon>Soon</Soon>
             </a>
           </Link>
           <Link href="/propose">
-            <a>{t("header.propose")}
-            <Soon>Soon</Soon>
+            <a>
+              {t("header.propose")}
+              <Soon>Soon</Soon>
             </a>
           </Link>
           <Link href="/faq">
@@ -206,8 +208,11 @@ const RightBox = styled.div`
 
 const Soon = styled.span`
   font-size: 8px !important;
-  background-color: yellow;
+  background-color: #9e9e9e3d;
   border-radius: 4px;
+  text-align: center;
+  margin: auto;
   padding: 3px;
+  margin-left: 9px;
 `;
 export default Header;
