@@ -20,8 +20,7 @@ const Comment = () => {
 
   async function getItemData(corpusID, itemID) {
     const itemData = await Argos.getItemData(corpusID, itemID);
-    console.log(itemData);
-
+    
     setItemData(itemData);
     setIsLoading(false);
   }

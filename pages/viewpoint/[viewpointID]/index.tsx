@@ -27,7 +27,6 @@ function Viewpoint() {
   async function getViewpointMetaData(viewpointID) {
     const Argos = new ArgosService();
     const metadata = await Argos.getViewpointMetaData(viewpointID);
-    console.log(metadata);
     setViewpointMetaData(metadata);
   }
 
