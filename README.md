@@ -18,13 +18,14 @@
 
 
 
-
 ## Introduction 
 
 
 Agorae is a Participative knowledge management app that can be used for any organization and it is a common mapping device for a generic co-built knowledge map about transitions. This generic scheme is adaptable to specific requirements of each organisation facing transition goals. 
 
 Agorae (this repository) is the Web side of the project that can be connected to an Argos Database and can be configured and customised following your needs by modifying `config/config.ts` 
+
+![image](https://user-images.githubusercontent.com/29493708/147855508-d3eb6f77-119b-4047-91d2-c4101bb770b0.png)
 
 ### V2 : What's new for Agorae 
 

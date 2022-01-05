@@ -1,6 +1,6 @@
 import React from "react";
 
-function PreviewRender({ source, alt }) {
+function PreviewRender({ source, alt , width , height}) {
   // Verifications
   const isVideo = (source) => {
     return source.includes("mp4");
@@ -21,9 +21,9 @@ function PreviewRender({ source, alt }) {
 }
 
   if (isVideo(source[0])) {
-    return <video src={source} loop muted controls style={{ width: "250px", height: "187px" }}></video>;
+    return <video src={source} loop muted controls style={{ width: width, height: height }}></video>;
   } else if (isImage(source[0])) {
-    return <img src={source} alt={alt} style={{ width: "250px", height: "187px" }} />;
+    return <img src={source} alt={alt} style={{ width: width, height: height }} />;
   }
   // if youtube url
   else if (isYoutube(source[0])) {
@@ -34,11 +34,11 @@ function PreviewRender({ source, alt }) {
         frameBorder="0"
         allow=""
         allowFullScreen
-        style={{ width: "250px", height: "187px" }}
+        style={{ width: width, height: height }}
       ></iframe>
     );
   } else {
-    return <img src={"/img/imgnotfound.png"} alt={alt} style={{ width: "250px", height: "187px" }} />;
+    return <img src={"/img/imgnotfound.png"} alt={alt} style={{ width: width, height: height }} />;
   }
 }
 

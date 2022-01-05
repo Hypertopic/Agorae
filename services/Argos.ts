@@ -80,6 +80,7 @@ export default class ArgosService {
     let data = await this.ht.getView(`/item/${corpusID}/${itemID}`);
 
     let itemData = await data[corpusID][itemID];
+
     // Add CorpusID to each element
     itemData["corpus_id"] = [corpusID];
 
@@ -163,7 +164,7 @@ export default class ArgosService {
   async getTopicItems(topicID, viewpointID) {
     const data = await this.ht.getView(`/topic/${topicID}/${viewpointID}`);
     const topicData = data[topicID][viewpointID];
-    const result = { topics : topicData.narrower, items: topicData.item };
+    const result = { topics: topicData.narrower, items: topicData.item };
     return result;
   }
 }
