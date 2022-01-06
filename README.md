@@ -12,6 +12,7 @@
  <img alt="GitHub" src="https://img.shields.io/github/license/hypertopic/agorae">
  <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/hypertopic/agorae">
  <img alt="GitHub issues" src="https://img.shields.io/github/issues/hypertopic/agorae">
+  <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/hypertopic/agorae/master?label=CI">
 </p>
 
 ![image](https://user-images.githubusercontent.com/29493708/146692341-b1635219-f3fc-4d65-81bd-26b1d6f9a5b6.png)
@@ -40,7 +41,7 @@ Agorae (this repository) is the Web side of the project that can be connected to
 
 
 - NodeJS v14+ 
-- Argos V2
+- Argos V4 
 
 ℹ️  To install Argos and know more about the Argos Project refer to : https://github.com/Hypertopic/Argos 
 
@@ -65,9 +66,7 @@ To run on a Dev-friendly (NextJS Dev) environment :
 ## Build project 
 
 
-`npm run build`
-
-`npm run start`
+`npm run build` && `npm run start`
 
 ℹ️ Docs : https://nextjs.org/docs/api-reference/cli#production 
 
