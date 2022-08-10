@@ -26,7 +26,6 @@ function TopicElements() {
   async function getViewpointMetaData(viewpointID) {
     const Argos = new ArgosService();
     const metadata = await Argos.getViewpointMetaData(viewpointID);
-    console.log(metadata);
     setViewpointMetaData(metadata);
     setIsLoading(false);
   }
@@ -36,7 +35,6 @@ function TopicElements() {
     const Argos = new ArgosService();
     const elements = await Argos.getTopicItems(viewpointID, topicID);
     setElements(elements);
-    console.log(elements);
   }
 
   useEffect(() => {

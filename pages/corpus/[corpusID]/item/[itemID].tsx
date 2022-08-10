@@ -20,8 +20,7 @@ const Comment = () => {
 
   async function getItemData(corpusID, itemID) {
     const itemData = await Argos.getItemData(corpusID, itemID);
-    console.log(itemData);
-
+    
     setItemData(itemData);
     setIsLoading(false);
   }
@@ -50,15 +49,16 @@ const Comment = () => {
           <Separator size={2}></Separator>
           <FancyRender>
             <Preview>
-              <PreviewRender source={ItemData["image/video"]} width="560px" height="360px" alt={"image"}></PreviewRender>
+              <PreviewRender source={ItemData["image/video"]} width="560px" height="360px" alt={ItemData.name + "image"}></PreviewRender>
               <InfoBox>
                 <p>
                   <b>Résumé : </b>
                   {ItemData["030 résumé:"]}{" "}
                 </p>
                 <br />
-                  <a href={ItemData["plus d'info"]}>Plus d'informations</a>
-                
+                <a target="_blank" rel="noreferrer" href={ItemData["plus d'info"]}>
+                  Plus d'informations
+                </a>
               </InfoBox>
             </Preview>
           </FancyRender>
@@ -70,12 +70,36 @@ const Comment = () => {
 
 export default Comment;
 
+const ListOfTopics = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const TopicElement = styled.div`
+  padding: 19px;
+  border-radius: 9px;
+  background-color: white;
+  box-shadow: 0px 14px 62px rgb(0 0 0 / 10%);
+  font-weight: bold;
+  transition: transform 0.2s;
+  margin: 20px;
+  width: fit-content;
+
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0px 14px 62px rgb(0 0 0 / 20%);
+    cursor: pointer;
+  }
+`;
+
 const InfoBox = styled.div`
   padding: 20px;
   width: 560px;
-  line-height: 15px;
+  p {
+    line-height: 25px;
+  }
 
-  a{
+  a {
     color: white;
     background-color: #074f72;
     padding: 10px;
