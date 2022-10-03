@@ -96,10 +96,11 @@ export default class ArgosService {
 
     await this.asyncForEach(availableCorpuses, async (corpusID) => {
       const data = await this.ht.getView(`/corpus/${corpusID}`);
-
-      let corpus_name = data[corpusID].name;
-      let corpus_id = corpusID;
-      corpuses.push({ corpus_name, corpus_id });
+      if(typeof data[corpusID] != 'undefined'){
+        let corpus_name = data[corpusID].name;
+        let corpus_id = corpusID;
+        corpuses.push({ corpus_name, corpus_id });
+      }
     });
 
     return corpuses;
