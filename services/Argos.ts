@@ -131,10 +131,11 @@ export default class ArgosService {
 
     await this.asyncForEach(availableViewpoints, async (viewpointID) => {
       const data = await this.ht.getView(`/viewpoint/${viewpointID}`);
-
-      let viewpoint_name = data[viewpointID].name;
-      let viewpoint_id = viewpointID;
-      viewpoints.push({ viewpoint_name, viewpoint_id });
+      if(typeof data[viewpointID] != 'undefined'){
+        let viewpoint_name = data[viewpointID].name;
+        let viewpoint_id = viewpointID;
+        viewpoints.push({ viewpoint_name, viewpoint_id });
+      }
     });
 
     return viewpoints;
