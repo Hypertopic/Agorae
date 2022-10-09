@@ -20,7 +20,6 @@ const Comment = () => {
 
   async function getItemData(corpusID, itemID) {
     const itemData = await Argos.getItemData(corpusID, itemID);
-    
     setItemData(itemData);
     setIsLoading(false);
   }
@@ -61,6 +60,17 @@ const Comment = () => {
                 </a>
               </InfoBox>
             </Preview>
+            <br />
+            <h2>Attributs:</h2>
+            {Object.entries(ItemData).map(([key, value]) => (
+              (key!="topic" && key!="topicsPaths") ? <p><b>* {key}:</b> {value}</p> : ""
+            ))}
+            <h2>Topics:</h2>
+            {(Object.entries(ItemData["topicsPaths"])).map((path) => (
+              <p>* {path}</p>
+            ))}
+
+            <br />
           </FancyRender>
         </CSSLayout>
       </Layout>

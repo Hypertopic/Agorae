@@ -83,7 +83,18 @@ export default class ArgosService {
 
     // Add CorpusID to each element
     itemData["corpus_id"] = [corpusID];
+    itemData["topicsPaths"] = [];
 
+    for(let x in itemData.topic){
+      const vp = await this.ht.getView(`/viewpoint/${itemData.topic[x].viewpoint}`);
+
+      let pathToAdd="";
+      pathToAdd+=vp[itemData.topic[x].viewpoint].name;
+      pathToAdd+=" >>> ";
+      pathToAdd+=vp[itemData.topic[x].viewpoint][itemData.topic[x].id]["name"][0];
+      itemData["topicsPaths"].push(pathToAdd);
+    }
+    console.log(itemData["topicsPaths"]);
     return itemData;
   }
 
