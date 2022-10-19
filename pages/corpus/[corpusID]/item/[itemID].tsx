@@ -67,7 +67,7 @@ const Comment = () => {
             ))}
             <h2>Topics:</h2>
             {(Object.entries(ItemData["topicsPaths"])).map((path) => (
-              <p>* {path}</p>
+              <p>* {path.slice(1)}</p>
             ))}
 
             <br />

@@ -88,13 +88,21 @@ export default class ArgosService {
     for(let x in itemData.topic){
       const vp = await this.ht.getView(`/viewpoint/${itemData.topic[x].viewpoint}`);
 
-      let pathToAdd="";
-      pathToAdd+=vp[itemData.topic[x].viewpoint].name;
-      pathToAdd+=" >>> ";
-      pathToAdd+=vp[itemData.topic[x].viewpoint][itemData.topic[x].id]["name"][0];
+      let destination=vp[itemData.topic[x].viewpoint][itemData.topic[x].id];
+
+      let path=[];
+      while(destination.hasOwnProperty("broader")){
+        path.push(destination["name"][0]);
+        let destinationid=destination.broader[0]["id"];
+        destination=vp[itemData.topic[x].viewpoint][destinationid];
+      }
+      let bigparent=vp[itemData.topic[x].viewpoint].name[0];
+      path.push(bigparent);
+      path=path.reverse();
+      let pathToAdd=path.join(" >>>> ")
       itemData["topicsPaths"].push(pathToAdd);
     }
-    console.log(itemData["topicsPaths"]);
+    
     return itemData;
   }
 

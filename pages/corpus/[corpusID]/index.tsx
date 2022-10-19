@@ -91,7 +91,9 @@ function Corpus() {
     <Layout title={"Corpus : " + corpusMetaData.corpus_name}>
       <Hero>
         <h1>{corpusMetaData.corpus_name}</h1>
+        <button>Add item</button>
       </Hero>
+      <br />
       {renderElements()}
     </Layout>
   );
@@ -130,6 +132,9 @@ const Hero = styled.div`
     padding-top: 10px;
     margin: auto;
     font-size: 18px;
+  }
+  button{
+    border: none;
   }
 `;
 export default Corpus;
