@@ -91,7 +91,7 @@ function Corpus() {
     <Layout title={"Corpus : " + corpusMetaData.corpus_name}>
       <Hero>
         <h1>{corpusMetaData.corpus_name}</h1>
-        <button>Add item</button>
+        <a href="#">Add item</a>
       </Hero>
       <br />
       {renderElements()}
@@ -133,8 +133,28 @@ const Hero = styled.div`
     margin: auto;
     font-size: 18px;
   }
-  button{
-    border: none;
+  a {
+    background:linear-gradient(to bottom, #f5f5f5 5%, #ffffff 100%);
+    background-color:#f5f5f5;
+    border-radius:42px;
+    border:2px solid #ffffff;
+    display:inline-block;
+    cursor:pointer;
+    color:#0040ff;
+    font-family:Arial;
+    font-size:17px;
+    padding:5px 31px;
+    text-decoration:none;
   }
+  a:hover {
+    background:linear-gradient(to bottom, #ffffff 5%, #f5f5f5 100%);
+    background-color:#ffffff;
+  }
+  a:active {
+    position:relative;
+    top:1px;
+  }
+  
+  
 `;
 export default Corpus;

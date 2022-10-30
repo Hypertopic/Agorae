@@ -58,6 +58,9 @@ const Comment = () => {
                 <a target="_blank" rel="noreferrer" href={ItemData["plus d'info"]}>
                   Plus d'informations
                 </a>
+                <br />
+                <br />
+                <button>Delete item 🗑️</button>
               </InfoBox>
             </Preview>
             <br />

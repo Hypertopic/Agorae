@@ -32,7 +32,7 @@ export default class HyperTopic {
    *
    */
   post(object: Object) {
-    const data = this.db.auth(this.auth[0], this.auth[1]).post(object).then(this._log).catch(this._error);
+    const data = this.db.auth(this.auth[0], this.auth[1]).post(object);
     return data;
   }
 

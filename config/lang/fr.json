@@ -6,7 +6,8 @@
     "propose": "Proposer un item",
     "faq": "FAQ",
     "contact-us": "Contact",
-    "search": "Chercher des sujets, noms, autheurs.."
+    "search": "Chercher des sujets, noms, autheurs..",
+    "Login": "Se Connecter"
   },
   "homepage": {
     "title": "Bienvenue à la Platforme {{name}}",
