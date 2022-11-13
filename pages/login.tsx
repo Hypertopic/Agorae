@@ -5,31 +5,32 @@ import styled from "styled-components";
 import Layout from "@components/Layout";
 import HyperTopic from "@services/HyperTopic";
 import { getAgoraeConfig } from "@services/Config";
-import { setCookie,getCookie,checkCookie } from "@services/utils";
+import { setCookie,getCookie } from "@services/utils";
 
 function validationandlogin(){
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
 
-  let agoraeConfig = getAgoraeConfig();
-  let ht = new HyperTopic([agoraeConfig.argos.url],[user,pass]);
+  if(user.length===0){
+    alert("Please enter a valid username");
+  } else if(pass.length===0){
+    alert("Please enter a valid password");
+  } else{
 
-  ht.post({}).then(
-    //adding cookie
-    r=>{
-      console.log(r);
-
-      setCookie("agoraeUser",user,7);
-      setCookie("agoraePass",pass,7);
-      location.replace("/")
+    let agoraeConfig = getAgoraeConfig();
+    let ht = new HyperTopic([agoraeConfig.argos.url],[user,pass]);
+    
+    ht.authenticate().then(result=>{
+      if(result.status===200){
+        setCookie("agoraeUser",user,7);
+        setCookie("agoraePass",pass,7);
+        //redirecting
+        location.replace("/");
+    }else{
+      alert("Sorry we could not find your account!");
     }
-  ).catch(
-    //Sending error message
-    e=>{
-      console.log(e);
-      alert("Sorry we could not find your account!")
-    }
-  );
+  });
+  }
 }
 
 function Userlogin() {
@@ -41,9 +42,9 @@ function Userlogin() {
         <Separator size={1}></Separator>
 
         <InputLabel>User :</InputLabel>
-        <InputField type="text" id="user" />
+        <InputField type="text" id="user" placeholder="Username"/>
         <InputLabel>Password : </InputLabel>
-        <InputField type="text" id="pass" />
+        <InputField type="password" id="pass" placeholder="Password" />
 
         <Separator size={1}></Separator>
         <button onClick={validationandlogin}>
@@ -76,7 +77,7 @@ const InputField = styled.input`
   padding: 10px;
   background-color: #e1e9ed;
   border: none;
-  width: 20%;
+  width: 60%;
   display: block;
   border-radius: 3px;
 `;

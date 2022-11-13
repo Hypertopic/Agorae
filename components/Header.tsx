@@ -4,7 +4,17 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { getAgoraeConfig } from "../services/Config";
 import Head from "next/head";
+import { setCookie,getCookie } from "@services/utils";
 
+function getusername(){
+  let username;
+  try{
+    username=getCookie("agoraeUser");
+  }catch{
+    username="";
+  }
+  return username;
+}
 function Header(props) {
   const { t, i18n } = useTranslation();
   const config = getAgoraeConfig();
@@ -45,10 +55,9 @@ function Header(props) {
         <meta property="og:locale" content="en-EN"></meta>
         <meta name="twitter:creator" content={config.seo.twitter}></meta>
         <meta name="theme-color" content={config.seo.theme_color}></meta>
-
         {/* SEO */}
       </Head>
-      <HeaderBox>
+      <HeaderBox >
         <LogoBox>
           <Link passHref href="/">
             <img src="/img/agorae-simple-logo.png" alt="Agorae Logo picture" />
@@ -88,7 +97,10 @@ function Header(props) {
             <a>{t("header.contact-us")}</a>
           </Link>
           <Link href="/login">
-            <a>{t("header.Login")}</a>
+            <a>
+              {t("header.Login")}
+              <Soon>{getusername()}</Soon>
+            </a>
           </Link>
           <Link href="">
             <a

@@ -36,4 +36,8 @@ export default class HyperTopic {
     return data;
   }
 
+  authenticate(){
+    const data= fetch(this.databases[0], {method: 'HEAD', credentials: 'include', headers:{'Authorization': 'Basic '+Buffer.from(`${this.auth[0]}:${this.auth[1]}`).toString('base64')}});
+    return data
+  }
 }
