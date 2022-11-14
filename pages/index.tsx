@@ -1,0 +1,127 @@
+import Footer from "@components/Footer";
+import React, { useState, useEffect } from "react";
+import Header from "@components/Header";
+import styled from "styled-components";
+import { getAgoraeConfig } from "@services/Config";
+import { useTranslation } from "react-i18next";
+import ArgosService from "@services/Argos";
+import ItemElement from "@components/ItemElement";
+import { useRouter } from "next/router";
+import ElementsLoader from "@components/ElementsLoader";
+import PagesLinks from "@components/PagesLinks";
+import { AnimatePresence } from "framer-motion";
+import Layout from "@components/Layout";
+
+const Home = () => {
+  const { t, i18n } = useTranslation();
+  const router = useRouter();
+  const { p } = router.query;
+  const config = getAgoraeConfig();
+
+  const localPage = p ? p : "1";
+
+  // React State
+  const [elements, setElements] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [pagesNumber, setPagesNumber] = useState(0);
+
+  // Get
+  async function getCorpusItems(page) {
+    const Argos = new ArgosService();
+    const data = await Argos.getCorpusItemsWithPagination(page, 8, config.argos.home_corpus);
+    const elements = await data.elements;
+    const length = await data.length;
+
+    // Calculate page nbr
+    let pagesNbr = Math.ceil(length / 8);
+
+    // Set states
+    setElements(elements);
+    setIsLoading(false);
+    setPagesNumber(pagesNbr);
+  }
+
+ 
+
+  useEffect(() => {
+    getCorpusItems(localPage);
+  }, [localPage]);
+
+  function renderElements() {
+    if (isLoading) {
+      return (
+        <ElementsList>
+          <ElementsLoader></ElementsLoader>
+        </ElementsList>
+      );
+    } else {
+      return (
+        <AnimatePresence>
+          <div style={{ top: "-120px", position: "relative" }}>
+            <PagesLinks withViewpointID={false} withCorpusID={false} pagesCount={pagesNumber}></PagesLinks>
+            <ElementsList>
+              {elements.map((item) => (
+                <ItemElement
+                  title={item["1"].name}
+                  preview={item["1"]["image/video"] ? item["1"]["image/video"] : "/img/imgnotfound.png"}
+                  creator={item["1"]["048 organisation:"]}
+                  creation_date={item["1"]["045 date de début:"]}
+                  description={item["1"]["030 résumé:"]}
+                  corpus_id={item["1"].corpus_id}
+                  key={item["1"].key}
+                  id={item[0]}
+                />
+              ))}
+            </ElementsList>
+          </div>
+        </AnimatePresence>
+      );
+    }
+  }
+  return (
+    <Layout title="Homepage">
+      <Hero>
+        <h1>{t("homepage.title", { name: config.website.title })} </h1>
+        <p>{t("homepage.description", { name: config.website.title })}</p>
+      </Hero>
+      {renderElements()}
+    </Layout>
+  );
+};
+
+/**
+ * Styling
+ * CSS with Styled Components
+ * https://styled-components.com/docs
+ */
+
+const config = getAgoraeConfig();
+const ElementsList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-left: 14%;
+  padding-right: 14%;
+`;
+
+const Hero = styled.div`
+  margin-top: 25px;
+  padding-top: 30px;
+  color: white;
+  text-align: center;
+  background-image: linear-gradient(39deg, ${config.website.colors[0]}, ${config.website.colors[1]});
+  height: 320px;
+
+  h1 {
+    padding-top: 10px;
+    margin-bottom: 0px;
+    font-weight: 700;
+  }
+  p {
+    width: 700px;
+    padding-top: 10px;
+    margin: auto;
+    font-size: 18px;
+  }
+`;
+export default Home;

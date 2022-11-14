@@ -1,0 +1,28 @@
+{
+  "header": {
+    "corpus": "Corpuses",
+    "viewpoint" : "Viewpoints", 
+    "about": "About",
+    "propose": "Propose new Item",
+    "faq": "FAQ",
+    "contact-us": "Contact Us",
+    "search": "Search for topics, names, authors and more...",
+    "Login": "Login"
+  },
+  "homepage": {
+    "title": "Welcome to the {{name}} Platform",
+    "description": "{{name}} is a common mapping device for a generic co-built knowledge map about transitions. This generic scheme is adaptable to specific requirements of each organisation facing transition goals"
+  },
+  "item_element": {
+    "more_details": "More details"
+  },
+  "contact": {
+    "title": "Contact us",
+    "description": "If you have any questions or comments, please contact us at:",
+    "values": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message"
+    }
+  }
+}
