@@ -19,4 +19,16 @@ function getCookie(cname) {
     }
     return "";
   }
-export {setCookie,getCookie,}
+  function getusernamepass(){
+    let username,pass;
+    try{
+      username=getCookie("agoraeUser");
+      pass=getCookie("agoraePass");
+    }catch{
+      username="Login";
+      pass="noPass"
+    }
+    return [username,pass];
+  }
+  
+export {setCookie,getCookie,getusernamepass}

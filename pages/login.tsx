@@ -5,7 +5,7 @@ import styled from "styled-components";
 import Layout from "@components/Layout";
 import HyperTopic from "@services/HyperTopic";
 import { getAgoraeConfig } from "@services/Config";
-import { setCookie,getCookie } from "@services/utils";
+import { setCookie,getCookie, getusernamepass } from "@services/utils";
 
 function validationandlogin(){
   const user = document.getElementById('user').value;

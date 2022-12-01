@@ -11,6 +11,10 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
+import HyperTopic from "@services/HyperTopic";
+import { setCookie,getCookie, getusernamepass } from "@services/utils";
+
+
 
 function Corpus() {
   const { t, i18n } = useTranslation();
@@ -25,6 +29,28 @@ function Corpus() {
   const [isLoading, setIsLoading] = useState(true);
   const [pagesNumber, setPagesNumber] = useState(0);
   const [corpusMetaData, setCorpusMetaData] = useState<any>({});
+
+  function additem(){
+    let [user,pass]=getusernamepass();
+    if(user==="Login"){
+      alert("Please Login to add item!");
+    } else{
+      let agoraeConfig = getAgoraeConfig();
+      let ht = new HyperTopic([agoraeConfig.argos.url],[user,pass]);
+      console.log(corpusMetaData);
+      ht.post(
+        {
+          item_name:'New item to edit',
+          item_corpus:corpusMetaData.corpus_id,
+          "048 organisation:":"Please add organisation",
+          "045 date de début:":"date to be added",
+          "image/video":"please add an image",
+          "030 résumé:":"Please update this resume",
+        }
+      );
+      location.reload();
+    }
+  }
 
   // Get
   async function getCorpusItems(page) {
@@ -91,7 +117,7 @@ function Corpus() {
     <Layout title={"Corpus : " + corpusMetaData.corpus_name}>
       <Hero>
         <h1>{corpusMetaData.corpus_name}</h1>
-        <a href="#">Add item</a>
+        <a href="#" onClick={additem}>Add item</a>
       </Hero>
       <br />
       {renderElements()}
@@ -154,7 +180,5 @@ const Hero = styled.div`
     position:relative;
     top:1px;
   }
-  
-  
 `;
 export default Corpus;

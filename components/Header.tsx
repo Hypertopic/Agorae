@@ -4,17 +4,9 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { getAgoraeConfig } from "../services/Config";
 import Head from "next/head";
-import { setCookie,getCookie } from "@services/utils";
+import { setCookie,getCookie, getusernamepass } from "@services/utils";
 
-function getusername(){
-  let username;
-  try{
-    username=getCookie("agoraeUser");
-  }catch{
-    username="";
-  }
-  return username;
-}
+
 function Header(props) {
   const { t, i18n } = useTranslation();
   const config = getAgoraeConfig();
@@ -99,7 +91,7 @@ function Header(props) {
           <Link href="/login">
             <a>
               {t("header.Login")}
-              <Soon>{getusername()}</Soon>
+              <Soon>{getusernamepass()[0]}</Soon>
             </a>
           </Link>
           <Link href="">

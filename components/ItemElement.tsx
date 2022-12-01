@@ -5,6 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion"
 import PreviewRender from "./UI/PreviewRender";
+import HyperTopic from "@services/HyperTopic";
+import { getAgoraeConfig } from "@services/Config";
+import { setCookie,getCookie, getusernamepass } from "@services/utils";
 
 function ItemElement({ title, preview, creator, description, id, creation_date, corpus_id }) {
   const { t, i18n } = useTranslation();
@@ -37,6 +40,15 @@ function ItemElement({ title, preview, creator, description, id, creation_date, 
             <a>{t("item_element.more_details")}</a>
           </Link>
         </Button>
+        <Delete onClick={()=>{
+          let [user,pass]=getusernamepass();
+          let agoraeConfig = getAgoraeConfig();
+          let ht = new HyperTopic([agoraeConfig.argos.url],[user,pass]);
+          ht.delete(id);
+          location.reload();
+          }}>
+          Delete
+        </Delete>
       </Bottom>
     </ElementBox>
   );
@@ -107,6 +119,16 @@ const Button = styled.div`
   padding: 15px;
   font-weight: bold;
   background-color: #000f801f;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+const Delete = styled.div`
+  padding: 15px;
+  font-weight: bold;
+  color: #ffffff;
+  background:linear-gradient(to bottom, #0393f4 5%, #3f51b5 100%);
 
   &:hover {
     cursor: pointer;
